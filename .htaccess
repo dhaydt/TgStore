@@ -12,13 +12,6 @@ RewriteRule ^ ^$1 [N]
 RewriteCond %{REQUEST_URI} (\.\w+$) [NC]
 RewriteRule ^(.*)$ public/$1
 
-RewriteCond %{REQUEST_URI} !^public
-
-RewriteRule ^(.*)$ public/$1 [L]
-
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ server.php

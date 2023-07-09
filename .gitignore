@@ -1,5 +1,5 @@
 # /node_modules
-/public/hot
+# /public/hot
 /storage/app/public
 # /vendor
 .env
