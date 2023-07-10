@@ -16,6 +16,7 @@ use App\Returns;
 use App\RewardPointSetting;
 use App\Sale;
 use App\User;
+use App\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -25,6 +26,10 @@ class UserController extends Controller
     public function profile(Request $request)
     {
         $user = User::find(auth()->id());
+
+        $user['warehouse_id'] = $user['warehouse_id'] ?? 1;
+
+        $user['warehouse'] = Warehouse::find($user['warehouse_id']);
 
         $user['role'] = Role::find($user->role_id);
 
@@ -112,7 +117,7 @@ class UserController extends Controller
             ->whereDate('product_sales.created_at', '<=', $end_date)
             ->groupBy('products.code')
             ->orderBy('sold_qty', 'desc')
-            ->take(5)
+            ->take(10)
             ->get();
 
         $yearly_best_selling_qty = Product_Sale::join('products', 'products.id', '=', 'product_sales.product_id')
@@ -192,18 +197,18 @@ class UserController extends Controller
             'purchase_return' => $purchase_return,
             'profit' => $profit,
             'payment_sent' => $payment_sent,
-            'month' => $month,
-            'yearly_sale_amount' => $yearly_sale_amount,
-            'yearly_purchase_amount' => $yearly_purchase_amount,
-            'yearly_purchase_amount' => $yearly_purchase_amount,
-            'recent_sale' => $recent_sale,
-            'recent_purchase' => $recent_purchase,
-            'recent_quotation' => $recent_quotation,
-            'recent_payment' => $recent_payment,
+            // 'month' => $month,
+            // 'yearly_sale_amount' => $yearly_sale_amount,
+            // 'yearly_purchase_amount' => $yearly_purchase_amount,
+            // 'yearly_purchase_amount' => $yearly_purchase_amount,
+            // 'recent_sale' => $recent_sale,
+            // 'recent_purchase' => $recent_purchase,
+            // 'recent_quotation' => $recent_quotation,
+            // 'recent_payment' => $recent_payment,
             'best_selling_qty' => $best_selling_qty,
-            'yearly_best_selling_qty' => $yearly_best_selling_qty,
-            'yearly_best_selling_price' => $yearly_best_selling_price,
-            'all_permission' => $all_permission,
+            // 'yearly_best_selling_qty' => $yearly_best_selling_qty,
+            // 'yearly_best_selling_price' => $yearly_best_selling_price,
+            // 'all_permission' => $all_permission,
         ];
         return response()->json($data, 200);
     }
