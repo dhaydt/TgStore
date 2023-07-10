@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Category;
 use App\Product;
 use DB;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Validation\Rule;
@@ -21,8 +21,9 @@ class CategoryController extends Controller
             $lims_category_all = Category::where('is_active', true)->get();
             return view('backend.category.create',compact('lims_categories', 'lims_category_all'));
         }
-        else
+        else{
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
+        }
     }
 
     public function categoryData(Request $request)
