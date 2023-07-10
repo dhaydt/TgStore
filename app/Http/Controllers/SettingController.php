@@ -51,8 +51,8 @@ class SettingController extends Controller
 
     public function generalSettingStore(Request $request)
     {
-        if(!env('USER_VERIFIED'))
-            return redirect()->back()->with('not_permitted', 'This feature is disable for demo!');
+        // if(!env('USER_VERIFIED'))
+        //     return redirect()->back()->with('not_permitted', 'This feature is disable for demo!');
 
         $this->validate($request, [
             'site_logo' => 'image|mimes:jpg,jpeg,png,gif|max:100000',
