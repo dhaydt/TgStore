@@ -79,4 +79,77 @@ class TransactionController extends Controller
             return redirect()->back()->with('not_permitted', 'Sorry! You are not allowed to access this module');
         }
     }
+
+    public function post_transaction(Request $request){
+        // _token: 9E0UjmjaovzF5qo6wFr0FH4rM5H7BN2CkU8OTwfS
+        // created_at: 
+        // reference_no: 
+        // warehouse_id_hidden: 1
+        // warehouse_id: 1
+        // biller_id_hidden: 1
+        // biller_id: 1
+        // customer_id_hidden: 1
+        // customer_id: 1
+        // product_code_name: 
+        // product_batch_id[]: 
+        // qty[]: 2
+        // product_code[]: AX3GB
+        // product_id[]: 1
+        // sale_unit[]: Pcs
+        // net_unit_price[]: 17000.00
+        // discount[]: 0.00
+        // tax_rate[]: 0.00
+        // tax[]: 0.00
+        // subtotal[]: 34000.00
+        // imei_number[]: 
+        // total_qty: 2
+        // total_discount: 0.00
+        // total_tax: 0.00
+        // total_price: 34000.00
+        // item: 1
+        // order_tax: 0.00
+        // grand_total: 34000.00
+        // used_points: 
+        // coupon_discount: 
+        // sale_status: 1
+        // coupon_active: 
+        // coupon_id: 
+        // coupon_discount: 
+        // pos: 1
+        // draft: 0
+        // paying_amount: 50000
+        // paid_amount: 34000.00
+        // paid_by_id: 1
+        // gift_card_id: 
+        // cheque_no: 
+        // payment_note: cash
+        // sale_note: -
+        // staff_note: -
+        // order_discount_type: Flat
+        // order_discount_value: 
+        // order_discount: 0
+        // order_tax_rate: 0
+        // shipping_cost: 
+        
+    }
+
+    public function scan_product(Request $request){
+        $this->validate($request, [
+            'code' => 'required',
+        ]);
+
+        $product = Product::where('code', 'like', '%'.$request['code'].'%')->orWhere('name', 'like', '%'.$request['code'].'%')->orWhere('barcode_symbology', 'like', '%'.$request['code'].'%')->first();
+        $data = [];
+        if($product){
+            $data = [
+                "id" => $product['id'],
+                "name" => $product['name'],
+                "code" => $product['code'],
+                "barcode_symbology" => $product['barcode_symbology'],
+                "price" => $product['price'],
+            ];
+        }
+
+        return response()->json($data);
+    }
 }
