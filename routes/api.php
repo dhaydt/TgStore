@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\GeneralController;
+use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,4 +27,13 @@ Route::post('login', [LoginController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [UserController::class, 'profile']);
     Route::get('/home', [UserController::class, 'home']);
+    Route::get('/transaction', [TransactionController::class, 'index']);
+    
+    Route::get('category_product', [GeneralController::class, 'category_product']);
+    Route::get('customer', [GeneralController::class, 'customer']);
+    Route::get('supplier', [GeneralController::class, 'supplier']);
+    Route::get('warehouse', [GeneralController::class, 'warehouse']);
+    Route::post('add_supplier', [GeneralController::class, 'add_supplier']);
+    Route::post('add_customer', [GeneralController::class, 'add_customer']);
+    Route::get('customer_group', [GeneralController::class, 'customer_group']);
 });

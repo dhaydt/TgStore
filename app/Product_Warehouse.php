@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Product_Warehouse extends Model
 {
@@ -27,5 +28,15 @@ class Product_Warehouse extends Model
             ['product_id', $product_id],
             ['warehouse_id', $warehouse_id]
         ]);
+    }
+
+    /**
+     * Get the user that owns the Product_Warehouse
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 }
