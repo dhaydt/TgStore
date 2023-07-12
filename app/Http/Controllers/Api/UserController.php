@@ -17,6 +17,7 @@ use App\RewardPointSetting;
 use App\Sale;
 use App\User;
 use App\Warehouse;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -71,6 +72,9 @@ class UserController extends Controller
             $all_permission[] = 'dummy text';
 
         $start_date = date("Y") . '-' . date("m") . '-' . '01';
+
+        $now = Carbon::now()->format('Y-m-d');
+
         $end_date = date("Y") . '-' . date("m") . '-' . date('t', mktime(0, 0, 0, date("m"), 1, date("Y")));
         $yearly_sale_amount = [];
 
@@ -79,32 +83,38 @@ class UserController extends Controller
             $product_sale_data = Sale::join('product_sales', 'sales.id', '=', 'product_sales.sale_id')
                 ->select(DB::raw('product_sales.product_id, product_sales.product_batch_id, product_sales.sale_unit_id, sum(product_sales.qty) as sold_qty, sum(product_sales.total) as sold_amount'))
                 ->where('sales.user_id', auth()->id())
-                ->whereDate('product_sales.created_at', '>=', $start_date)
-                ->whereDate('product_sales.created_at', '<=', $end_date)
+                ->whereDate('product_sales.created_at', '=', $now)
+                ->whereDate('product_sales.created_at', '=', $now)
                 ->groupBy('product_sales.product_id', 'product_sales.product_batch_id')
                 ->get();
             $product_cost = Helpers::calculateAverageCOGS($product_sale_data);
-            $revenue = Sale::whereDate('created_at', '>=', $start_date)->where('user_id', auth()->id())->whereDate('created_at', '<=', $end_date)->sum('grand_total');
-            $return = Returns::whereDate('created_at', '>=', $start_date)->where('user_id', auth()->id())->whereDate('created_at', '<=', $end_date)->sum('grand_total');
-            $purchase_return = ReturnPurchase::whereDate('created_at', '>=', $start_date)->where('user_id', auth()->id())->whereDate('created_at', '<=', $end_date)->sum('grand_total');
+            // $revenue = Sale::whereDate('created_at', '>=', $start_date)->where('user_id', auth()->id())->whereDate('created_at', '<=', $end_date)->sum('grand_total');
+            $revenue = Sale::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->whereDate('created_at', '=', $now)->sum('grand_total');
+
+            // $return = Returns::whereDate('created_at', '>=', $start_date)->where('user_id', auth()->id())->whereDate('created_at', '<=', $end_date)->sum('grand_total');
+            $return = Returns::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->whereDate('created_at', '=', $now)->sum('grand_total');
+            $purchase_return = ReturnPurchase::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->whereDate('created_at', '=', $now)->sum('grand_total');
             $revenue = $revenue - $return;
             $purchase = Purchase::whereDate('created_at', '>=', $start_date)->where('user_id', auth()->id())->whereDate('created_at', '<=', $end_date)->sum('grand_total');
             $profit = $revenue + $purchase_return - $product_cost;
-            $expense = Expense::whereDate('created_at', '>=', $start_date)->where('user_id', auth()->id())->whereDate('created_at', '<=', $end_date)->sum('amount');
+            $expense = Expense::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->whereDate('created_at', '=', $now)->sum('amount');
             $recent_sale = Sale::with('customer')->orderBy('id', 'desc')->where('user_id', auth()->id())->take(5)->get();
             $recent_purchase = Purchase::with('supplier')->orderBy('id', 'desc')->where('user_id', auth()->id())->take(5)->get();
             $recent_quotation = Quotation::with('customer')->orderBy('id', 'desc')->where('user_id', auth()->id())->take(5)->get();
             $recent_payment = Payment::orderBy('id', 'desc')->where('user_id', auth()->id())->take(5)->get();
         } else {
-            $product_sale_data = Product_Sale::select(DB::raw('product_id, product_batch_id, sale_unit_id, sum(qty) as sold_qty, sum(total) as sold_amount'))->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->groupBy('product_id', 'product_batch_id')->get();
+            $product_sale_data = Product_Sale::select(DB::raw('product_id, product_batch_id, sale_unit_id, sum(qty) as sold_qty, sum(total) as sold_amount'))->whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->groupBy('product_id', 'product_batch_id')->get();
             $product_cost = Helpers::calculateAverageCOGS($product_sale_data);
-            $revenue = Sale::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
-            $return = Returns::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
-            $purchase_return = ReturnPurchase::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
+            // $revenue = Sale::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
+            $revenue = Sale::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('grand_total');
+
+            // $return = Returns::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
+            $return = Returns::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('grand_total');
+            $purchase_return = ReturnPurchase::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('grand_total');
             $revenue = $revenue - $return;
-            $purchase = Purchase::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
+            $purchase = Purchase::whereDate('created_at', '=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
             $profit = $revenue + $purchase_return - $product_cost;
-            $expense = Expense::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+            $expense = Expense::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('amount');
             $recent_sale = Sale::with('customer')->orderBy('id', 'desc')->take(5)->get();
             $recent_purchase = Purchase::with('supplier')->orderBy('id', 'desc')->take(5)->get();
             $recent_quotation = Quotation::with('customer')->orderBy('id', 'desc')->take(5)->get();
@@ -151,14 +161,14 @@ class UserController extends Controller
                 $sent_amount = DB::table('payments')->whereNotNull('purchase_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('amount');
                 $return_amount = Returns::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('grand_total');
                 $purchase_return_amount = ReturnPurchase::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('grand_total');
-                $expense_amount = Expense::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('amount');
+                $expense_amount = Expense::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->where('user_id', auth()->id())->sum('amount');
                 $payroll_amount = Payroll::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('amount');
             } else {
                 $recieved_amount = DB::table('payments')->whereNotNull('sale_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
                 $sent_amount = DB::table('payments')->whereNotNull('purchase_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
                 $return_amount = Returns::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
                 $purchase_return_amount = ReturnPurchase::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
-                $expense_amount = Expense::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
+                $expense_amount = Expense::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('amount');
                 $payroll_amount = Payroll::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
             }
             $sent_amount = $sent_amount + $return_amount + $expense_amount + $payroll_amount;
@@ -190,13 +200,13 @@ class UserController extends Controller
         DB::reconnect();
 
         $data = [
-            'revenue' => $revenue,
-            'purchase' => $purchase,
-            'expense' => $expense,
-            'return' => $return,
-            'purchase_return' => $purchase_return,
+            'pendapatan' => $revenue,
             'profit' => $profit,
-            'payment_sent' => $payment_sent,
+            'pengeluaran' => $purchase,
+            'pembelian' => $expense,
+            // 'return' => $return,
+            // 'purchase_return' => $purchase_return,
+            // 'payment_sent' => $payment_sent,
             // 'month' => $month,
             // 'yearly_sale_amount' => $yearly_sale_amount,
             // 'yearly_purchase_amount' => $yearly_purchase_amount,
@@ -205,7 +215,7 @@ class UserController extends Controller
             // 'recent_purchase' => $recent_purchase,
             // 'recent_quotation' => $recent_quotation,
             // 'recent_payment' => $recent_payment,
-            'best_selling_qty' => $best_selling_qty,
+            'best_selling' => $best_selling_qty,
             // 'yearly_best_selling_qty' => $yearly_best_selling_qty,
             // 'yearly_best_selling_price' => $yearly_best_selling_price,
             // 'all_permission' => $all_permission,
