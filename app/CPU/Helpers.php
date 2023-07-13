@@ -8,10 +8,25 @@ use App\Unit;
 
 class Helpers
 {
-    public static function imgUrl($type){
-        if($type == 'product'){
+    public static function imgUrl($type)
+    {
+        if ($type == 'product') {
             return 'public/images/product/';
         }
+    }
+
+    public static function errMsg($status, $field, $pesan)
+    {
+        $resp = [
+            "message" => 'The given data was invalid.',
+            $status => [
+                $field => [
+                    $pesan
+                ]
+            ]
+        ];
+
+        return $resp;
     }
     public static function responseApi($status, $message)
     {
