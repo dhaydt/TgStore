@@ -111,7 +111,7 @@ class TransactionController extends Controller
 
         $data['product_batch_id'] = [];
         $data['warehouse_id'] = auth()->user()->warehouse_id ?? 1;
-        $data['biller_id'] = auth()->user()->biller_id ?? 1;
+        $data['biller_id'] = PosSetting::OrderBy('created_at', 'desc')->first()['biller_id'];
         $data['product_code_name'] = null;
         $data['sale_unit'] = [];
         $data['discount'] = [];
@@ -161,7 +161,7 @@ class TransactionController extends Controller
 
         $data['user_id'] = auth()->user()->id;
         $data['warehouse_id'] = auth()->user()->warehouse_id ?? 1;
-        $data['biller_id'] = auth()->user()->biller_id ?? 1;
+        $data['biller_id'] = PosSetting::OrderBy('created_at', 'desc')->first()['biller_id'];
         $cash_register_data = CashRegister::where([
             ['user_id', $data['user_id']],
             ['warehouse_id', $data['warehouse_id']],
