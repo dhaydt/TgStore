@@ -150,7 +150,6 @@ class TransactionController extends Controller
             array_push($data['tax'], 0.00);
         }
 
-        // dd($data);
 
         if (isset($request->reference_no)) {
             $this->validate($request, [

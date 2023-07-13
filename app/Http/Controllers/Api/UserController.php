@@ -134,30 +134,45 @@ class UserController extends Controller
         $auth = auth()->user();
         $warehouse_id = $auth->warehouse_id ?? 1;
 
-        foreach($best_selling_qty as $bs){
+        foreach ($best_selling_qty as $bs) {
             $stock = Product_Warehouse::where(['product_id' => $bs['product_id'], 'warehouse_id' => $warehouse_id])->first();
 
-            if($stock){
+            if ($stock) {
                 $stock = $stock['qty'];
-            }else{
+            } else {
                 $stock = 0;
             }
 
             $bs['stock'] = $stock;
-            $bs['product_images'] = config('app.url').Helpers::imgUrl('product').$bs['product_images'];
+            $bs['product_images'] = config('app.url') . Helpers::imgUrl('product') . $bs['product_images'];
             $bs['warehouse_id'] = $warehouse_id;
         }
 
         // return $best_selling_qty;
 
         $yearly_best_selling_qty = Product_Sale::join('products', 'products.id', '=', 'product_sales.product_id')
-            ->select(DB::raw('products.name as product_name, products.code as product_code, products.image as product_images, sum(product_sales.qty) as sold_qty'))
+            ->select(DB::raw('products.id as product_id, products.name as product_name, products.code as product_code, products.image as product_images, sum(product_sales.qty) as sold_qty'))
             ->whereDate('product_sales.created_at', '>=', date("Y") . '-01-01')
             ->whereDate('product_sales.created_at', '<=', date("Y") . '-12-31')
             ->groupBy('products.code')
             ->orderBy('sold_qty', 'desc')
             ->take(5)
             ->get();
+
+        foreach ($yearly_best_selling_qty as $by) {
+            $stock = Product_Warehouse::where(['product_id' => $by['product_id'], 'warehouse_id' => $warehouse_id])->first();
+
+            if ($stock) {
+                $stock = $stock['qty'];
+            } else {
+                $stock = 0;
+            }
+
+            $by['stock'] = $stock;
+            $by['product_images'] = config('app.url') . Helpers::imgUrl('product') . $bs['product_images'];
+            $by['warehouse_id'] = $warehouse_id;
+        }
+        // return $yearly_best_selling_qty;
 
         $yearly_best_selling_price = Product_Sale::join('products', 'products.id', '=', 'product_sales.product_id')
             ->select(DB::raw('products.name as product_name, products.code as product_code, products.image as product_images, sum(total) as total_price'))
@@ -236,7 +251,7 @@ class UserController extends Controller
             // 'recent_quotation' => $recent_quotation,
             // 'recent_payment' => $recent_payment,
             'best_selling' => $best_selling_qty,
-            // 'yearly_best_selling_qty' => $yearly_best_selling_qty,
+            'yearly_best_selling' => $yearly_best_selling_qty,
             // 'yearly_best_selling_price' => $yearly_best_selling_price,
             // 'all_permission' => $all_permission,
         ];
