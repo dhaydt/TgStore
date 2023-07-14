@@ -28,7 +28,7 @@ class Sale extends Model
      */
     public function product_sale(): HasMany
     {
-        return $this->hasMany(product_sale::class, 'sale_id', 'id');
+        return $this->hasMany(Product_Sale::class, 'sale_id', 'id');
     }
 
     public function warehouse()
