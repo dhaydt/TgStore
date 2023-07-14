@@ -94,6 +94,27 @@ class TransactionController extends Controller
         }
     }
 
+    public function product_list(){
+        $product = Product::with('category')->where('is_active', 1)->get();
+        $data = [];
+        foreach($product as $p){
+            $item = [
+                'product_id' => $p['id'],
+                'name' => $p['name'],
+                'code' => $p['code'],
+                'category' => $p['category']['name'],
+                'qty' => $p['qty'],
+                'price' => $p['price'],
+                'details' => $p['product_details'],
+                'image' => config('app.url').Helpers::imgUrl('product').$p['image'],
+            ];
+
+            array_push($data, $item);
+        }
+
+        return response()->json($data);
+    }
+
     public function transaction_post(Request $request)
     {
         $this->validate($request, [
