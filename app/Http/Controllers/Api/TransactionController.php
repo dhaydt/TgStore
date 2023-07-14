@@ -94,19 +94,26 @@ class TransactionController extends Controller
         }
     }
 
-    public function product_list(){
-        $product = Product::with('category')->where('is_active', 1)->get();
+    public function product_list()
+    {
+        $warehouse_id = auth()->user()['warehouse_id'] ?? 1;
+
+        $product = Product_Warehouse::with('product')->where('warehouse_id', $warehouse_id)->whereHas('product', function($q){
+            $q->where('is_active', 1);
+        })->get();
+
         $data = [];
-        foreach($product as $p){
+        
+        foreach ($product as $p) {
             $item = [
-                'product_id' => $p['id'],
-                'name' => $p['name'],
-                'code' => $p['code'],
-                'category' => $p['category']['name'],
+                'product_id' => $p['product_id'],
+                'name' => $p['product']['name'],
+                'code' => $p['product']['code'],
+                'category' => $p['product']['category']['name'],
                 'qty' => $p['qty'],
-                'price' => $p['price'],
-                'details' => $p['product_details'],
-                'image' => config('app.url').Helpers::imgUrl('product').$p['image'],
+                'price' => $p['product']['price'],
+                'details' => $p['product']['product_details'],
+                'image' => config('app.url') . Helpers::imgUrl('product') . $p['product']['image'],
             ];
 
             array_push($data, $item);
@@ -162,7 +169,7 @@ class TransactionController extends Controller
         $data['shipping_cost'] = 0;
         $data['imei_number'] = [];
 
-        foreach($request->product_id as $pl){
+        foreach ($request->product_id as $pl) {
             array_push($data['product_batch_id'], null);
             array_push($data['imei_number'], null);
             array_push($data['sale_unit'], 'Pcs');
@@ -557,13 +564,13 @@ class TransactionController extends Controller
         }
         if ($lims_sale_data->sale_status == '1')
             return response()->json(['message' => $message]);
-            // return redirect('sales/gen_invoice/' . $lims_sale_data->id)->with('message', $message);
+        // return redirect('sales/gen_invoice/' . $lims_sale_data->id)->with('message', $message);
         elseif ($data['pos'])
             return response()->json(['message' => $message]);
-            // return redirect('pos')->with('message', $message);
+        // return redirect('pos')->with('message', $message);
         else
             return response()->json(['message' => $message]);
-            // return redirect('sales')->with('message', $message);
+        // return redirect('sales')->with('message', $message);
         // reference_no: 
         // warehouse_id: 1
         // biller_id: 1
