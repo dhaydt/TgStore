@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/scan_product', [TransactionController::class, 'scan_product']);
     Route::get('/product_list', [TransactionController::class, 'product_list']);
     Route::get('/transaction_list', [TransactionController::class, 'transaction_list']);
+    Route::get('/transaction_detail/{id}', [TransactionController::class, 'transaction_details']);
     
     Route::get('category_product', [GeneralController::class, 'category_product']);
     Route::get('customer', [GeneralController::class, 'customer']);

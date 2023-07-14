@@ -96,239 +96,106 @@ class TransactionController extends Controller
     }
 
     public function transaction_list(){
-        $columns = array( 
-            1 => 'created_at', 
-            2 => 'reference_no',
-            7 => 'grand_total',
-            8 => 'paid_amount',
-        );
-        
         $warehouse_id = auth()->user()->warehouse_id;
-        $sale_status = null;
-        $payment_status = null;
-
-        // $q = Sale::whereDate('created_at', '>=' ,$request->input('starting_date'))->whereDate('created_at', '<=' ,$request->input('ending_date'));
-        $q = new Sale();
-
-        if(auth()->user()->role_id > 2 && config('staff_access') == 'own')
-            $q = $q->where('user_id', auth()->id());
-        if($sale_status)
-            $q = $q->where('sale_status', $sale_status);
-        if($payment_status)
-            $q = $q->where('payment_status', $payment_status);
-        
-        $totalData = $q->count();
-        $totalFiltered = $totalData;
-
-        // if($request->input('length') != -1)
-        //     $limit = $request->input('length');
-        // else
-        //     $limit = $totalData;
-        // $start = $request->input('start');
-        // $order = 'sales.'.$columns[$request->input('order.0.column')];
-        // $dir = $request->input('order.0.dir');
-        // if(empty($request->input('search.value'))) {
-            // $q = Sale::with('biller', 'customer', 'warehouse', 'user')
-            //     ->whereDate('created_at', '>=' ,$request->input('starting_date'))
-            //     ->whereDate('created_at', '<=' ,$request->input('ending_date'))
-            //     ->offset($start)
-            //     ->limit($limit)
-            //     ->orderBy($order, $dir);
-            $q = Sale::with('biller', 'customer', 'warehouse', 'user')
-                ->orderBy('created_at', 'desc');
-            if(auth()->user()->role_id > 2 && config('staff_access') == 'own')
-                $q = $q->where('user_id', auth()->id());
-            if($warehouse_id)
-                $q = $q->where('warehouse_id', $warehouse_id);
-            if($sale_status)
-                $q = $q->where('sale_status', $sale_status);
-            if($payment_status)
-                $q = $q->where('payment_status', $payment_status);
-            $sales = $q->get();
-        // }
-        // else
-        // {
-        //     $search = $request->input('search.value');
-        //     $q = Sale::join('customers', 'sales.customer_id', '=', 'customers.id')
-        //         ->join('billers', 'sales.biller_id', '=', 'billers.id')
-        //         ->whereDate('sales.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))))
-        //         ->offset($start)
-        //         ->limit($limit)
-        //         ->orderBy($order,$dir);
-        $search = null;
-            if(auth()->user()->role_id > 2 && config('staff_access') == 'own') {
-                $sales =  $q->select('sales.*')
-                            ->with('biller', 'customer', 'warehouse', 'user')
-                            ->where('sales.user_id', auth()->id())
-                            ->orWhere([
-                                ['sales.reference_no', 'LIKE', "%{$search}%"],
-                                ['sales.user_id', auth()->id()]
-                            ])
-                            ->orWhere([
-                                ['customers.name', 'LIKE', "%{$search}%"],
-                                ['sales.user_id', auth()->id()]
-                            ])
-                            ->orWhere([
-                                ['customers.phone_number', 'LIKE', "%{$search}%"],
-                                ['sales.user_id', auth()->id()]
-                            ])
-                            ->orWhere([
-                                ['billers.name', 'LIKE', "%{$search}%"],
-                                ['sales.user_id', auth()->id()]
-                            ])->get();
-
-                $totalFiltered = $q->where('sales.user_id', auth()->id())
-                                ->orWhere([
-                                    ['sales.reference_no', 'LIKE', "%{$search}%"],
-                                    ['sales.user_id', auth()->id()]
-                                ])
-                                ->orWhere([
-                                    ['customers.name', 'LIKE', "%{$search}%"],
-                                    ['sales.user_id', auth()->id()]
-                                ])
-                                ->orWhere([
-                                    ['customers.phone_number', 'LIKE', "%{$search}%"],
-                                    ['sales.user_id', auth()->id()]
-                                ])
-                                ->orWhere([
-                                    ['billers.name', 'LIKE', "%{$search}%"],
-                                    ['sales.user_id', auth()->id()]
-                                ])
-                                ->count();
-            }
-            else {
-                // $sales =  $q->select('sales.*')
-                //             ->with('biller', 'customer', 'warehouse', 'user')
-                //             ->orWhere('sales.reference_no', 'LIKE', "%{$search}%")
-                //             ->orWhere('customers.name', 'LIKE', "%{$search}%")
-                //             ->orWhere('customers.phone_number', 'LIKE', "%{$search}%")
-                //             ->orWhere('billers.name', 'LIKE', "%{$search}%")
-                //             ->get();
-
-                // $totalFiltered = $q->orWhere('sales.reference_no', 'LIKE', "%{$search}%")
-                //                 ->orWhere('customers.name', 'LIKE', "%{$search}%")
-                //                 ->orWhere('customers.phone_number', 'LIKE', "%{$search}%")
-                //                 ->orWhere('billers.name', 'LIKE', "%{$search}%")
-                //                 ->count();
-            }
-        // }
-
-        $data = [];
-
-        if(!empty($sales))
-        {
-            foreach ($sales as $key=>$sale)
-            {
-                $nestedData['id'] = $sale->id;
-                $nestedData['key'] = $key;
-                $nestedData['date'] = date(config('date_format'), strtotime($sale->created_at->toDateString()));
-                $nestedData['reference_no'] = $sale->reference_no;
-                $nestedData['biller'] = $sale->biller->name;
-                // $nestedData['customer'] = $sale->customer->name.'<br>'.$sale->customer->phone_number.'<input type="hidden" class="deposit" value="'.($sale->customer->deposit - $sale->customer->expense).'" />'.'<input type="hidden" class="points" value="'.$sale->customer->points.'" />';
-                $nestedData['customer'] = $sale->customer;
-
-                $nestedData['sale_status'] = $sale->sale_status;
-                // if($sale->sale_status == 1){
-                //     $nestedData['sale_status'] = '<div class="badge badge-success">'.trans('file.Completed').'</div>';
-                //     $sale_status = trans('file.Completed');
-                // }
-                // elseif($sale->sale_status == 2){
-                //     $nestedData['sale_status'] = '<div class="badge badge-danger">'.trans('file.Pending').'</div>';
-                //     $sale_status = trans('file.Pending');
-                // }
-                // else{
-                //     $nestedData['sale_status'] = '<div class="badge badge-warning">'.trans('file.Draft').'</div>';
-                //     $sale_status = trans('file.Draft');
-                // }
-
-                if($sale->payment_status == 1)
-                    $nestedData['payment_status'] = 'Pending';
-                elseif($sale->payment_status == 2)
-                    $nestedData['payment_status'] = 'due';
-                elseif($sale->payment_status == 3)
-                    $nestedData['payment_status'] = 'partial';
-                else
-                    $nestedData['payment_status'] = 'paid';
-                $delivery_data = DB::table('deliveries')->select('status')->where('sale_id', $sale->id)->first();
-                // $nestedData['delivery_status'] = $delivery_data ?? 'N/A';
-                if($delivery_data) {
-                    if($delivery_data->status == 1)
-                        $nestedData['delivery_status'] = 'packing';
-                    elseif($delivery_data->status == 2)
-                        $nestedData['delivery_status'] = 'delivering';
-                    elseif($delivery_data->status == 3)
-                        $nestedData['delivery_status'] = 'delivered';
-                }
-                else
-                    $nestedData['delivery_status'] = 'N/A';
-
-                $nestedData['grand_total'] = number_format($sale->grand_total, 2);
-                $returned_amount = DB::table('returns')->where('sale_id', $sale->id)->sum('grand_total');
-                $nestedData['returned_amount'] = number_format($returned_amount, 2);
-                $nestedData['paid_amount'] = number_format($sale->paid_amount, 2);
-                $nestedData['due'] = number_format($sale->grand_total - $returned_amount - $sale->paid_amount, 2);
-                // $nestedData['options'] = '<div class="btn-group">
-                //             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.trans("file.action").'
-                //               <span class="caret"></span>
-                //               <span class="sr-only">Toggle Dropdown</span>
-                //             </button>
-                //             <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
-                //                 <li><a href="'.route('sale.invoice', $sale->id).'" class="btn btn-link"><i class="fa fa-copy"></i> '.trans('file.Generate Invoice').'</a></li>
-                //                 <li>
-                //                     <button type="button" class="btn btn-link view"><i class="fa fa-eye"></i> '.trans('file.View').'</button>
-                //                 </li>';
-                // if(in_array("sales-edit", $request['all_permission'])){
-                //     if($sale->sale_status != 3)
-                //         $nestedData['options'] .= '<li>
-                //             <a href="'.route('sales.edit', $sale->id).'" class="btn btn-link"><i class="dripicons-document-edit"></i> '.trans('file.edit').'</a>
-                //             </li>';
-                //     else
-                //         $nestedData['options'] .= '<li>
-                //             <a href="'.url('sales/'.$sale->id.'/create').'" class="btn btn-link"><i class="dripicons-document-edit"></i> '.trans('file.edit').'</a>
-                //         </li>';
-                // }
-                // if(in_array("sale-payment-index", $request['all_permission']))
-                //     $nestedData['options'] .= 
-                //         '<li>
-                //             <button type="button" class="get-payment btn btn-link" data-id = "'.$sale->id.'"><i class="fa fa-money"></i> '.trans('file.View Payment').'</button>
-                //         </li>';
-                // if(in_array("sale-payment-add", $request['all_permission']))
-                //     $nestedData['options'] .= 
-                //         '<li>
-                //             <button type="button" class="add-payment btn btn-link" data-id = "'.$sale->id.'" data-toggle="modal" data-target="#add-payment"><i class="fa fa-plus"></i> '.trans('file.Add Payment').'</button>
-                //         </li>';
-
-                // $nestedData['options'] .= 
-                //     '<li>
-                //         <button type="button" class="add-delivery btn btn-link" data-id = "'.$sale->id.'"><i class="fa fa-truck"></i> '.trans('file.Add Delivery').'</button>
-                //     </li>';
-                // if(in_array("sales-delete", $request['all_permission']))
-                //     $nestedData['options'] .= \Form::open(["route" => ["sales.destroy", $sale->id], "method" => "DELETE"] ).'
-                //             <li>
-                //               <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="dripicons-trash"></i> '.trans("file.delete").'</button> 
-                //             </li>'.\Form::close().'
-                //         </ul>
-                //     </div>';
-                // data for sale details by one click
-                $coupon = Coupon::find($sale->coupon_id);
-                if($coupon)
-                    $coupon_code = $coupon->code;
-                else
-                    $coupon_code = null;
-
-                // $nestedData['sale'] = array( '[ "'.date(config('date_format'), strtotime($sale->created_at->toDateString())).'"', ' "'.$sale->reference_no.'"', ' "'.$sale_status.'"', ' "'.$sale->biller->name.'"', ' "'.$sale->biller->company_name.'"', ' "'.$sale->biller->email.'"', ' "'.$sale->biller->phone_number.'"', ' "'.$sale->biller->address.'"', ' "'.$sale->biller->city.'"', ' "'.$sale->customer->name.'"', ' "'.$sale->customer->phone_number.'"', ' "'.$sale->customer->address.'"', ' "'.$sale->customer->city.'"', ' "'.$sale->id.'"', ' "'.$sale->total_tax.'"', ' "'.$sale->total_discount.'"', ' "'.$sale->total_price.'"', ' "'.$sale->order_tax.'"', ' "'.$sale->order_tax_rate.'"', ' "'.$sale->order_discount.'"', ' "'.$sale->shipping_cost.'"', ' "'.$sale->grand_total.'"', ' "'.$sale->paid_amount.'"', ' "'.preg_replace('/[\n\r]/', "<br>", $sale->sale_note).'"', ' "'.preg_replace('/[\n\r]/', "<br>", $sale->staff_note).'"', ' "'.$sale->user->name.'"', ' "'.$sale->user->email.'"', ' "'.$sale->warehouse->name.'"', ' "'.$coupon_code.'"', ' "'.$sale->coupon_discount.'"]'
-                // );
-                $data[] = $nestedData;
-            }
+        $query = Sale::with('user', 'customer', 'warehouse', 'biller');
+        if($warehouse_id == null){
+            $query = $query->orderBy('created_at', 'desc')->get();
+        }else{
+            $query = $query->where('warehouse_id', $warehouse_id)->orderBy('created_at', 'desc')->get();
         }
-        $json_data = array(
-            // "draw"            => intval($request->input('draw')),  
-            "recordsTotal"    => intval($totalData),  
-            "recordsFiltered" => intval($totalFiltered), 
-            "data"            => $data   
-        );
-        // echo json_encode($json_data);
-        return response()->json($json_data);
+
+        $data = [
+            'total_data' => count($query),
+            'data' => []
+        ];
+        foreach($query as $q){
+            $payment = $q['payment_status'];
+            if($payment == 1){
+                $payment = 'pending';
+            }elseif($payment == 2){
+                $payment = 'due';
+            }elseif($payment == 3){
+                $payment = 'partial';
+            }else{
+                $payment = 'cash';
+            }
+            $item = [
+                'transaction _id' => $q['id'],
+                'reference_no' => $q['reference_no'],
+                'cash_register_id' => $q['cash_register_id'],
+                'item' => $q['item'],
+                'total_qty' => $q['total_qty'],
+                'total_price' => $q['total_price'],
+                'grand_total' => $q['grand_total'],
+                'payment_status' => $payment,
+                'seller' => [
+                    'id' => $q['user']['id'],
+                    'name' => $q['user']['name']
+                ],
+                'customer' => [
+                    'id' => $q['customer']['id'],
+                    'name' => $q['customer']['name']
+                ],
+                'warehouse' => [
+                    'id' => $q['warehouse']['id'],
+                    'name' => $q['warehouse']['name']
+                ],
+                'biller' => [
+                    'id' => $q['biller']['id'],
+                    'name' => $q['biller']['name']
+                ],
+            ];
+
+            array_push($data['data'], $item);
+        }
+        return response()->json($data);
+    }
+
+    public function transaction_details($id){
+        $sale = Sale::with('product_sale', 'biller', 'customer', 'user', 'warehouse')->find($id);
+
+        $payment = $sale['payment_status'];
+
+        if($payment == 1){
+            $payment = 'pending';
+        }elseif($payment == 2){
+            $payment = 'due';
+        }elseif($payment == 3){
+            $payment = 'partial';
+        }else{
+            $payment = 'cash';
+        }
+
+        $data = [
+                'transaction _id' => $sale['id'],
+                'reference_no' => $sale['reference_no'],
+                'cash_register_id' => $sale['cash_register_id'],
+                'item' => $sale['item'],
+                'total_qty' => $sale['total_qty'],
+                'total_price' => $sale['total_price'],
+                'grand_total' => $sale['grand_total'],
+                'payment_status' => $payment,
+                'created_at' => $sale['created_at'],
+                'seller' => [
+                    'id' => $sale['user']['id'],
+                    'name' => $sale['user']['name']
+                ],
+                'customer' => [
+                    'id' => $sale['customer']['id'],
+                    'name' => $sale['customer']['name']
+                ],
+                'warehouse' => [
+                    'id' => $sale['warehouse']['id'],
+                    'name' => $sale['warehouse']['name']
+                ],
+                'biller' => [
+                    'id' => $sale['biller']['id'],
+                    'name' => $sale['biller']['name']
+                ],
+                'product' => $sale['product_sale']
+        ];
+
+        return $data;
     }
 
     public function product_list()

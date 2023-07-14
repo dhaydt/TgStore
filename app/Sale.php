@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sale extends Model
 {
@@ -18,6 +19,16 @@ class Sale extends Model
     public function customer()
     {
     	return $this->belongsTo('App\Customer');
+    }
+
+    /**
+     * Get all of the comments for the Sale
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function product_sale(): HasMany
+    {
+        return $this->hasMany(product_sale::class, 'sale_id', 'id');
     }
 
     public function warehouse()
