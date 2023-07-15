@@ -7,7 +7,9 @@ use App\Product;
 use App\Product_Sale;
 use App\Product_Warehouse;
 use App\ProductPurchase;
+use App\ProductReturn;
 use App\ProductVariant;
+use App\PurchaseProductReturn;
 use App\Variant;
 use App\Warehouse;
 use Illuminate\Http\Request;
@@ -382,5 +384,35 @@ class ReportController extends Controller
 
         return $resp;
         return view('backend.report.purchase_report', compact('product_id', 'variant_id', 'product_name', 'product_qty', 'start_date', 'end_date', 'lims_warehouse_list', 'warehouse_id'));
+    }
+
+    public function stockReport(Request $request)
+    {
+        $user = auth()->user();
+        $warehouse_id = $request->warehouse_id;
+        if ($warehouse_id == null || $warehouse_id == 0) {
+            $warehouse_id = 1;
+        }
+
+        $product = Product_Warehouse::with('product')->whereHas('product', function ($q) {
+            $q->where('is_active', 1);
+        })->where('warehouse_id', $warehouse_id)->get();
+
+        $resp = [
+            'total_item' => count($product),
+            'warehouse_id' => $warehouse_id,
+            'stock' => []
+        ];
+
+        foreach ($product as $p) {
+            $data = [];
+            $data['product_id'] = $p['product']['id'];
+            $data['name'] = $p['product']['name'];
+            $data['qty'] = $p['qty'];
+
+            array_push($resp['stock'], $data);
+        }
+
+        return $resp;
     }
 }
