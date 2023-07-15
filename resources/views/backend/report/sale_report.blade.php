@@ -117,6 +117,7 @@
                             }
                         }
                         $sold_qty = 0;
+                        // dd(count($product_sale_data));
                         foreach ($product_sale_data as $product_sale) {
                             $unit = DB::table('units')->find($product_sale->sale_unit_id);
                             if($unit){

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\GeneralController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -34,6 +35,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/product_list', [TransactionController::class, 'product_list']);
     Route::get('/transaction_list', [TransactionController::class, 'transaction_list']);
     Route::get('/transaction_detail/{id}', [TransactionController::class, 'transaction_details']);
+
+    Route::post('/sale_report', [ReportController::class, 'saleReport']);
     
     Route::get('category_product', [GeneralController::class, 'category_product']);
     Route::get('customer', [GeneralController::class, 'customer']);
