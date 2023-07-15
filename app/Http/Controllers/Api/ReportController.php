@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Product;
 use App\Product_Sale;
 use App\Product_Warehouse;
+use App\ProductPurchase;
 use App\ProductVariant;
 use App\Variant;
 use App\Warehouse;
@@ -16,26 +17,16 @@ class ReportController extends Controller
 {
     public function saleReport(Request $request)
     {
-        // $request->validate([
-        //     'start_date' => 'required',
-        //     'end_date' => 'required',
-        //     'warehouse_id' => 'required',
-        // ], [
-        //     'start_date.required' => 'Masukan tanggal mulai',
-        //     'end_date.required' => 'Masukan tanggal berakhir',
-        //     'warehouse_id.required' => 'Password tidak bisa kosong',
-        // ]);
-
         $user = auth()->user();
         $data = $request->all();
         $start_date = $data['start_date'];
         $end_date = $data['end_date'];
         $warehouse_id = $data['warehouse_id'];
-        
-        if($start_date == null){
-            $start_date = date('Y-m').'-01';
+
+        if ($start_date == null) {
+            $start_date = date('Y-m') . '-01';
         }
-        if($end_date == null){
+        if ($end_date == null) {
             $end_date = now()->format('Y-m-d');
         }
 
@@ -44,64 +35,61 @@ class ReportController extends Controller
         $product_name = [];
         $product_qty = [];
         $lims_product_all = Product::select('id', 'name', 'qty', 'is_variant')->where('is_active', true)->get();
-        
+
         foreach ($lims_product_all as $product) {
             $lims_product_sale_data = null;
             $variant_id_all = [];
-            if($warehouse_id == 0){
-                if($product->is_variant)
-                    $variant_id_all = Product_Sale::distinct('variant_id')->where('product_id', $product->id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->pluck('variant_id');
+            if ($warehouse_id == 0) {
+                if ($product->is_variant)
+                    $variant_id_all = Product_Sale::distinct('variant_id')->where('product_id', $product->id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->pluck('variant_id');
                 else
-                    $lims_product_sale_data = Product_Sale::where('product_id', $product->id)->whereDate('created_at', '>=' , $start_date)->whereDate('created_at', '<=' , $end_date)->first();
-            }
-            else {
-                if($product->is_variant)
+                    $lims_product_sale_data = Product_Sale::where('product_id', $product->id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->first();
+            } else {
+                if ($product->is_variant)
                     $variant_id_all = DB::table('sales')
                         ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')
                         ->distinct('variant_id')
                         ->where([
                             ['product_sales.product_id', $product->id],
                             ['sales.warehouse_id', $warehouse_id]
-                        ])->whereDate('sales.created_at','>=', $start_date)
-                          ->whereDate('sales.created_at','<=', $end_date)
-                          ->pluck('variant_id');
+                        ])->whereDate('sales.created_at', '>=', $start_date)
+                        ->whereDate('sales.created_at', '<=', $end_date)
+                        ->pluck('variant_id');
                 else
                     $lims_product_sale_data = DB::table('sales')
-                            ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
-                                    ['product_sales.product_id', $product->id],
-                                    ['sales.warehouse_id', $warehouse_id]
-                            ])->whereDate('sales.created_at','>=', $start_date)
-                              ->whereDate('sales.created_at','<=', $end_date)
-                              ->first();
+                        ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
+                            ['product_sales.product_id', $product->id],
+                            ['sales.warehouse_id', $warehouse_id]
+                        ])->whereDate('sales.created_at', '>=', $start_date)
+                        ->whereDate('sales.created_at', '<=', $end_date)
+                        ->first();
             }
-            if($lims_product_sale_data) {
+            if ($lims_product_sale_data) {
                 $product_name[] = $product->name;
                 $product_id[] = $product->id;
                 $variant_id[] = null;
-                if($warehouse_id == 0)
+                if ($warehouse_id == 0)
                     $product_qty[] = $product->qty;
                 else {
                     $product_qty[] = Product_Warehouse::where([
-                                    ['product_id', $product->id],
-                                    ['warehouse_id', $warehouse_id]
-                                ])->sum('qty');
+                        ['product_id', $product->id],
+                        ['warehouse_id', $warehouse_id]
+                    ])->sum('qty');
                 }
-            }
-            elseif(count($variant_id_all)) {
+            } elseif (count($variant_id_all)) {
                 foreach ($variant_id_all as $key => $variantId) {
                     $variant_data = Variant::find($variantId);
-                    $product_name[] = $product->name.' ['.$variant_data->name.']';
+                    $product_name[] = $product->name . ' [' . $variant_data->name . ']';
                     $product_id[] = $product->id;
                     $variant_id[] = $variant_data->id;
-                    if($warehouse_id == 0)
+                    if ($warehouse_id == 0)
                         $product_qty[] = ProductVariant::FindExactProduct($product->id, $variant_data->id)->first()->qty;
                     else
                         $product_qty[] = Product_Warehouse::where([
-                                        ['product_id', $product->id],
-                                        ['variant_id', $variant_data->id],
-                                        ['warehouse_id', $warehouse_id]
-                                    ])->first()->qty;
-                    
+                            ['product_id', $product->id],
+                            ['variant_id', $variant_data->id],
+                            ['warehouse_id', $warehouse_id]
+                        ])->first()->qty;
                 }
             }
         }
@@ -121,60 +109,57 @@ class ReportController extends Controller
             'lims_warehouse_list' => $lims_warehouse_list,
         ];
 
-        if(!empty($product_name)){
+        if (!empty($product_name)) {
             $total_a = [];
             $total_q = [];
             $total_in = [];
-            foreach($product_id as $key => $pro_id){
-                if($warehouse_id == 0){
-                    if($variant_id[$key]) {
+            foreach ($product_id as $key => $pro_id) {
+                if ($warehouse_id == 0) {
+                    if ($variant_id[$key]) {
                         $sold_price = DB::table('product_sales')->where([
                             ['product_id', $pro_id],
-                            ['variant_id', $variant_id[$key] ]
-                        ])->whereDate('created_at','>=', $start_date)
-                          ->whereDate('created_at','<=', $end_date)
-                          ->sum('total');
+                            ['variant_id', $variant_id[$key]]
+                        ])->whereDate('created_at', '>=', $start_date)
+                            ->whereDate('created_at', '<=', $end_date)
+                            ->sum('total');
 
                         $product_sale_data = DB::table('product_sales')->where([
                             ['product_id', $pro_id],
-                            ['variant_id', $variant_id[$key] ]
-                        ])->whereDate('created_at','>=', $start_date)
-                          ->whereDate('created_at','<=', $end_date)
-                          ->get();
-                    }
-                    else {
+                            ['variant_id', $variant_id[$key]]
+                        ])->whereDate('created_at', '>=', $start_date)
+                            ->whereDate('created_at', '<=', $end_date)
+                            ->get();
+                    } else {
                         $sold_price = DB::table('product_sales')->where('product_id', $pro_id)
-                        ->whereDate('created_at','>=', $start_date)->whereDate('created_at','<=', $end_date)->sum('total');
+                            ->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('total');
 
-                        $product_sale_data = DB::table('product_sales')->where('product_id', $pro_id)->whereDate('created_at','>=', $start_date)->whereDate('created_at','<=', $end_date)->get();
+                        $product_sale_data = DB::table('product_sales')->where('product_id', $pro_id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->get();
                     }
-                }
-                else{
-                    if($variant_id[$key]) {
+                } else {
+                    if ($variant_id[$key]) {
                         $sold_price = DB::table('sales')
                             ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
                                 ['product_sales.product_id', $pro_id],
-                                ['variant_id', $variant_id[$key] ],
+                                ['variant_id', $variant_id[$key]],
                                 ['sales.warehouse_id', $warehouse_id]
-                            ])->whereDate('sales.created_at','>=', $start_date)->whereDate('sales.created_at','<=', $end_date)->sum('total');
+                            ])->whereDate('sales.created_at', '>=', $start_date)->whereDate('sales.created_at', '<=', $end_date)->sum('total');
                         $product_sale_data = DB::table('sales')
                             ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
                                 ['product_sales.product_id', $pro_id],
-                                ['variant_id', $variant_id[$key] ],
+                                ['variant_id', $variant_id[$key]],
                                 ['sales.warehouse_id', $warehouse_id]
-                            ])->whereDate('sales.created_at','>=', $start_date)->whereDate('sales.created_at','<=', $end_date)->get();
-                    }
-                    else {
+                            ])->whereDate('sales.created_at', '>=', $start_date)->whereDate('sales.created_at', '<=', $end_date)->get();
+                    } else {
                         $sold_price = DB::table('sales')
                             ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
                                 ['product_sales.product_id', $pro_id],
                                 ['sales.warehouse_id', $warehouse_id]
-                            ])->whereDate('sales.created_at','>=', $start_date)->whereDate('sales.created_at','<=', $end_date)->sum('total');
+                            ])->whereDate('sales.created_at', '>=', $start_date)->whereDate('sales.created_at', '<=', $end_date)->sum('total');
                         $product_sale_data = DB::table('sales')
                             ->join('product_sales', 'sales.id', '=', 'product_sales.sale_id')->where([
                                 ['product_sales.product_id', $pro_id],
                                 ['sales.warehouse_id', $warehouse_id]
-                            ])->whereDate('sales.created_at','>=', $start_date)->whereDate('sales.created_at','<=', $end_date)->get();
+                            ])->whereDate('sales.created_at', '>=', $start_date)->whereDate('sales.created_at', '<=', $end_date)->get();
                     }
                 }
 
@@ -184,13 +169,12 @@ class ReportController extends Controller
 
                 foreach ($product_sale_data as $product_sale) {
                     $unit = DB::table('units')->find($product_sale->sale_unit_id);
-                    if($unit){
-                        if($unit->operator == '*')
+                    if ($unit) {
+                        if ($unit->operator == '*')
                             $sold_qty += $product_sale->qty * $unit->operation_value;
-                        elseif($unit->operator == '/')
+                        elseif ($unit->operator == '/')
                             $sold_qty += $product_sale->qty / $unit->operation_value;
-                    }
-                    else
+                    } else
                         $sold_qty += $product_sale->qty;
                 }
 
@@ -213,6 +197,190 @@ class ReportController extends Controller
         }
 
         return response()->json($resp);
-        return view('backend.report.sale_report',compact('product_id', 'variant_id', 'product_name', 'product_qty', 'start_date', 'end_date', 'lims_warehouse_list','warehouse_id'));
+        return view('backend.report.sale_report', compact('product_id', 'variant_id', 'product_name', 'product_qty', 'start_date', 'end_date', 'lims_warehouse_list', 'warehouse_id'));
+    }
+
+    public function purchaseReport(Request $request)
+    {
+        $user = auth()->user();
+        $data = $request->all();
+        $start_date = $data['start_date'];
+        $end_date = $data['end_date'];
+        $warehouse_id = $data['warehouse_id'];
+
+        if ($start_date == null) {
+            $start_date = date('Y-m') . '-01';
+        }
+        if ($end_date == null) {
+            $end_date = now()->format('Y-m-d');
+        }
+
+        $product_id = [];
+        $variant_id = [];
+        $product_name = [];
+        $product_qty = [];
+        $lims_product_all = Product::select('id', 'name', 'qty', 'is_variant')->where('is_active', true)->get();
+        foreach ($lims_product_all as $product) {
+            $lims_product_purchase_data = null;
+            $variant_id_all = [];
+            if ($warehouse_id == 0) {
+                if ($product->is_variant)
+                    $variant_id_all = ProductPurchase::distinct('variant_id')->where('product_id', $product->id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->pluck('variant_id');
+                else
+                    $lims_product_purchase_data = ProductPurchase::where('product_id', $product->id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->first();
+            } else {
+                if ($product->is_variant)
+                    $variant_id_all = DB::table('purchases')
+                        ->join('product_purchases', 'purchases.id', '=', 'product_purchases.purchase_id')
+                        ->distinct('variant_id')
+                        ->where([
+                            ['product_purchases.product_id', $product->id],
+                            ['purchases.warehouse_id', $warehouse_id]
+                        ])->whereDate('purchases.created_at', '>=', $start_date)
+                        ->whereDate('purchases.created_at', '<=', $end_date)
+                        ->pluck('variant_id');
+                else
+                    $lims_product_purchase_data = DB::table('purchases')
+                        ->join('product_purchases', 'purchases.id', '=', 'product_purchases.purchase_id')->where([
+                            ['product_purchases.product_id', $product->id],
+                            ['purchases.warehouse_id', $warehouse_id]
+                        ])->whereDate('purchases.created_at', '>=', $start_date)
+                        ->whereDate('purchases.created_at', '<=', $end_date)
+                        ->first();
+            }
+
+            if ($lims_product_purchase_data) {
+                $product_name[] = $product->name;
+                $product_id[] = $product->id;
+                $variant_id[] = null;
+                if ($warehouse_id == 0)
+                    $product_qty[] = $product->qty;
+                else
+                    $product_qty[] = Product_Warehouse::where([
+                        ['product_id', $product->id],
+                        ['warehouse_id', $warehouse_id]
+                    ])->sum('qty');
+            } elseif (count($variant_id_all)) {
+                foreach ($variant_id_all as $key => $variantId) {
+                    $variant_data = Variant::find($variantId);
+                    $product_name[] = $product->name . ' [' . $variant_data->name . ']';
+                    $product_id[] = $product->id;
+                    $variant_id[] = $variant_data->id;
+                    if ($warehouse_id == 0)
+                        $product_qty[] = ProductVariant::FindExactProduct($product->id, $variant_data->id)->first()->qty;
+                    else
+                        $product_qty[] = Product_Warehouse::where([
+                            ['product_id', $product->id],
+                            ['variant_id', $variant_data->id],
+                            ['warehouse_id', $warehouse_id]
+                        ])->first()->qty;
+                }
+            }
+        }
+
+        $lims_warehouse_list = Warehouse::where('is_active', true)->get();
+
+
+        $resp = [
+            // 'product_id' => $product_id,
+            // 'variant_id' => $variant_id,
+            // 'product_name' => $product_name,
+            // 'product_qty' => $product_qty,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'warehouse_id' => $warehouse_id,
+            'purchased_amount' => '',
+            'purchased_qty' => '',
+            'total_in_stock' => '',
+            'data_purchased' => [],
+            'lims_warehouse_list' => $lims_warehouse_list,
+        ];
+
+        if (!empty($product_name)) {
+            $total_a = [];
+            $total_q = [];
+            $total_in = [];
+            foreach ($product_id as $key => $pro_id) {
+                if ($warehouse_id == 0) {
+                    if ($variant_id[$key]) {
+                        $purchased_cost = DB::table('product_purchases')->where([
+                            ['product_id', $pro_id],
+                            ['variant_id', $variant_id[$key]]
+                        ])->whereDate('created_at', '>=', $start_date)
+                            ->whereDate('created_at', '<=', $end_date)
+                            ->sum('total');
+
+                        $product_purchase_data = DB::table('product_purchases')->where([
+                            ['product_id', $pro_id],
+                            ['variant_id', $variant_id[$key]]
+                        ])->whereDate('created_at', '>=', $start_date)
+                            ->whereDate('created_at', '<=', $end_date)
+                            ->get();
+                    } else {
+                        $purchased_cost = DB::table('product_purchases')->where('product_id', $pro_id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('total');
+
+                        $product_purchase_data = DB::table('product_purchases')->where('product_id', $pro_id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->get();
+                    }
+                } else {
+                    if ($variant_id[$key]) {
+                        $purchased_cost = DB::table('purchases')
+                            ->join('product_purchases', 'purchases.id', '=', 'product_purchases.purchase_id')->where([
+                                ['product_purchases.product_id', $pro_id],
+                                ['product_purchases.variant_id', $variant_id[$key]],
+                                ['purchases.warehouse_id', $warehouse_id]
+                            ])->whereDate('purchases.created_at', '>=', $start_date)->whereDate('purchases.created_at', '<=', $end_date)->sum('total');
+                        $product_purchase_data = DB::table('purchases')
+                            ->join('product_purchases', 'purchases.id', '=', 'product_purchases.purchase_id')->where([
+                                ['product_purchases.product_id', $pro_id],
+                                ['product_purchases.variant_id', $variant_id[$key]],
+                                ['purchases.warehouse_id', $warehouse_id]
+                            ])->whereDate('purchases.created_at', '>=', $start_date)->whereDate('purchases.created_at', '<=', $end_date)->get();
+                    } else {
+                        $purchased_cost = DB::table('purchases')
+                            ->join('product_purchases', 'purchases.id', '=', 'product_purchases.purchase_id')->where([
+                                ['product_purchases.product_id', $pro_id],
+                                ['purchases.warehouse_id', $warehouse_id]
+                            ])->whereDate('purchases.created_at', '>=', $start_date)->whereDate('purchases.created_at', '<=', $end_date)->sum('total');
+                        $product_purchase_data = DB::table('purchases')
+                            ->join('product_purchases', 'purchases.id', '=', 'product_purchases.purchase_id')->where([
+                                ['product_purchases.product_id', $pro_id],
+                                ['purchases.warehouse_id', $warehouse_id]
+                            ])->whereDate('purchases.created_at', '>=', $start_date)->whereDate('purchases.created_at', '<=', $end_date)->get();
+                    }
+                }
+
+                $purchased_qty = 0;
+
+                // return count($product_sale_data);
+
+                foreach ($product_purchase_data as $product_purchase) {
+                    $unit = DB::table('units')->find($product_purchase->purchase_unit_id);
+                    if ($unit->operator == '*') {
+                        $purchased_qty += $product_purchase->qty * $unit->operation_value;
+                    } elseif ($unit->operator == '/') {
+                        $purchased_qty += $product_purchase->qty / $unit->operation_value;
+                    }
+                }
+
+                $item = [
+                    'product_id' => $product_id[$key],
+                    'product_name' => $product_name[$key],
+                    'purchased_amount' => $purchased_cost,
+                    'purchased_qty' => $purchased_qty,
+                    'in_stock' => $product_qty[$key]
+                ];
+                // return $item;
+                array_push($resp['data_purchased'], $item);
+                array_push($total_a, $purchased_cost);
+                array_push($total_q, $purchased_qty);
+                array_push($total_in, $product_qty[$key]);
+            }
+            $resp['purchased_amount'] = array_sum($total_a);
+            $resp['purchased_qty'] = array_sum($total_q);
+            $resp['total_in_stock'] = array_sum($total_in);
+        }
+
+        return $resp;
+        return view('backend.report.purchase_report', compact('product_id', 'variant_id', 'product_name', 'product_qty', 'start_date', 'end_date', 'lims_warehouse_list', 'warehouse_id'));
     }
 }
