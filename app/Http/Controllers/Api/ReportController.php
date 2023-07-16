@@ -267,6 +267,7 @@ class ReportController extends Controller
                 'id' => $a['product']['id'],
                 'name' => $a['product']['name'],
                 'qty' => $a['product']['qty'],
+                'warehouse_id' => $a['warehouse_id'],
             ];
             if ($a['product']['alert_quantity'] > $a['qty']) {
                 array_push($resp['data'], $item);
