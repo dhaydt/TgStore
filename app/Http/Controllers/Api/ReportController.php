@@ -202,6 +202,37 @@ class ReportController extends Controller
         return view('backend.report.sale_report', compact('product_id', 'variant_id', 'product_name', 'product_qty', 'start_date', 'end_date', 'lims_warehouse_list', 'warehouse_id'));
     }
 
+    public function stockAlert(Request $request){
+        $warehouse_id = auth()->user()->warehouse_id;
+        
+        if($warehouse_id == null){
+            $alert = Product_Warehouse::with('product')->whereHas('product', function($q){
+                $q->where('is_active', 1);
+            })->get();
+        }else{
+            $alert = Product_Warehouse::with('product')->where('warehouse_id', $warehouse_id)->whereHas('product', function($q){
+                $q->where('is_active', 1);
+            })->get();
+        }
+
+        $resp = ['warehouse_id' => $warehouse_id, 'data' => []];
+
+        foreach($alert as $a){
+            $item = [
+                'id' => $a['product']['id'],
+                'name' => $a['product']['name'],
+                'qty' => $a['product']['qty'],
+            ];
+            if($a['product']['alert_quantity'] > $a['qty']){
+                array_push($resp['data'], $item);
+            }
+        }
+
+
+        return response()->json($resp);
+
+    }
+
     public function purchaseReport(Request $request)
     {
         $user = auth()->user();
