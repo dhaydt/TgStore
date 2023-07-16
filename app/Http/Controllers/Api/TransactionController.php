@@ -19,7 +19,9 @@ use App\Product;
 use App\Product_Sale;
 use App\Product_Warehouse;
 use App\ProductBatch;
+use App\ProductPurchase;
 use App\ProductVariant;
+use App\Purchase;
 use App\RewardPointSetting;
 use App\Sale;
 use App\Tax;
@@ -95,12 +97,212 @@ class TransactionController extends Controller
         }
     }
 
-    public function transaction_list(){
+    public function addPurchase(Request $request)
+    {
+
+        $data = $request->except('document');
+        // warehouse_id: 1
+        // supplier_id: 1
+        $data['status'] = 1;
+        $data['document'] = null;
+        $data['product_code_name'] = null;
+        // qty[]: 1
+        $data['recieved'] = [];
+        $data['batch_no'] = [];
+        $data['expired_date'] = [];
+        // product_code[]: AX5GB
+        // product_id[]: 2
+        // purchase_unit[]: Pcs
+        // net_unit_cost[]: 15000.00
+        $data['discount'] = [];
+        $data['tax_rate'] = [];
+        $data['tax'] = [];
+        // subtotal[]: 15000.00
+        $data['imei_number'] = [];
+        // qty[]: 1
+        $data['batch_no'] = [];
+        // product_code[]: AX3GB
+        // product_id[]: 1
+        $data['purchase_unit'] = [];
+        // net_unit_cost[]: 13000.00
+        // $data['discount']=[];
+        // tax_rate[]: 0.00
+        // tax[]: 0.00
+        // subtotal[]: 13000.00
+        // imei_number[]: 
+        // total_qty: 2
+        $data['total_discount'] = 0.00;
+        $data['total_tax'] = 0.00;
+        // total_cost: 28000.00
+        // item: 2
+        $data['order_tax'] = 0.0;
+        $data['grand_total'] = $request->total_cost;
+        $data['paid_amount'] = $request->total_cost;
+        $data['payment_status'] = 1;
+        $data['order_tax_rate'] = 0;
+        $data['order_discount'] = null;
+        $data['shipping_cost'] = null;
+        $data['note'] = null;
+
+        //return dd($data);
+        $data['user_id'] = auth()->id();
+        $data['reference_no'] = 'pr-' . date("Ymd") . '-' . date("his");
+
+        foreach ($request->product_id as $key => $p) {
+            array_push($data['purchase_unit'], 'Pcs');
+            array_push($data['tax_rate'], 0);
+            array_push($data['discount'], 0);
+            array_push($data['tax'], 0);
+            array_push($data['imei_number'], null);
+            array_push($data['batch_no'], null);
+            array_push($data['recieved'], $request->qty[$key]);
+        }
+
+        // $document = $request->document;
+        // if ($document) {
+        //     $v = Validator::make(
+        //         [
+        //             'extension' => strtolower($request->document->getClientOriginalExtension()),
+        //         ],
+        //         [
+        //             'extension' => 'in:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt',
+        //         ]
+        //     );
+        //     if ($v->fails())
+        //         return redirect()->back()->withErrors($v->errors());
+
+        //     $documentName = $document->getClientOriginalName();
+        //     $document->move('public/documents/purchase', $documentName);
+        //     $data['document'] = $documentName;
+        // }
+        if (isset($data['created_at']))
+            $data['created_at'] = date("Y-m-d H:i:s", strtotime($data['created_at']));
+        else
+            $data['created_at'] = date("Y-m-d H:i:s");
+        //return dd($data);
+        $lims_purchase_data = Purchase::create($data);
+        $product_id = $data['product_id'];
+        $product_code = $data['product_code'];
+        $qty = $data['qty'];
+        $recieved = $data['recieved'];
+        $batch_no = $data['batch_no'];
+        $expired_date = $data['expired_date'];
+        $purchase_unit = $data['purchase_unit'];
+        $net_unit_cost = $data['net_unit_cost'];
+        $discount = $data['discount'];
+        $tax_rate = $data['tax_rate'];
+        $tax = $data['tax'];
+        $total = $data['subtotal'];
+        $imei_numbers = $data['imei_number'];
+        $product_purchase = [];
+
+        foreach ($product_id as $i => $id) {
+            $lims_purchase_unit_data  = Unit::where('unit_name', $purchase_unit[$i])->first();
+
+            if ($lims_purchase_unit_data->operator == '*') {
+                $quantity = $recieved[$i] * $lims_purchase_unit_data->operation_value;
+            } else {
+                $quantity = $recieved[$i] / $lims_purchase_unit_data->operation_value;
+            }
+            $lims_product_data = Product::find($id);
+
+            //dealing with product barch
+            if ($batch_no[$i]) {
+                $product_batch_data = ProductBatch::where([
+                    ['product_id', $lims_product_data->id],
+                    ['batch_no', $batch_no[$i]]
+                ])->first();
+                if ($product_batch_data) {
+                    $product_batch_data->expired_date = $expired_date[$i];
+                    $product_batch_data->qty += $quantity;
+                    $product_batch_data->save();
+                } else {
+                    $product_batch_data = ProductBatch::create([
+                        'product_id' => $lims_product_data->id,
+                        'batch_no' => $batch_no[$i],
+                        'expired_date' => $expired_date[$i],
+                        'qty' => $quantity
+                    ]);
+                }
+                $product_purchase['product_batch_id'] = $product_batch_data->id;
+            } else
+                $product_purchase['product_batch_id'] = null;
+
+            if ($lims_product_data->is_variant) {
+                $lims_product_variant_data = ProductVariant::select('id', 'variant_id', 'qty')->FindExactProductWithCode($lims_product_data->id, $product_code[$i])->first();
+                $lims_product_warehouse_data = Product_Warehouse::where([
+                    ['product_id', $id],
+                    ['variant_id', $lims_product_variant_data->variant_id],
+                    ['warehouse_id', $data['warehouse_id']]
+                ])->first();
+                $product_purchase['variant_id'] = $lims_product_variant_data->variant_id;
+                //add quantity to product variant table
+                $lims_product_variant_data->qty += $quantity;
+                $lims_product_variant_data->save();
+            } else {
+                $product_purchase['variant_id'] = null;
+                if ($product_purchase['product_batch_id']) {
+                    $lims_product_warehouse_data = Product_Warehouse::where([
+                        ['product_id', $id],
+                        ['product_batch_id', $product_purchase['product_batch_id']],
+                        ['warehouse_id', $data['warehouse_id']],
+                    ])->first();
+                } else {
+                    $lims_product_warehouse_data = Product_Warehouse::where([
+                        ['product_id', $id],
+                        ['warehouse_id', $data['warehouse_id']],
+                    ])->first();
+                }
+            }
+            //add quantity to product table
+            $lims_product_data->qty = $lims_product_data->qty + $quantity;
+            $lims_product_data->save();
+            //add quantity to warehouse
+            if ($lims_product_warehouse_data) {
+                $lims_product_warehouse_data->qty = $lims_product_warehouse_data->qty + $quantity;
+                $lims_product_warehouse_data->product_batch_id = $product_purchase['product_batch_id'];
+            } else {
+                $lims_product_warehouse_data = new Product_Warehouse();
+                $lims_product_warehouse_data->product_id = $id;
+                $lims_product_warehouse_data->product_batch_id = $product_purchase['product_batch_id'];
+                $lims_product_warehouse_data->warehouse_id = $data['warehouse_id'];
+                $lims_product_warehouse_data->qty = $quantity;
+                if ($lims_product_data->is_variant)
+                    $lims_product_warehouse_data->variant_id = $lims_product_variant_data->variant_id;
+            }
+            //added imei numbers to product_warehouse table
+            if ($imei_numbers[$i]) {
+                if ($lims_product_warehouse_data->imei_number)
+                    $lims_product_warehouse_data->imei_number .= ',' . $imei_numbers[$i];
+                else
+                    $lims_product_warehouse_data->imei_number = $imei_numbers[$i];
+            }
+            $lims_product_warehouse_data->save();
+
+            $product_purchase['purchase_id'] = $lims_purchase_data->id;
+            $product_purchase['product_id'] = $id;
+            $product_purchase['imei_number'] = $imei_numbers[$i];
+            $product_purchase['qty'] = $qty[$i];
+            $product_purchase['recieved'] = $recieved[$i];
+            $product_purchase['purchase_unit_id'] = $lims_purchase_unit_data->id;
+            $product_purchase['net_unit_cost'] = $net_unit_cost[$i];
+            $product_purchase['discount'] = $discount[$i];
+            $product_purchase['tax_rate'] = $tax_rate[$i];
+            $product_purchase['tax'] = $tax[$i];
+            $product_purchase['total'] = $total[$i];
+            ProductPurchase::create($product_purchase);
+        }
+
+        return response()->json(['status' => 'success', 'message' => 'Pembelian berhasil ditambahkan!']);
+    }
+
+    public function transaction_list()
+    {
         $warehouse_id = auth()->user()->warehouse_id;
         $query = Sale::with('user', 'customer', 'warehouse', 'biller');
-        if($warehouse_id == null){
+        if ($warehouse_id == null) {
             $query = $query->orderBy('created_at', 'desc')->get();
-        }else{
+        } else {
             $query = $query->where('warehouse_id', $warehouse_id)->orderBy('created_at', 'desc')->get();
         }
 
@@ -108,15 +310,15 @@ class TransactionController extends Controller
             'total_data' => count($query),
             'data' => []
         ];
-        foreach($query as $q){
+        foreach ($query as $q) {
             $payment = $q['payment_status'];
-            if($payment == 1){
+            if ($payment == 1) {
                 $payment = 'pending';
-            }elseif($payment == 2){
+            } elseif ($payment == 2) {
                 $payment = 'due';
-            }elseif($payment == 3){
+            } elseif ($payment == 3) {
                 $payment = 'partial';
-            }else{
+            } else {
                 $payment = 'cash';
             }
             $item = [
@@ -151,48 +353,49 @@ class TransactionController extends Controller
         return response()->json($data);
     }
 
-    public function transaction_details($id){
+    public function transaction_details($id)
+    {
         $sale = Sale::with('product_sale', 'biller', 'customer', 'user', 'warehouse')->find($id);
 
         $payment = $sale['payment_status'];
 
-        if($payment == 1){
+        if ($payment == 1) {
             $payment = 'pending';
-        }elseif($payment == 2){
+        } elseif ($payment == 2) {
             $payment = 'due';
-        }elseif($payment == 3){
+        } elseif ($payment == 3) {
             $payment = 'partial';
-        }else{
+        } else {
             $payment = 'cash';
         }
 
         $data = [
-                'transaction _id' => $sale['id'],
-                'reference_no' => $sale['reference_no'],
-                'cash_register_id' => $sale['cash_register_id'],
-                'item' => $sale['item'],
-                'total_qty' => $sale['total_qty'],
-                'total_price' => $sale['total_price'],
-                'grand_total' => $sale['grand_total'],
-                'payment_status' => $payment,
-                'created_at' => $sale['created_at'],
-                'seller' => [
-                    'id' => $sale['user']['id'],
-                    'name' => $sale['user']['name']
-                ],
-                'customer' => [
-                    'id' => $sale['customer']['id'],
-                    'name' => $sale['customer']['name']
-                ],
-                'warehouse' => [
-                    'id' => $sale['warehouse']['id'],
-                    'name' => $sale['warehouse']['name']
-                ],
-                'biller' => [
-                    'id' => $sale['biller']['id'],
-                    'name' => $sale['biller']['name']
-                ],
-                'product' => $sale['product_sale']
+            'transaction _id' => $sale['id'],
+            'reference_no' => $sale['reference_no'],
+            'cash_register_id' => $sale['cash_register_id'],
+            'item' => $sale['item'],
+            'total_qty' => $sale['total_qty'],
+            'total_price' => $sale['total_price'],
+            'grand_total' => $sale['grand_total'],
+            'payment_status' => $payment,
+            'created_at' => $sale['created_at'],
+            'seller' => [
+                'id' => $sale['user']['id'],
+                'name' => $sale['user']['name']
+            ],
+            'customer' => [
+                'id' => $sale['customer']['id'],
+                'name' => $sale['customer']['name']
+            ],
+            'warehouse' => [
+                'id' => $sale['warehouse']['id'],
+                'name' => $sale['warehouse']['name']
+            ],
+            'biller' => [
+                'id' => $sale['biller']['id'],
+                'name' => $sale['biller']['name']
+            ],
+            'product' => $sale['product_sale']
         ];
 
         return $data;
@@ -202,7 +405,7 @@ class TransactionController extends Controller
     {
         $warehouse_id = auth()->user()['warehouse_id'] ?? 1;
 
-        $product = Product_Warehouse::with('product')->where('warehouse_id', $warehouse_id)->whereHas('product', function($q){
+        $product = Product_Warehouse::with('product')->where('warehouse_id', $warehouse_id)->whereHas('product', function ($q) {
             $q->where('is_active', 1);
         })->get();
 
@@ -243,9 +446,9 @@ class TransactionController extends Controller
 
         $data['product_batch_id'] = [];
         $data['warehouse_id'] = auth()->user()->warehouse_id ?? 1;
-        if($data['warehouse_id'] == 1){
+        if ($data['warehouse_id'] == 1) {
             $data['biller_id'] = PosSetting::OrderBy('created_at', 'desc')->first()['biller_id'];
-        }else{
+        } else {
             $data['biller_id'] = auth()->user()->biller_id;
         }
         $data['product_code_name'] = null;
@@ -297,9 +500,9 @@ class TransactionController extends Controller
 
         $data['user_id'] = auth()->user()->id;
         $data['warehouse_id'] = auth()->user()->warehouse_id ?? 1;
-        if($data['warehouse_id'] == 1){
+        if ($data['warehouse_id'] == 1) {
             $data['biller_id'] = PosSetting::OrderBy('created_at', 'desc')->first()['biller_id'];
-        }else{
+        } else {
             $data['biller_id'] = auth()->user()->biller_id;
         }
         $cash_register_data = CashRegister::where([
