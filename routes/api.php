@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/change_password', [UserController::class, 'change_password']);
     
     Route::post('/transfer_stock', [StockController::class, 'transfer_stock']);
-    Route::post('/report_transfer_stock', [StockController::class, 'report_transfer_stock']);
+    Route::post('/report_transfer_stock', [StockController::class, 'reportTransfer']);
 
     Route::get('/transaction', [TransactionController::class, 'index']);
     Route::post('/transaction_post', [TransactionController::class, 'transaction_post']);
