@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Expense;
 use App\Http\Controllers\Controller;
 use App\Product;
 use App\Product_Sale;
@@ -202,35 +203,78 @@ class ReportController extends Controller
         return view('backend.report.sale_report', compact('product_id', 'variant_id', 'product_name', 'product_qty', 'start_date', 'end_date', 'lims_warehouse_list', 'warehouse_id'));
     }
 
-    public function stockAlert(Request $request){
-        $warehouse_id = auth()->user()->warehouse_id;
-        
-        if($warehouse_id == null){
-            $alert = Product_Warehouse::with('product')->whereHas('product', function($q){
+    public function expenseReport(Request $request)
+    {
+        $user = auth()->user();
+        $data = $request->all();
+        $start_date = $data['start_date'];
+        $end_date = $data['end_date'];
+        $warehouse_id = $data['warehouse_id'];
+
+        if ($warehouse_id == null || $warehouse_id == 0) {
+            $warehouse_id = 1;
+        }
+
+        if ($start_date == null) {
+            $start_date = date('Y-m') . '-01';
+        }
+        if ($end_date == null) {
+            $end_date = now()->format('Y-m-d');
+        }
+
+        $expenses = Expense::with('expenseCategory')->where('warehouse_id', $warehouse_id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
+
+        $resp = [
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'warehouse_id' => $warehouse_id,
+            'data' => [],
+        ];
+
+        foreach ($expenses as $e) {
+            $item = [
+                'id' => $e['id'],
+                'category_name' => $e['expenseCategory']['name'],
+                'reference_no' => $e['reference_no'],
+                'amount' => $e['amount'],
+                'note' => $e['note'],
+            ];
+
+            array_push($resp['data'], $item);
+        }
+
+        return response()->json($resp);
+    }
+
+    public function stockAlert(Request $request)
+    {
+        $warehouse_id = $request->warehouse_id;
+
+        if ($warehouse_id == null) {
+            $alert = Product_Warehouse::with('product')->whereHas('product', function ($q) {
                 $q->where('is_active', 1);
             })->get();
-        }else{
-            $alert = Product_Warehouse::with('product')->where('warehouse_id', $warehouse_id)->whereHas('product', function($q){
+        } else {
+            $alert = Product_Warehouse::with('product')->where('warehouse_id', $warehouse_id)->whereHas('product', function ($q) {
                 $q->where('is_active', 1);
             })->get();
         }
 
         $resp = ['warehouse_id' => $warehouse_id, 'data' => []];
 
-        foreach($alert as $a){
+        foreach ($alert as $a) {
             $item = [
                 'id' => $a['product']['id'],
                 'name' => $a['product']['name'],
                 'qty' => $a['product']['qty'],
             ];
-            if($a['product']['alert_quantity'] > $a['qty']){
+            if ($a['product']['alert_quantity'] > $a['qty']) {
                 array_push($resp['data'], $item);
             }
         }
 
 
         return response()->json($resp);
-
     }
 
     public function purchaseReport(Request $request)
