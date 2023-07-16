@@ -21,6 +21,7 @@ use App\Warehouse;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -36,6 +37,19 @@ class UserController extends Controller
         $user['role'] = Role::find($user->role_id);
 
         return response()->json($user);
+    }
+
+    public function change_password(Request $request){
+        $request->validate([
+            'password' => 'required',
+            'confim_password' => 'required|same:password'
+        ]);
+
+        $user = User::find(auth()->id());
+        $user->password = Hash::make($request->password);
+        $user->save();
+        
+        return response()->json(['status' => 'success', 'message' => 'Password berhasil diganti']);
     }
 
     public function home(Request $request)

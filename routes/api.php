@@ -28,6 +28,7 @@ Route::post('login', [LoginController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [UserController::class, 'profile']);
     Route::get('/home', [UserController::class, 'home']);
+    Route::post('/change_password', [UserController::class, 'change_password']);
 
     Route::get('/transaction', [TransactionController::class, 'index']);
     Route::post('/transaction_post', [TransactionController::class, 'transaction_post']);
