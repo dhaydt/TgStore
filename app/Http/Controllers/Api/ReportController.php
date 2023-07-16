@@ -211,9 +211,9 @@ class ReportController extends Controller
         $end_date = $data['end_date'];
         $warehouse_id = $data['warehouse_id'];
 
-        if ($warehouse_id == null || $warehouse_id == 0) {
-            $warehouse_id = 1;
-        }
+        // if ($warehouse_id == null || $warehouse_id == 0) {
+        //     $warehouse_id = 1;
+        // }
 
         if ($start_date == null) {
             $start_date = date('Y-m') . '-01';
@@ -222,7 +222,11 @@ class ReportController extends Controller
             $end_date = now()->format('Y-m-d');
         }
 
-        $expenses = Expense::with('expenseCategory')->where('warehouse_id', $warehouse_id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
+        if($warehouse_id == 0 || $warehouse_id == null){
+            $expenses = Expense::with('expenseCategory')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
+        }else{
+            $expenses = Expense::with('expenseCategory')->where('warehouse_id', $warehouse_id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
+        }
 
         $resp = [
             'start_date' => $start_date,
@@ -237,6 +241,7 @@ class ReportController extends Controller
                 'category_name' => $e['expenseCategory']['name'],
                 'reference_no' => $e['reference_no'],
                 'amount' => $e['amount'],
+                'warehouse_id' => $e['warehouse_id'],
                 'note' => $e['note'],
             ];
 
@@ -301,7 +306,7 @@ class ReportController extends Controller
         foreach ($lims_product_all as $product) {
             $lims_product_purchase_data = null;
             $variant_id_all = [];
-            if ($warehouse_id == 0) {
+            if ($warehouse_id == 0 || $warehouse_id ==  null) {
                 if ($product->is_variant)
                     $variant_id_all = ProductPurchase::distinct('variant_id')->where('product_id', $product->id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->pluck('variant_id');
                 else
@@ -445,7 +450,7 @@ class ReportController extends Controller
                     'product_name' => $product_name[$key],
                     'purchased_amount' => $purchased_cost,
                     'purchased_qty' => $purchased_qty,
-                    'in_stock' => $product_qty[$key]
+                    'in_stock' => $product_qty[$key],
                 ];
                 // return $item;
                 array_push($resp['data_purchased'], $item);
