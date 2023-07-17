@@ -8,6 +8,7 @@ use App\CashRegister;
 use App\Coupon;
 use App\CPU\Helpers;
 use App\Customer;
+use App\Expense;
 use App\GiftCard;
 use App\Http\Controllers\Controller;
 use App\Payment;
@@ -98,12 +99,42 @@ class TransactionController extends Controller
     }
 
     public function addExpense(Request $request){
-//         created_at: 17-07-2023
-// expense_category_id: 1
-// warehouse_id: 1
-// amount: 200000
-// account_id: 8
-// note: Pena 3
+        $this->validate($request, [
+            'expense_category_id' => 'required',
+            'warehouse_id' => 'required',
+            'note' => 'required',
+            'amount' => 'required',
+        ]);
+
+        $data = $request->all();
+
+        $data['account_id'] = Account::where('is_default', 1)->first()['id'];
+
+        $data['created_at'] = date("Y-m-d H:i:s");
+
+        // expense_category_id: 1
+        // warehouse_id: 1
+        // amount: 200000
+        // note: Pena 3
+
+        $data['reference_no'] = 'er-' . date("Ymd") . '-'. date("his");
+
+        $data['user_id'] = auth()->id();
+
+        $cash_register_data = CashRegister::where([
+            ['user_id', $data['user_id']],
+            ['warehouse_id', $data['warehouse_id']],
+            ['status', true]
+        ])->first();
+
+        if($cash_register_data){
+            $data['cash_register_id'] = $cash_register_data->id;
+        }
+
+        Expense::create($data);
+
+        return response()->json(['status' => 'success', 'message' => 'Pengeluaran berhasil ditambahkan!']);
+        
     }
 
     public function addPurchase(Request $request)
