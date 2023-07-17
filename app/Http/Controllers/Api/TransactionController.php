@@ -98,7 +98,8 @@ class TransactionController extends Controller
         }
     }
 
-    public function addExpense(Request $request){
+    public function addExpense(Request $request)
+    {
         $this->validate($request, [
             'expense_category_id' => 'required',
             'warehouse_id' => 'required',
@@ -117,7 +118,7 @@ class TransactionController extends Controller
         // amount: 200000
         // note: Pena 3
 
-        $data['reference_no'] = 'er-' . date("Ymd") . '-'. date("his");
+        $data['reference_no'] = 'er-' . date("Ymd") . '-' . date("his");
 
         $data['user_id'] = auth()->id();
 
@@ -127,14 +128,13 @@ class TransactionController extends Controller
             ['status', true]
         ])->first();
 
-        if($cash_register_data){
+        if ($cash_register_data) {
             $data['cash_register_id'] = $cash_register_data->id;
         }
 
         Expense::create($data);
 
         return response()->json(['status' => 'success', 'message' => 'Pengeluaran berhasil ditambahkan!']);
-        
     }
 
     public function addPurchase(Request $request)
@@ -454,30 +454,220 @@ class TransactionController extends Controller
 
     public function product_list()
     {
-        $warehouse_id = auth()->user()['warehouse_id'] ?? 1;
+        // $warehouse_id = auth()->user()['warehouse_id'] ?? 1;
 
-        $product = Product_Warehouse::with('product')->where('warehouse_id', $warehouse_id)->whereHas('product', function ($q) {
-            $q->where('is_active', 1);
-        })->get();
+        // $product = Product_Warehouse::with('product')->where('warehouse_id', $warehouse_id)->whereHas('product', function ($q) {
+        //     $q->where('is_active', 1);
+        // })->get();
 
-        $data = [];
+        // $data = [];
 
-        foreach ($product as $p) {
-            $item = [
-                'product_id' => $p['product_id'],
-                'name' => $p['product']['name'],
-                'code' => $p['product']['code'],
-                'category' => $p['product']['category']['name'],
-                'qty' => $p['qty'],
-                'price' => $p['product']['price'],
-                'details' => $p['product']['product_details'],
-                'image' => config('app.url') . Helpers::imgUrl('product') . $p['product']['image'],
-            ];
+        // foreach ($product as $p) {
+        //     $item = [
+        //         'product_id' => $p['product_id'],
+        //         'name' => $p['product']['name'],
+        //         'code' => $p['product']['code'],
+        //         'category' => $p['product']['category']['name'],
+        //         'qty' => $p['qty'],
+        //         'price' => $p['product']['price'],
+        //         'details' => $p['product']['product_details'],
+        //         'image' => config('app.url') . Helpers::imgUrl('product') . $p['product']['image'],
+        //     ];
 
-            array_push($data, $item);
+        //     array_push($data, $item);
+        // }
+
+        // return response()->json($data);
+
+        $columns = array(
+            2 => 'name',
+            3 => 'code',
+            4 => 'brand_id',
+            5 => 'category_id',
+            6 => 'qty',
+            7 => 'unit_id',
+            8 => 'price',
+            9 => 'cost',
+            10 => 'stock_worth'
+        );
+
+        $totalData = Product::where('is_active', true)->count();
+        $totalFiltered = $totalData;
+
+        // if($request->input('length') != -1)
+        //     $limit = $request->input('length');
+        // else
+        $limit = null;
+        // $start = $request->input('start');
+        // $order = 'products.'.$columns[$request->input('order.0.column')];
+        // $dir = $request->input('order.0.dir');
+        // if(empty($request->input('search.value'))){
+        //     $products = Product::with('category', 'brand', 'unit')->offset($start)
+        //                 ->where('is_active', true)
+        //                 ->limit($limit)
+        //                 ->orderBy($order,$dir)
+        //                 ->get();
+        // }
+        // else
+        // {
+        // $search = $request->input('search.value'); 
+        $products =  Product::select('products.*')
+            ->with('category', 'brand', 'unit')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->leftjoin('brands', 'products.brand_id', '=', 'brands.id')
+            ->where([
+                // ['products.name', 'LIKE', "%{$search}%"],
+                ['products.is_active', true]
+            ])
+            ->orWhere([
+                // ['products.code', 'LIKE', "%{$search}%"],
+                ['products.is_active', true]
+            ])
+            ->orWhere([
+                // ['categories.name', 'LIKE', "%{$search}%"],
+                ['categories.is_active', true],
+                ['products.is_active', true]
+            ])
+            ->orWhere([
+                // ['brands.title', 'LIKE', "%{$search}%"],
+                ['brands.is_active', true],
+                ['products.is_active', true]
+            ])
+            // ->offset($start)
+            ->limit($limit)
+            ->orderBy('created_at', 'desc')->get();
+
+        $totalFiltered = Product::join('categories', 'products.category_id', '=', 'categories.id')
+            ->leftjoin('brands', 'products.brand_id', '=', 'brands.id')
+            ->where([
+                // ['products.name','LIKE',"%{$search}%"],
+                ['products.is_active', true]
+            ])
+            ->orWhere([
+                // ['products.code', 'LIKE', "%{$search}%"],
+                ['products.is_active', true]
+            ])
+            ->orWhere([
+                // ['categories.name', 'LIKE', "%{$search}%"],
+                ['categories.is_active', true],
+                ['products.is_active', true]
+            ])
+            ->orWhere([
+                // ['brands.title', 'LIKE', "%{$search}%"],
+                ['brands.is_active', true],
+                ['products.is_active', true]
+            ])
+            ->count();
+        // }
+        $data = array();
+        if (!empty($products)) {
+            foreach ($products as $key => $product) {
+                $nestedData['id'] = $product->id;
+                $nestedData['key'] = $key;
+                $product_image = explode(",", $product->image);
+                $product_image = htmlspecialchars($product_image[0]);
+                $nestedData['image'] = url('public/images/product', $product_image);
+                $nestedData['name'] = $product->name;
+                $nestedData['code'] = $product->code;
+                if ($product->brand_id)
+                    $nestedData['brand'] = $product->brand->title;
+                else
+                    $nestedData['brand'] = "N/A";
+                $nestedData['category'] = $product->category->name;
+                if (auth()->user()->role_id > 2 && $product->type == 'standard') {
+                    $nestedData['qty'] = Product_Warehouse::where([
+                        ['product_id', $product->id],
+                        ['warehouse_id', auth()->user()->warehouse_id]
+                    ])->sum('qty');
+                } else
+                    $nestedData['qty'] = $product->qty;
+
+                if ($product->unit_id)
+                    $nestedData['unit'] = $product->unit->unit_name;
+                else
+                    $nestedData['unit'] = 'N/A';
+
+                $nestedData['price'] = $product->price;
+                $nestedData['cost'] = $product->cost;
+
+                if (config('currency_position') == 'prefix')
+                    $nestedData['stock_worth'] = config('currency') . ' ' . ($nestedData['qty'] * $product->price) . ' / ' . config('currency') . ' ' . ($nestedData['qty'] * $product->cost);
+                else
+                    $nestedData['stock_worth'] = ($nestedData['qty'] * $product->price) . ' ' . config('currency') . ' / ' . ($nestedData['qty'] * $product->cost) . ' ' . config('currency');
+
+                // $nestedData['options'] = '<div class="btn-group">
+                //             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.trans("file.action").'
+                //               <span class="caret"></span>
+                //               <span class="sr-only">Toggle Dropdown</span>
+                //             </button>
+                //             <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
+                //             <li>
+                //                 <button="type" class="btn btn-link view"><i class="fa fa-eye"></i> '.trans('file.View').'</button>
+                //             </li>';
+
+                // if(in_array("products-edit", $request['all_permission']))
+                //     $nestedData['options'] .= '<li>
+                //             <a href="'.route('products.edit', $product->id).'" class="btn btn-link"><i class="fa fa-edit"></i> '.trans('file.edit').'</a>
+                //         </li>';
+                // if(in_array("product_history", $request['all_permission']))
+                //     $nestedData['options'] .= \Form::open(["route" => "products.history", "method" => "GET"] ).'
+                //             <li>
+                //                 <input type="hidden" name="product_id" value="'.$product->id.'" />
+                //                 <button type="submit" class="btn btn-link"><i class="dripicons-checklist"></i> '.trans("file.Product History").'</button> 
+                //             </li>'.\Form::close();
+                // if(in_array("print_barcode", $request['all_permission'])) {
+                //     $product_info = $product->code.' ('.$product->name.')';
+                //     $nestedData['options'] .= \Form::open(["route" => "product.printBarcode", "method" => "GET"] ).'
+                //         <li>
+                //             <input type="hidden" name="data" value="'.$product_info.'" />
+                //             <button type="submit" class="btn btn-link"><i class="dripicons-print"></i> '.trans("file.print_barcode").'</button> 
+                //         </li>'.\Form::close(); 
+                // }
+                // if(in_array("products-delete", $request['all_permission']))
+                //     $nestedData['options'] .= \Form::open(["route" => ["products.destroy", $product->id], "method" => "DELETE"] ).'
+                //             <li>
+                //               <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="fa fa-trash"></i> '.trans("file.delete").'</button> 
+                //             </li>'.\Form::close().'
+                //         </ul>
+                //     </div>';
+                // data for product details by one click
+                if ($product->tax_id)
+                    $tax = Tax::find($product->tax_id)->name;
+                else
+                    $tax = "N/A";
+
+                if ($product->tax_method == 1)
+                    $tax_method = trans('file.Exclusive');
+                else
+                    $tax_method = trans('file.Inclusive');
+
+                $nestedData['product'] = array(
+                    '[ "' . $product->type . '"', ' "' . $product->name . '"', ' "' . $product->code . '"', ' "' . $nestedData['brand'] . '"', ' "' . $nestedData['category'] . '"', ' "' . $nestedData['unit'] . '"', ' "' . $product->cost . '"', ' "' . $product->price . '"', ' "' . $tax . '"', ' "' . $tax_method . '"', ' "' . $product->alert_quantity . '"', ' "' . preg_replace('/\s+/S', " ", $product->product_details) . '"', ' "' . $product->id . '"', ' "' . $product->product_list . '"', ' "' . $product->variant_list . '"', ' "' . $product->qty_list . '"', ' "' . $product->price_list . '"', ' "' . $nestedData['qty'] . '"', ' "' . $product->image . '"', ' "' . $product->is_variant . '"]'
+                );
+                $nestedData['product'] = [
+                    'type' => $product->type,
+                    'name' => $product->name,
+                    'code' => $product->code,
+                    'brand' => $product->brand,
+                    'category' => $product->category->name,
+                    'unit' => $product->unit->unit_name,
+                    'cost' => $product->cost,
+                    'price' => $product->price,
+                    'is_variant' => $product->is_variant
+                ];
+                //$nestedData['imagedata'] = DNS1D::getBarcodePNG($product->code, $product->barcode_symbology);
+                $data[] = $nestedData;
+            }
         }
+        $json_data = array(
+            // "draw"            => intval($request->input('draw')),  
+            "recordsTotal"    => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data"            => $data
+        );
 
-        return response()->json($data);
+        return response()->json($json_data);
+        echo json_encode($json_data);
     }
 
     public function transaction_post(Request $request)
