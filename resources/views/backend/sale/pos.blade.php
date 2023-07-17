@@ -2932,11 +2932,12 @@ function productSearch(data) {
         success: function(data) {
             console.log(pre_qty);
             var flag = 1;
+            console.log('resp', data, product_warehouse_price);
             if (pre_qty > 0) {
                 /*if(pre_qty)
                     var qty = parseFloat(pre_qty) + data[15];
                 else*/
-                    var qty = data[15];
+                var qty = data[15];
                 $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ') .qty').val(qty);
                 pos = product_code.indexOf(data[1]);
                 if(!data[11] && product_warehouse_price[pos]) {
