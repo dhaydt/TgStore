@@ -97,10 +97,30 @@ class TransactionController extends Controller
         }
     }
 
+    public function addExpense(Request $request){
+//         created_at: 17-07-2023
+// expense_category_id: 1
+// warehouse_id: 1
+// amount: 200000
+// account_id: 8
+// note: Pena 3
+    }
+
     public function addPurchase(Request $request)
     {
+        $this->validate($request, [
+            'warehouse_id' => 'required',
+            'supplier_id' => 'required',
+            'product_id' => 'required',
+            'product_code' => 'required',
+            'qty' => 'required',
+            'net_unit_cost' => 'required',
+            'subtotal' => 'required',
+            'total_cost' => 'required',
+            'item' => 'required',
+        ]);
 
-        $data = $request->except('document');
+        $data = $request->all();
         // warehouse_id: 1
         // supplier_id: 1
         $data['status'] = 1;
