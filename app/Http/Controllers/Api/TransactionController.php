@@ -1239,7 +1239,7 @@ class TransactionController extends Controller
                         ])
                         ->select('discounts.*')
                         ->get();
-        $lims_product_data = Product::with('product_warehouse')->where([
+        $lims_product_data = Product::where([
             ['code', $product_code[0]],
             ['is_active', true]
         ])->first();
