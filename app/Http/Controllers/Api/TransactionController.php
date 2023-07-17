@@ -653,7 +653,7 @@ class TransactionController extends Controller
                     'unit' => $product->unit->unit_name,
                     'cost' => $product->cost,
                     'price' => $product->price,
-                    'is_variant' => $product->is_variant
+                    // 'is_variant' => $product->is_variant
                 ];
                 //$nestedData['imagedata'] = DNS1D::getBarcodePNG($product->code, $product->barcode_symbology);
                 $data[] = $nestedData;
