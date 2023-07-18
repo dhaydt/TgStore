@@ -1282,14 +1282,20 @@ class TransactionController extends Controller
         }
 
         // return $lims_product_data;
+        $qty_warehouse = 0;
+
+        $product_warehouse = Product_Warehouse::where(['product_id' => $lims_product_data->id, 'warehouse_id' => $warehouse_id])->first();
+        if($product_warehouse){
+            $qty_warehouse = $product_warehouse->qty;
+        }
+
         if($lims_product_data->is_diffPrice == 1){
             if($lims_product_data->promotion && $todayDate <= $lims_product_data->last_date && $no_discount) {
                 $product['price'] = $lims_product_data->promotion_price;
             }
             elseif($no_discount)
-                $price = Product_Warehouse::where(['product_id' => $lims_product_data->id, 'warehouse_id' => $warehouse_id])->first();
-                if($price){
-                    $product['price'] = $price->price;
+                if($product_warehouse){
+                    $product['price'] = $product_warehouse->price;
                 }else{
                     $product['price'] = $lims_product_data->price;
                 }
@@ -1346,7 +1352,7 @@ class TransactionController extends Controller
         $product['is_batch'] = $lims_product_data->is_batch;
         $product['is_imei'] = $lims_product_data->is_imei;
         $product['is_variant'] = $lims_product_data->is_variant;
-        // $product['qty'] = $qty;
+        $product['qty'] = $qty_warehouse;
         return $product;
     }
 }
