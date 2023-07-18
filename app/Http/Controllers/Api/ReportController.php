@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Expense;
+use App\ExpenseCategory;
 use App\Http\Controllers\Controller;
 use App\Product;
 use App\Product_Sale;
@@ -201,6 +202,12 @@ class ReportController extends Controller
 
         return response()->json($resp);
         return view('backend.report.sale_report', compact('product_id', 'variant_id', 'product_name', 'product_qty', 'start_date', 'end_date', 'lims_warehouse_list', 'warehouse_id'));
+    }
+
+    public function expense_category(){
+        $cat = ExpenseCategory::where('is_active', 1)->get();
+
+        return response()->json($cat);
     }
 
     public function expenseReport(Request $request)
