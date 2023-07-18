@@ -30,6 +30,7 @@ use App\Unit;
 use App\User;
 use App\Variant;
 use App\Warehouse;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -381,6 +382,7 @@ class TransactionController extends Controller
                 'total_price' => $q['total_price'],
                 'grand_total' => $q['grand_total'],
                 'payment_status' => $payment,
+                'transaction_date' => Carbon::parse($q['created_at'])->format('d-m-Y H:i'),
                 'seller' => [
                     'id' => $q['user']['id'],
                     'name' => $q['user']['name']
@@ -420,6 +422,10 @@ class TransactionController extends Controller
             $payment = 'cash';
         }
 
+        foreach($sale['product_sale'] as $ps){
+            $ps['product_name'] = Product::find($ps['product_id'])['name'];
+        }
+
         $data = [
             'transaction _id' => $sale['id'],
             'reference_no' => $sale['reference_no'],
@@ -429,6 +435,9 @@ class TransactionController extends Controller
             'total_price' => $sale['total_price'],
             'grand_total' => $sale['grand_total'],
             'payment_status' => $payment,
+            'sale_note' => $sale['sale_note'],
+            'staff_note' => $sale['staff_note'],
+            'transaction_date' => Carbon::parse($sale['created_at'])->format('d-m-Y H:i'),
             'created_at' => $sale['created_at'],
             'seller' => [
                 'id' => $sale['user']['id'],

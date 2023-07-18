@@ -117,12 +117,12 @@ class GeneralController extends Controller
             $message .= ' created successfully!';
         }
             
-        Customer::create($lims_customer_data);
+        $Customer = Customer::create($lims_customer_data);
         $message .= ' created successfully!';
         // if($lims_customer_data['pos'])
         //     return redirect('pos')->with('message', $message);
         // else
-        return response()->json(['message' => $message]);
+        return response()->json(['message' => $message, 'customer_id' => $Customer['id']]);
     }
 
     public function add_supplier(Request $request)
@@ -157,7 +157,7 @@ class GeneralController extends Controller
             $image->move('public/images/supplier', $imageName);
             $lims_supplier_data['image'] = $imageName;
         }
-        Supplier::create($lims_supplier_data);
+        $sup = Supplier::create($lims_supplier_data);
         $message = 'Supplier';
         try{
             Mail::send( 'mail.supplier_create', $lims_supplier_data, function( $message ) use ($lims_supplier_data)
@@ -169,6 +169,6 @@ class GeneralController extends Controller
         catch(\Exception $e) {
             $message .= ' created successfully. Please setup your <a href="setting/mail_setting">mail setting</a> to send mail.';
         }
-        return response()->json(['message' => $message]);
+        return response()->json(['message' => $message, 'customersupllier_id' => $sup['id']]);
     }
 }

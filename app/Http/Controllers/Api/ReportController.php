@@ -488,8 +488,10 @@ class ReportController extends Controller
         foreach ($product as $p) {
             $data = [];
             $data['product_id'] = $p['product']['id'];
+            $data['warehouse_id'] = $p['warehouse_id'];
             $data['name'] = $p['product']['name'];
             $data['qty'] = $p['qty'];
+            $data['price'] = $p['price'] ?? Product::find($p['product_id'])['price'];
 
             array_push($resp['stock'], $data);
         }
