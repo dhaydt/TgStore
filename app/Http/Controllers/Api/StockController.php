@@ -9,6 +9,7 @@ use App\ProductTransfer;
 use App\ProductVariant;
 use App\Transfer;
 use App\Unit;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class StockController extends Controller
@@ -88,7 +89,7 @@ class StockController extends Controller
             foreach ($transfers as $key => $transfer) {
                 $nestedData['id'] = $transfer->id;
                 $nestedData['key'] = $key;
-                $nestedData['date'] = date(config('date_format'), strtotime($transfer->created_at->toDateString()));
+                $nestedData['date_transfer'] = Carbon::parse($transfer->created_at)->format('d-m-Y');
                 $nestedData['reference_no'] = $transfer->reference_no;
                 $nestedData['from_warehouse'] = $transfer->fromWarehouse->id;
                 $nestedData['to_warehouse'] = $transfer->toWarehouse->id;
