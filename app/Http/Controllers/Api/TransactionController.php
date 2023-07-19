@@ -348,20 +348,45 @@ class TransactionController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Pembelian berhasil ditambahkan!']);
     }
 
-    public function transaction_list()
+    public function transaction_list(Request $request)
     {
-        $warehouse_id = auth()->user()->warehouse_id;
+        $from = $request->from_date ?? now()->format('Y-m-d');
+        $to = $request->to_date ?? now()->format('Y-m-d');
+
+        $warehouse_id = $request->warehouse_id;
+
+        $role = auth()->user()->role_id;
+
+        // return $role;
+
         $query = Sale::with('user', 'customer', 'warehouse', 'biller');
-        if ($warehouse_id == null) {
-            $query = $query->orderBy('created_at', 'desc')->get();
-        } else {
-            $query = $query->where('warehouse_id', $warehouse_id)->orderBy('created_at', 'desc')->get();
+
+        if($role == 1){
+            if ($warehouse_id == null) {
+                $query = $query->orderBy('created_at', 'desc')->whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->get();
+            } else {
+                $query = $query->where('warehouse_id', $warehouse_id)->whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->orderBy('created_at', 'desc')->get();
+            }
+        }elseif($role == 2){
+
+            $warehouse_id = auth()->user()->warehouse_id;
+
+            $query = $query->where('warehouse_id', $warehouse_id)->whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->orderBy('created_at', 'desc')->get();
+
+        }else{
+
+            $warehouse_id = auth()->user()->warehouse_id;
+            $query = $query->where('warehouse_id', $warehouse_id)->whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
         }
 
         $data = [
             'total_data' => count($query),
+            'warehouse_id' => $warehouse_id,
+            'from_date' => $from,
+            'to_date' => $to,
             'data' => []
         ];
+
         foreach ($query as $q) {
             $payment = $q['payment_status'];
             if ($payment == 1) {
