@@ -11,10 +11,10 @@ class LoginController extends Controller
     public function login(Request $request){
         $data = $request->only('phone', 'password');
         $request->validate([
-            'phone' => 'required',
+            'name' => 'required',
             'password' => 'required',
         ], [
-            'phone.required' => 'No HP Tidak bisa kosong',
+            'name.required' => 'No HP Tidak bisa kosong',
             'password.required' => 'Password tidak bisa kosong',
             // 'password.min:8' => 'Minimal password 8 huruf!',
         ]);
@@ -23,9 +23,9 @@ class LoginController extends Controller
 
         // return $fieldType;
 
-        if(auth()->attempt(array('phone' => $request['phone'], 'password' => $request['password'])))
+        if(auth()->attempt(array('phone' => $request['name'], 'password' => $request['password'])))
         {
-            $token = $request->user()->createToken($request['phone']);
+            $token = $request->user()->createToken($request['name']);
             $data = [
                 'token' => $token->plainTextToken,
                 'user' => $request->user(),
