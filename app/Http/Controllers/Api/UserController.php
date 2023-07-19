@@ -164,19 +164,19 @@ class UserController extends Controller
         $auth = auth()->user();
         $warehouse_id = $auth->warehouse_id;
 
-        // foreach ($best_selling_qty as $bs) {
-        //     $stock = Product_Warehouse::where(['product_id' => $bs['product_id'], 'warehouse_id' => $warehouse_id])->first();
+        foreach ($best_selling_qty as $bs) {
+            $stock = Product_Warehouse::where(['product_id' => $bs['product_id'], 'warehouse_id' => $warehouse_id])->first();
 
-        //     if ($stock) {
-        //         $stock = $stock['qty'];
-        //     } else {
-        //         $stock = 0;
-        //     }
+            if ($stock) {
+                $stock = $stock['qty'];
+            } else {
+                $stock = 0;
+            }
 
-        //     $bs['stock'] = $stock;
-        //     $bs['product_images'] = config('app.url') . Helpers::imgUrl('product') . $bs['product_images'];
-        //     $bs['warehouse_id'] = $warehouse_id;
-        // }
+            $bs['stock'] = $stock;
+            $bs['product_images'] = config('app.url') . Helpers::imgUrl('product') . $bs['product_images'];
+            // $bs['warehouse_id'] = $warehouse_id;
+        }
 
         // return $best_selling_qty;
 
@@ -218,7 +218,6 @@ class UserController extends Controller
 
             $by['stock'] = $stock;
             $by['product_images'] = config('app.url') . Helpers::imgUrl('product') . $by['product_images'];
-            $by['warehouse_id'] = $warehouse_id;
         }
         // return $yearly_best_selling_qty;
 
