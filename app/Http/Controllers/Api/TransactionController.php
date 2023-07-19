@@ -624,6 +624,17 @@ class TransactionController extends Controller
                     $nestedData['unit'] = 'N/A';
 
                 $nestedData['price'] = $product->price;
+
+                $warehouse_id = auth()->user()->warehouse_id;
+                if($warehouse_id){
+                    if($product->is_diffPrice == 1){
+                        $newProduct = Product_Warehouse::where(['product_id' => $product['id'], 'warehouse_id' => $warehouse_id])->first();
+                        if($newProduct){
+                            $nestedData['price'] = $newProduct->price;
+                        }
+                    }
+                }
+
                 $nestedData['cost'] = $product->cost;
 
                 if (config('currency_position') == 'prefix')
@@ -688,7 +699,7 @@ class TransactionController extends Controller
                     'category' => $product->category->name,
                     'unit' => $product->unit->unit_name,
                     'cost' => $product->cost,
-                    'price' => $product->price,
+                    'price' => $nestedData['price'],
                     // 'is_variant' => $product->is_variant
                 ];
                 //$nestedData['imagedata'] = DNS1D::getBarcodePNG($product->code, $product->barcode_symbology);
