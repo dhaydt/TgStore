@@ -57,6 +57,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request);
         $this->validate($request, [
             'name' => [
                 'max:255',
@@ -68,7 +69,7 @@ class UserController extends Controller
                 'email',
                 'max:255',
                     Rule::unique('users')->where(function ($query) {
-                    return $query->where('is_deleted', false);
+                        return $query->where('is_deleted', false);
                 }),
             ],
         ]);
@@ -79,6 +80,17 @@ class UserController extends Controller
                     'max:255',
                         Rule::unique('customers')->where(function ($query) {
                         return $query->where('is_active', 1);
+                    }),
+                ],
+            ]);
+        }
+        
+        if($request->role_id == 1 || $request->role_id == 4) {
+            $this->validate($request, [
+                'phone' => [
+                    'max:20',
+                        Rule::unique('users')->where(function ($query) {
+                        return $query->where('is_deleted', false);
                     }),
                 ],
             ]);

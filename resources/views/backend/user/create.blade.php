@@ -26,6 +26,21 @@
                                         @endif
                                     </div>
                                     <div class="form-group">
+                                        <label><strong>{{trans('file.Phone Number')}} *</strong></label>
+                                        <input type="text" name="phone_number" onchange="addPhone()" required class="form-control">
+                                        <input type="hidden" name="phone" id="phone">
+                                        @if($errors->has('phone_number'))
+                                            <span>
+                                               <strong>{{ $errors->first('phone_number') }}</strong>
+                                            </span>
+                                        @endif
+                                        @if($errors->has('phone'))
+                                            <span>
+                                               <strong>{{ $errors->first('phone') }}</strong>
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="form-group">
                                         <label><strong>{{trans('file.Password')}} *</strong> </label>
                                         <div class="input-group">
                                             <input type="password" name="password" required class="form-control">
@@ -48,15 +63,7 @@
                                         </span>
                                         @endif
                                     </div>
-                                    <div class="form-group">
-                                        <label><strong>{{trans('file.Phone Number')}} *</strong></label>
-                                        <input type="text" name="phone_number" required class="form-control">
-                                        @if($errors->has('phone_number'))
-                                            <span>
-                                               <strong>{{ $errors->first('phone_number') }}</strong>
-                                            </span>
-                                        @endif
-                                    </div>
+                                    
                                     <div class="customer-section">
                                         <div class="form-group">
                                             <label><strong>{{trans('file.Address')}} *</strong></label>
@@ -149,7 +156,10 @@
 
 @push('scripts')
 <script type="text/javascript">
-
+    function addPhone(){
+        var num = $('input[name="phone_number"]').val();
+        $('input[name="phone"]').val(num);
+    }
     $("ul#people").siblings('a').attr('aria-expanded','true');
     $("ul#people").addClass("show");
     $("ul#people #user-create-menu").addClass("active");
