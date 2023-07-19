@@ -136,8 +136,10 @@ class UserController extends Controller
             $recent_payment = Payment::orderBy('id', 'desc')->take(5)->get();
         }
 
+        $id_warehouse = auth()->user()->warehouse_id;
+        
         $best_selling_qty = Product_Sale::join('products', 'products.id', '=', 'product_sales.product_id')
-            ->select(DB::raw('products.id as product_id, products.name as product_name, products.code as product_code, products.image as product_images, sum(product_sales.qty) as sold_qty'))
+            ->select(DB::raw('sale_id, products.id as product_id, products.name as product_name, products.code as product_code, products.image as product_images, sum(product_sales.qty) as sold_qty'))
             ->whereDate('product_sales.created_at', '>=', $start_date)
             ->whereDate('product_sales.created_at', '<=', $end_date)
             ->groupBy('products.code')
@@ -145,10 +147,26 @@ class UserController extends Controller
             ->take(10)
             ->get();
 
+        $filtered_best_selling_qty = [];
+
+        if($id_warehouse == null){
+            $filtered_best_selling_qty = $best_selling_qty;
+        }else{
+            foreach ($best_selling_qty as $key => $b) {
+                $ware_id = Sale::find($b['sale_id'])['warehouse_id'];
+                // return $ware_id;
+                if($ware_id == $id_warehouse){
+                    array_push($filtered_best_selling_qty, $b);
+                }
+            }
+        }
+
+        // return $filtered_best_selling_qty;
+
         $auth = auth()->user();
         $warehouse_id = $auth->warehouse_id ?? 1;
 
-        foreach ($best_selling_qty as $bs) {
+        foreach ($filtered_best_selling_qty as $bs) {
             $stock = Product_Warehouse::where(['product_id' => $bs['product_id'], 'warehouse_id' => $warehouse_id])->first();
 
             if ($stock) {
@@ -165,7 +183,7 @@ class UserController extends Controller
         // return $best_selling_qty;
 
         $yearly_best_selling_qty = Product_Sale::join('products', 'products.id', '=', 'product_sales.product_id')
-            ->select(DB::raw('products.id as product_id, products.name as product_name, products.code as product_code, products.image as product_images, sum(product_sales.qty) as sold_qty'))
+            ->select(DB::raw('sale_id, products.id as product_id, products.name as product_name, products.code as product_code, products.image as product_images, sum(product_sales.qty) as sold_qty'))
             ->whereDate('product_sales.created_at', '>=', date("Y") . '-01-01')
             ->whereDate('product_sales.created_at', '<=', date("Y") . '-12-31')
             ->groupBy('products.code')
@@ -173,7 +191,21 @@ class UserController extends Controller
             ->take(5)
             ->get();
 
-        foreach ($yearly_best_selling_qty as $by) {
+        $filtered_yearly_best_selling_qty = [];
+
+        if($id_warehouse == null){
+            $filtered_yearly_best_selling_qty = $yearly_best_selling_qty;
+        }else{
+            foreach ($yearly_best_selling_qty as $key => $b) {
+                $ware_id = Sale::find($b['sale_id'])['warehouse_id'];
+                // return $ware_id;
+                if($ware_id == $id_warehouse){
+                    array_push($filtered_yearly_best_selling_qty, $b);
+                }
+            }
+        }
+
+        foreach ($filtered_yearly_best_selling_qty as $by) {
             $stock = Product_Warehouse::where(['product_id' => $by['product_id'], 'warehouse_id' => $warehouse_id])->first();
 
             if ($stock) {
@@ -183,7 +215,7 @@ class UserController extends Controller
             }
 
             $by['stock'] = $stock;
-            $by['product_images'] = config('app.url') . Helpers::imgUrl('product') . $bs['product_images'];
+            $by['product_images'] = config('app.url') . Helpers::imgUrl('product') . $by['product_images'];
             $by['warehouse_id'] = $warehouse_id;
         }
         // return $yearly_best_selling_qty;
@@ -264,8 +296,8 @@ class UserController extends Controller
             // 'recent_purchase' => $recent_purchase,
             // 'recent_quotation' => $recent_quotation,
             // 'recent_payment' => $recent_payment,
-            'best_selling' => $best_selling_qty,
-            'yearly_best_selling' => $yearly_best_selling_qty,
+            'best_selling' => $filtered_best_selling_qty,
+            'yearly_best_selling' => $filtered_yearly_best_selling_qty,
             // 'yearly_best_selling_price' => $yearly_best_selling_price,
             // 'all_permission' => $all_permission,
         ];
