@@ -245,7 +245,7 @@ class ReportController extends Controller
         foreach ($expenses as $e) {
             $item = [
                 'id' => $e['id'],
-                'category_name' => $e['expenseCategory']['name'],
+                'category_name' => $e['expenseCategory']['name'] ?? 'Invalid Category name',
                 'reference_no' => $e['reference_no'],
                 'amount' => $e['amount'],
                 'warehouse_id' => $e['warehouse_id'],
