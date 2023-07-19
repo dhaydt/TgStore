@@ -449,7 +449,9 @@ class TransactionController extends Controller
             ],
             'warehouse' => [
                 'id' => $sale['warehouse']['id'],
-                'name' => $sale['warehouse']['name']
+                'name' => $sale['warehouse']['name'],
+                'address' => $sale['warehouse']['address'],
+                'phone' => $sale['warehouse']['phone']
             ],
             'biller' => [
                 'id' => $sale['biller']['id'],

@@ -95,11 +95,11 @@ class UserController extends Controller
         $yearly_sale_amount = [];
 
         $general_setting = DB::table('general_settings')->latest()->first();
+        // return $general_setting;
         if (auth()->user()->role_id > 2 && $general_setting->staff_access == 'own') {
             $product_sale_data = Sale::join('product_sales', 'sales.id', '=', 'product_sales.sale_id')
                 ->select(DB::raw('product_sales.product_id, product_sales.product_batch_id, product_sales.sale_unit_id, sum(product_sales.qty) as sold_qty, sum(product_sales.total) as sold_amount'))
                 ->where('sales.user_id', auth()->id())
-                ->whereDate('product_sales.created_at', '=', $now)
                 ->whereDate('product_sales.created_at', '=', $now)
                 ->groupBy('product_sales.product_id', 'product_sales.product_batch_id')
                 ->get();
@@ -119,7 +119,7 @@ class UserController extends Controller
             $recent_quotation = Quotation::with('customer')->orderBy('id', 'desc')->where('user_id', auth()->id())->take(5)->get();
             $recent_payment = Payment::orderBy('id', 'desc')->where('user_id', auth()->id())->take(5)->get();
         } else {
-            $product_sale_data = Product_Sale::select(DB::raw('product_id, product_batch_id, sale_unit_id, sum(qty) as sold_qty, sum(total) as sold_amount'))->whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->groupBy('product_id', 'product_batch_id')->get();
+            $product_sale_data = Product_Sale::select(DB::raw('product_id, product_batch_id, sale_unit_id, sum(qty) as sold_qty, sum(total) as sold_amount'))->whereDate('created_at', '=', $now)->groupBy('product_id', 'product_batch_id')->get();
             $product_cost = Helpers::calculateAverageCOGS($product_sale_data);
             // $revenue = Sale::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
             $revenue = Sale::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('grand_total');
