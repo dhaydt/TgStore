@@ -478,13 +478,35 @@ class ReportController extends Controller
     {
         $user = auth()->user();
         $warehouse_id = $request->warehouse_id;
-        if ($warehouse_id == null || $warehouse_id == 0) {
-            $warehouse_id = 1;
+
+        if($warehouse_id == null){
+            $product = Product::where('is_active', 1)->get();
+
+            $resp = [
+                'total_item' => count($product),
+                'warehouse_id' => $warehouse_id,
+                'stock' => []
+            ];
+    
+            foreach ($product as $p) {
+                $data = [];
+                $data['product_id'] = $p['id'];
+                $data['warehouse_id'] = null;
+                $data['name'] = $p['name'];
+                $data['qty'] = $p['qty'];
+                $data['price'] = $p['price'] ?? Product::find($p['product_id'])['price'];
+    
+                array_push($resp['stock'], $data);
+            }
+    
+            return $resp;
+
+        }else{
+            $product = Product_Warehouse::with('product')->whereHas('product', function ($q) {
+                $q->where('is_active', 1);
+            })->where('warehouse_id', $warehouse_id)->get();
         }
 
-        $product = Product_Warehouse::with('product')->whereHas('product', function ($q) {
-            $q->where('is_active', 1);
-        })->where('warehouse_id', $warehouse_id)->get();
 
         $resp = [
             'total_item' => count($product),
