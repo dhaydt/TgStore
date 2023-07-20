@@ -284,8 +284,8 @@ class UserController extends Controller
         $data = [
             'pendapatan' => $revenue,
             'profit' => $profit,
-            'pengeluaran' => $purchase,
-            'pembelian' => $expense,
+            'pengeluaran' => $expense,
+            'pembelian' => $purchase,
             // 'return' => $return,
             // 'purchase_return' => $purchase_return,
             // 'payment_sent' => $payment_sent,
