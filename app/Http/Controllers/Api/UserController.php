@@ -120,6 +120,7 @@ class UserController extends Controller
             $recent_payment = Payment::orderBy('id', 'desc')->where('user_id', auth()->id())->take(5)->get();
         } else {
             $product_sale_data = Product_Sale::select(DB::raw('product_id, product_batch_id, sale_unit_id, sum(qty) as sold_qty, sum(total) as sold_amount'))->whereDate('created_at', '=', $now)->groupBy('product_id', 'product_batch_id')->get();
+            // return $product_sale_data;
             $product_cost = Helpers::calculateAverageCOGS($product_sale_data);
             // $revenue = Sale::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
             $revenue = Sale::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('grand_total');
@@ -130,6 +131,7 @@ class UserController extends Controller
             $revenue = $revenue - $return;
             $purchase = Purchase::whereDate('created_at', '=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
             $profit = $revenue + $purchase_return - $product_cost;
+            // return [$revenue, $purchase_return, $product_cost];
             $expense = Expense::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('amount');
             $recent_sale = Sale::with('customer')->orderBy('id', 'desc')->take(5)->get();
             $recent_purchase = Purchase::with('supplier')->orderBy('id', 'desc')->take(5)->get();
