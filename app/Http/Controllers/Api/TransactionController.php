@@ -488,32 +488,9 @@ class TransactionController extends Controller
         return $data;
     }
 
+
     public function product_list()
     {
-        // $warehouse_id = auth()->user()['warehouse_id'] ?? 1;
-
-        // $product = Product_Warehouse::with('product')->where('warehouse_id', $warehouse_id)->whereHas('product', function ($q) {
-        //     $q->where('is_active', 1);
-        // })->get();
-
-        // $data = [];
-
-        // foreach ($product as $p) {
-        //     $item = [
-        //         'product_id' => $p['product_id'],
-        //         'name' => $p['product']['name'],
-        //         'code' => $p['product']['code'],
-        //         'category' => $p['product']['category']['name'],
-        //         'qty' => $p['qty'],
-        //         'price' => $p['product']['price'],
-        //         'details' => $p['product']['product_details'],
-        //         'image' => config('app.url') . Helpers::imgUrl('product') . $p['product']['image'],
-        //     ];
-
-        //     array_push($data, $item);
-        // }
-
-        // return response()->json($data);
 
         $columns = array(
             2 => 'name',
@@ -728,6 +705,7 @@ class TransactionController extends Controller
             'subtotal' => 'required',
             'total_price' => 'required',
             'item' => 'required',
+            'paid_amount' => 'required',
         ]);
 
         $data = $request->all();
@@ -748,7 +726,7 @@ class TransactionController extends Controller
         $data['total_tax'] = 0.00;
         $data['order_tax'] = 0.00;
         $data['grand_total'] = $request->total_price;
-        $data['paid_amount'] = $request->total_price;
+        $data['paid_amount'] = $request['paid_amount'];
         $data['used_points'] = null;
         $data['coupon_discount'] = null;
         $data['sale_status'] = 1;
@@ -756,7 +734,7 @@ class TransactionController extends Controller
         $data['coupon_id'] = null;
         $data['pos'] = 1;
         $data['draft'] = 0;
-        $data['paying_amount'] = $request['paid_amount'];
+        $data['paying_amount'] = $request->total_price;
         $data['paid_by_id'] = 1;
         $data['gift_card_id'] = null;
         $data['cheque_no'] = null;
