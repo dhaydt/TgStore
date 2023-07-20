@@ -263,28 +263,42 @@ class ReportController extends Controller
         $warehouse_id = $request->warehouse_id;
 
         if ($warehouse_id == null) {
-            $alert = Product_Warehouse::with('product')->whereHas('product', function ($q) {
-                $q->where('is_active', 1);
-            })->get();
+            $alert = Product::where('is_active', 1)->get();
+
+            $resp = ['warehouse_id' => $warehouse_id, 'data' => []];
+    
+            foreach ($alert as $a) {
+                $item = [
+                    'id' => $a['id'],
+                    'name' => $a['name'],
+                    'qty' => $a['qty'],
+                    'warehouse_id' => $a['warehouse_id'],
+                ];
+
+                if ($a['alert_quantity'] > $a['qty']) {
+                    array_push($resp['data'], $item);
+                }
+            }
         } else {
             $alert = Product_Warehouse::with('product')->where('warehouse_id', $warehouse_id)->whereHas('product', function ($q) {
                 $q->where('is_active', 1);
             })->get();
-        }
-
-        $resp = ['warehouse_id' => $warehouse_id, 'data' => []];
-
-        foreach ($alert as $a) {
-            $item = [
-                'id' => $a['product']['id'],
-                'name' => $a['product']['name'],
-                'qty' => $a['product']['qty'],
-                'warehouse_id' => $a['warehouse_id'],
-            ];
-            if ($a['product']['alert_quantity'] > $a['qty']) {
-                array_push($resp['data'], $item);
+            
+            $resp = ['warehouse_id' => $warehouse_id, 'data' => []];
+    
+            foreach ($alert as $a) {
+                $item = [
+                    'id' => $a['product']['id'],
+                    'name' => $a['product']['name'],
+                    'qty' => $a['product']['qty'],
+                    'warehouse_id' => $a['warehouse_id'],
+                ];
+                if ($a['product']['alert_quantity'] > $a['qty']) {
+                    array_push($resp['data'], $item);
+                }
             }
         }
+
 
 
         return response()->json($resp);
