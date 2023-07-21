@@ -273,6 +273,8 @@ class UserController extends Controller
                 $sale_amount = Sale::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
                 $purchase_amount = Purchase::whereDate('created_at', '=', $now)->sum('grand_total');
             }
+
+            // return $purchase;
             $yearly_sale_amount[] = number_format((float)$sale_amount, 2, '.', '');
             $yearly_purchase_amount[] = number_format((float)$purchase_amount, 2, '.', '');
             $start = strtotime("+1 month", $start);
