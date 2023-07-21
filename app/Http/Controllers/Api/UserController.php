@@ -111,7 +111,7 @@ class UserController extends Controller
             $return = Returns::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->whereDate('created_at', '=', $now)->sum('grand_total');
             $purchase_return = ReturnPurchase::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->whereDate('created_at', '=', $now)->sum('grand_total');
             $revenue = $revenue - $return;
-            $purchase = Purchase::whereDate('created_at', '>=', $start_date)->where('user_id', auth()->id())->whereDate('created_at', '<=', $end_date)->sum('grand_total');
+            $purchase = Purchase::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->sum('grand_total');
             $profit = $revenue + $purchase_return - $product_cost;
             $expense = Expense::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->whereDate('created_at', '=', $now)->sum('amount');
             $recent_sale = Sale::with('customer')->orderBy('id', 'desc')->where('user_id', auth()->id())->take(5)->get();
@@ -128,7 +128,7 @@ class UserController extends Controller
             $return = Returns::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('grand_total');
             $purchase_return = ReturnPurchase::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('grand_total');
             $revenue = $revenue - $return;
-            $purchase = Purchase::whereDate('created_at', '=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
+            $purchase = Purchase::whereDate('created_at', '=', $start_date)->sum('grand_total');
             $profit = $revenue + $purchase_return - $product_cost;
             $expense = Expense::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('amount');
             $recent_sale = Sale::with('customer')->orderBy('id', 'desc')->take(5)->get();
@@ -243,7 +243,7 @@ class UserController extends Controller
                 $sent_amount = DB::table('payments')->whereNotNull('purchase_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('amount');
                 $return_amount = Returns::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('grand_total');
                 $purchase_return_amount = ReturnPurchase::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('grand_total');
-                $expense_amount = Expense::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->sum('amount');
+                $expense_amount = Expense::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->where('user_id', auth()->id())->sum('amount');
                 $payroll_amount = Payroll::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('amount');
             } else {
                 $recieved_amount = DB::table('payments')->whereNotNull('sale_id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('amount');
@@ -268,13 +268,11 @@ class UserController extends Controller
             $end_date = date("Y") . '-' . date('m', $start) . '-' . date('t', mktime(0, 0, 0, date("m", $start), 1, date("Y", $start)));
             if (auth()->user()->role_id > 2 && $general_setting->staff_access == 'own') {
                 $sale_amount = Sale::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('grand_total');
-                $purchase_amount = Purchase::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->sum('grand_total');
+                $purchase_amount = Purchase::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('grand_total');
             } else {
                 $sale_amount = Sale::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
-                $purchase_amount = Purchase::whereDate('created_at', '=', $now)->sum('grand_total');
+                $purchase_amount = Purchase::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
             }
-
-            // return $purchase;
             $yearly_sale_amount[] = number_format((float)$sale_amount, 2, '.', '');
             $yearly_purchase_amount[] = number_format((float)$purchase_amount, 2, '.', '');
             $start = strtotime("+1 month", $start);
