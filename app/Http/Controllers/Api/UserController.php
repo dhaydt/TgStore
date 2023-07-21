@@ -128,7 +128,7 @@ class UserController extends Controller
             $return = Returns::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('grand_total');
             $purchase_return = ReturnPurchase::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('grand_total');
             $revenue = $revenue - $return;
-            $purchase = Purchase::whereDate('created_at', '=', $start_date)->sum('grand_total');
+            $purchase = Purchase::whereDate('created_at', '=', $now)->sum('grand_total');
             $profit = $revenue + $purchase_return - $product_cost;
             $expense = Expense::whereDate('created_at', '=', $now)->whereDate('created_at', '=', $now)->sum('amount');
             $recent_sale = Sale::with('customer')->orderBy('id', 'desc')->take(5)->get();
