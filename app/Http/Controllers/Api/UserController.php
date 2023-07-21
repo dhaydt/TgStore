@@ -268,10 +268,10 @@ class UserController extends Controller
             $end_date = date("Y") . '-' . date('m', $start) . '-' . date('t', mktime(0, 0, 0, date("m", $start), 1, date("Y", $start)));
             if (auth()->user()->role_id > 2 && $general_setting->staff_access == 'own') {
                 $sale_amount = Sale::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('grand_total');
-                $purchase_amount = Purchase::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->where('user_id', auth()->id())->sum('grand_total');
+                $purchase_amount = Purchase::whereDate('created_at', '=', $now)->where('user_id', auth()->id())->sum('grand_total');
             } else {
                 $sale_amount = Sale::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
-                $purchase_amount = Purchase::whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->sum('grand_total');
+                $purchase_amount = Purchase::whereDate('created_at', '=', $now)->sum('grand_total');
             }
             $yearly_sale_amount[] = number_format((float)$sale_amount, 2, '.', '');
             $yearly_purchase_amount[] = number_format((float)$purchase_amount, 2, '.', '');
