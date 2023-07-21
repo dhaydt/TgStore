@@ -417,7 +417,9 @@ class ReturnController extends Controller
     public function store(Request $request)
     {
         $data = $request->except('document');
-        //return dd($data);
+        if($request->total_qty == null){
+            return redirect()->back()->with('message', 'Pilih produk yang akan di return!');
+        }
         $data['reference_no'] = 'rr-' . date("Ymd") . '-'. date("his");
         $data['user_id'] = Auth::id();
         $lims_sale_data = Sale::select('warehouse_id', 'customer_id', 'biller_id')->find($data['sale_id']);
