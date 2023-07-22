@@ -46,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/add_cart', [TransactionController::class, 'add_cart']);
 
     Route::post('/sale_report', [ReportController::class, 'saleReport']);
+    Route::post('/sale_return_report', [ReportController::class, 'saleReturn']);
     Route::post('/purchase_report', [ReportController::class, 'purchaseReport']);
     Route::post('/stock_report', [ReportController::class, 'stockReport']);
     Route::post('/expense_report', [ReportController::class, 'expenseReport']);

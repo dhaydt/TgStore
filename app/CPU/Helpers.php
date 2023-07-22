@@ -3,7 +3,10 @@
 namespace App\CPU;
 
 use App\Product;
+use App\ProductBatch;
 use App\ProductPurchase;
+use App\ProductReturn;
+use App\ProductVariant;
 use App\Unit;
 
 class Helpers
@@ -136,5 +139,48 @@ class Helpers
             }
         }
         return $product_cost;
+    }
+    public static function productReturnData($id)
+    {
+        $lims_product_return_data = ProductReturn::where('return_id', $id)->get();
+        $data = [];
+        foreach ($lims_product_return_data as $key => $product_return_data) {
+            $product = Product::find($product_return_data->product_id);
+            if($product_return_data->sale_unit_id != 0){
+                $unit_data = Unit::find($product_return_data->sale_unit_id);
+                $unit = $unit_data->unit_code;
+            }
+            else
+                $unit = '';
+            if($product_return_data->variant_id) {
+                $lims_product_variant_data = ProductVariant::select('item_code')->FindExactProduct($product_return_data->product_id, $product_return_data->variant_id)->first();
+                $product->code = $lims_product_variant_data->item_code;
+            }
+            if($product_return_data->product_batch_id) {
+                $product_batch_data = ProductBatch::select('batch_no')->find($product_return_data->product_batch_id);
+                $product_return[7][$key] = $product_batch_data->batch_no;
+            }
+            else
+                // $product_return[7][$key] = 'N/A';
+            $product_return['product_name'][$key] = $product->name . ' [' . $product->code . ']';
+            if($product_return_data->imei_number){
+                $product_return[0][$key] .= '<br>IMEI or Serial Number: ' . $product_return_data->imei_number;
+            }
+            $product_return['qty'][$key] = $product_return_data->qty;
+            // $product_return[2][$key] = $unit;
+            // $product_return[3][$key] = $product_return_data->tax;
+            // $product_return[4][$key] = $product_return_data->tax_rate;
+            // $product_return[5][$key] = $product_return_data->discount;
+            $product_return['total_price'][$key] = $product_return_data->total;
+
+            $item = [
+                'product_name' => $product->name,
+                'qty' => $product_return_data->qty,
+                'price' => $product_return_data->total,
+            ];
+
+            array_push($data, $item);
+        }
+        return $data;
     }
 }

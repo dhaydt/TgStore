@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\CPU\Helpers;
 use App\Expense;
 use App\ExpenseCategory;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\ReturnController;
 use App\Product;
 use App\Product_Sale;
 use App\Product_Warehouse;
@@ -12,13 +14,186 @@ use App\ProductPurchase;
 use App\ProductReturn;
 use App\ProductVariant;
 use App\PurchaseProductReturn;
+use App\Returns;
+use App\Sale;
 use App\Variant;
 use App\Warehouse;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
+    public function saleReturn(Request $request){
+        $warehouse_id = $request->warehouse_id;
+        $start_date = $request->start_date ?? now()->format('Y-m-d');
+        $end_date = $request->end_date ?? now()->format('Y-m-d');
+
+        if(auth()->user()->role_id > 2 && config('staff_access') == 'own'){
+            $totalData = Returns::where('user_id', auth()->id())
+                        ->whereDate('created_at', '>=' ,$start_date)
+                        ->whereDate('created_at', '<=' ,$end_date)
+                        ->count();
+        }elseif($warehouse_id != 0){
+            $totalData = Returns::where('warehouse_id', $warehouse_id)
+                        ->whereDate('created_at', '>=' ,$start_date)
+                        ->whereDate('created_at', '<=' ,$end_date)
+                        ->count();
+        }else{
+            $totalData = Returns::whereDate('created_at', '>=' ,$start_date)
+                        ->whereDate('created_at', '<=' ,$end_date)
+                        ->count();
+        }
+        $totalFiltered = $totalData;
+        if($request->input('length') != -1)
+            $limit = $request->input('length');
+        else
+            $limit = $totalData;
+        $start = $request->input('start');
+
+        if(empty($request->input('search.value'))) {
+            $q = Returns::with('biller', 'customer', 'warehouse', 'user')
+                ->whereDate('created_at', '>=' ,$start_date)
+                ->whereDate('created_at', '<=' ,$end_date)
+                ->orderBy('created_at', 'desc');
+            if(auth()->user()->role_id > 2 && config('staff_access') == 'own')
+                $q = $q->where('user_id', auth()->id());
+            elseif($warehouse_id != 0)
+                $q = $q->where('warehouse_id', $warehouse_id);
+            $returnss = $q->get();
+        }
+        else
+        {
+            $search = $request->input('search.value');
+            $q = Returns::join('customers', 'returns.customer_id', '=', 'customers.id')
+                ->join('billers', 'returns.biller_id', '=', 'billers.id')
+                ->whereDate('returns.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))))
+                ->offset($start)
+                ->limit($limit)
+                ->orderBy('created_at', 'desc');
+            if(auth()->user()->role_id > 2 && config('staff_access') == 'own') {
+                $returnss =  $q->select('returns.*')
+                            ->with('biller', 'customer', 'warehouse', 'user')
+                            ->where('returns.user_id', auth()->id())
+                            ->orwhere([
+                                ['returns.reference_no', 'LIKE', "%{$search}%"],
+                                ['returns.user_id', auth()->id()]
+                            ])
+                            ->orwhere([
+                                ['customers.name', 'LIKE', "%{$search}%"],
+                                ['returns.user_id', auth()->id()]
+                            ])
+                            ->orwhere([
+                                ['customers.phone_number', 'LIKE', "%{$search}%"],
+                                ['returns.user_id', auth()->id()]
+                            ])
+                            ->orwhere([
+                                ['billers.name', 'LIKE', "%{$search}%"],
+                                ['returns.user_id', auth()->id()]
+                            ])->get();
+
+                $totalFiltered = $q->where('returns.user_id', auth()->id())
+                                ->orwhere([
+                                    ['returns.reference_no', 'LIKE', "%{$search}%"],
+                                    ['returns.user_id', auth()->id()]
+                                ])
+                                ->orwhere([
+                                    ['customers.name', 'LIKE', "%{$search}%"],
+                                    ['returns.user_id', auth()->id()]
+                                ])
+                                ->orwhere([
+                                    ['customers.phone_number', 'LIKE', "%{$search}%"],
+                                    ['returns.user_id', auth()->id()]
+                                ])
+                                ->orwhere([
+                                    ['billers.name', 'LIKE', "%{$search}%"],
+                                    ['returns.user_id', auth()->id()]
+                                ])
+                                ->count();
+            }
+            else {
+                $returnss =  $q->select('returns.*')
+                            ->with('biller', 'customer', 'warehouse', 'user')
+                            ->orwhere('returns.reference_no', 'LIKE', "%{$search}%")
+                            ->orwhere('customers.name', 'LIKE', "%{$search}%")
+                            ->orwhere('customers.phone_number', 'LIKE', "%{$search}%")
+                            ->orwhere('billers.name', 'LIKE', "%{$search}%")
+                            ->get();
+
+                $totalFiltered = $q->orwhere('returns.reference_no', 'LIKE', "%{$search}%")
+                                ->orwhere('customers.name', 'LIKE', "%{$search}%")
+                                ->orwhere('customers.phone_number', 'LIKE', "%{$search}%")
+                                ->orwhere('billers.name', 'LIKE', "%{$search}%")
+                                ->count();
+            }
+        }
+        $data = array();
+        if(!empty($returnss))
+        {
+            foreach ($returnss as $key=>$returns)
+            {
+                // return $returns;
+                $nestedData['id'] = $returns->id;
+                $nestedData['key'] = $key;
+                $nestedData['date'] = date(config('date_format'), strtotime($returns->created_at->toDateString()));
+                $nestedData['reference_no'] = $returns->reference_no;
+                if($returns->sale_id) {
+                    $sale_data = Sale::select('reference_no')->find($returns->sale_id);
+                    $nestedData['sale_reference'] = $sale_data->reference_no;
+                }
+                else
+                    $nestedData['sale_reference'] = 'N/A';
+                $nestedData['warehouse'] = $returns->warehouse->name;
+                $nestedData['biller'] = $returns->biller->name;
+                $nestedData['customer'] = $returns->customer->name;
+                $nestedData['grand_total'] = number_format($returns->grand_total);
+                $nestedData['return_date'] = Carbon::parse($returns->created_at)->format('d-m-Y H:i');
+
+                // data for sale details by one click
+
+                // $nestedData['return'] = array( '[ "'.date(config('date_format'), strtotime($returns->created_at->toDateString())).'"', ' "'.$returns->reference_no.'"', ' "'.$returns->warehouse->name.'"', ' "'.$returns->biller->name.'"', ' "'.$returns->biller->company_name.'"', ' "'.$returns->biller->email.'"', ' "'.$returns->biller->phone_number.'"', ' "'.$returns->biller->address.'"', ' "'.$returns->biller->city.'"', ' "'.$returns->customer->name.'"', ' "'.$returns->customer->phone_number.'"', ' "'.$returns->customer->address.'"', ' "'.$returns->customer->city.'"', ' "'.$returns->id.'"', ' "'.$returns->total_tax.'"', ' "'.$returns->total_discount.'"', ' "'.$returns->total_price.'"', ' "'.$returns->order_tax.'"', ' "'.$returns->order_tax_rate.'"', ' "'.$returns->grand_total.'"', ' "'.preg_replace('/[\n\r]/', "<br>", $returns->return_note).'"', ' "'.preg_replace('/[\n\r]/', "<br>", $returns->staff_note).'"', ' "'.$returns->user->name.'"', ' "'.$returns->user->email.'"', ' "'.$nestedData['sale_reference'].'"]'
+                // );
+                $product = ProductReturn::where('return_id', $returns->id)->first();
+                $nestedData['product'] = [];
+                if($product){
+                    $nestedData['product'] = Helpers::productReturnData($returns->id);
+                }
+                // $nestedData['return'] = [
+                    
+                // ];
+                $data[] = $nestedData;
+            }
+        }
+
+        $newData = [];
+
+        foreach($data as $d){
+            // return $d;
+            foreach($d['product'] as $p){
+                $item = [
+                    'product_name' => $p['product_name'],
+                    'price' => $p['price'],
+                    'qty' => $p['qty'],
+                    'reference_no' => $d['reference_no'],
+                    'warehouse' => $d['warehouse'],
+                    'return_date' => $d['return_date'],
+                    'biller' => $d['biller'],
+                    'customer' => $d['customer'],
+                    // 'grand_total' => $d['grand_total'],
+                ];
+
+                array_push($newData, $item);
+            }
+        }
+        $json_data = array(
+            "draw"            => intval($request->input('draw')),  
+            "recordsTotal"    => intval($totalData),  
+            "recordsFiltered" => intval($totalFiltered), 
+            "data_return"     => $newData
+        );
+            
+        return response()->json($json_data);
+    }
     public function saleReport(Request $request)
     {
         $user = auth()->user();
