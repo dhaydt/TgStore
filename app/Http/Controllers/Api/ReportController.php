@@ -209,6 +209,7 @@ class ReportController extends Controller
             'return_pembelian' => $purchase_return,
             'return_penjualan' => $return,
             'pengeluaran' => $expense,
+            'gaji' => $payroll,
         ];
 
         return response()->json($return);
