@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\CPU\Helpers;
+use App\CustomerGroup;
 use App\Expense;
 use App\ExpenseCategory;
 use App\Http\Controllers\Controller;
@@ -347,6 +348,39 @@ class ReportController extends Controller
         );
             
         return response()->json($json_data);
+    }
+
+    public function customerDueReport(Request $request){
+        $data = $request->all();
+        $start_date = $data['start_date'] ?? date('Y') - 1 . '-'.date('m').'-'.date('d');
+        $end_date = $data['end_date'] ?? date('Y') . '-'.date('m').'-'.date('d');
+
+        $q = Sale::with('customer')->where('payment_status', '!=', 4)
+            ->whereDate('created_at', '>=' , $start_date)
+            ->whereDate('created_at', '<=' , $end_date);
+        if($request->customer_id)
+            $q = $q->where('customer_id', $request->customer_id);
+        $lims_sale_data = $q->get();
+        $data = [
+            "recordsTotal" => count($lims_sale_data),
+            "data" => []
+        ];
+
+        foreach($lims_sale_data as $d){
+            $item = [
+                'due_date' => Carbon::parse($d['created_at'])->format('d-m-Y'),
+                'reference_no' => $d['reference_no'],
+                'customer' => $d['customer']['name'],
+                'customer_group' => CustomerGroup::find($d['customer']['customer_group_id'])['name'] ?? 'Invalid Group Customer',
+                'total' => $d['total_price'],
+                'paid' => $d['paid_amount'],
+                'due' => $d['total_price'] - $d['paid_amount'],
+                'payment_status' => $d['payment_status'] == 4 ? 'Lunas' : 'Hutang'
+            ];
+
+            array_push($data['data'], $item);
+        }
+        return $data;
     }
 
     public function saleReport(Request $request)

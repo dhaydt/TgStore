@@ -1894,7 +1894,7 @@ class ReportController extends Controller
 
     public function customerDueReportByDate(Request $request)
     {
-    	$data = $request->all();
+        $data = $request->all();
         $start_date = $data['start_date'];
         $end_date = $data['end_date'];
         $q = Sale::where('payment_status', '!=', 4)
