@@ -189,8 +189,8 @@ class TransactionController extends Controller
         // item: 2
         $data['order_tax'] = 0.0;
         $data['grand_total'] = $request->total_cost;
-        $data['paid_amount'] = $request->total_cost;
-        $data['payment_status'] = 2;
+        $data['paid_amount'] = 0;
+        $data['payment_status'] = 1;
         $data['order_tax_rate'] = 0;
         $data['order_discount'] = null;
         $data['shipping_cost'] = null;
