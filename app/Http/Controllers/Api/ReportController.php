@@ -20,6 +20,7 @@ use App\ReturnPurchase;
 use App\Returns;
 use App\Sale;
 use App\Supplier;
+use App\User;
 use App\Variant;
 use App\Warehouse;
 use Carbon\Carbon;
@@ -687,7 +688,7 @@ class ReportController extends Controller
         return response()->json($resp);
     }
 
-    public function purchaseReport(Request $request)
+    public function OldPurchaseReport(Request $request)
     {
         $user = auth()->user();
         $data = $request->all();
@@ -869,6 +870,184 @@ class ReportController extends Controller
 
         return $resp;
         return view('backend.report.purchase_report', compact('product_id', 'variant_id', 'product_name', 'product_qty', 'start_date', 'end_date', 'lims_warehouse_list', 'warehouse_id'));
+    }
+
+    public function purchaseReport(Request $request){        
+        $warehouse_id = $request->warehouse_id;
+        // $purchase_status = $request->input('purchase_status');
+        // $payment_status = $request->input('payment_status');
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+        if ($start_date == null) {
+            $start_date = date('Y-m') . '-01';
+        }
+        if ($end_date == null) {
+            $end_date = now()->format('Y-m-d');
+        }
+        $search = $request->supplier;
+
+        $q = Purchase::whereDate('created_at', '>=' ,$start_date)->whereDate('created_at', '<=' ,$end_date);
+        // return $q->get();
+        if(auth()->user()->role_id > 2 && config('staff_access') == 'own')
+            $q = $q->where('user_id', auth()->id());
+        if($warehouse_id)
+            $q = $q->where('warehouse_id', $warehouse_id);
+        // if($purchase_status)
+        //     $q = $q->where('status', $purchase_status);
+        // if($payment_status)
+        //     $q = $q->where('payment_status', $payment_status);
+
+        $totalData = $q->count();
+        $totalFiltered = $totalData;
+
+        if($request->input('length') != -1)
+            $limit = $request->input('length');
+        else
+            $limit = $totalData;
+        if(empty($search)) {
+            $q = Purchase::with('supplier', 'warehouse')
+                ->whereDate('created_at', '>=' ,$start_date)
+                ->whereDate('created_at', '<=' ,$end_date)
+                ->orderBy('created_at', 'desc');
+            if(auth()->user()->role_id > 2 && config('staff_access') == 'own')
+                $q = $q->where('user_id', auth()->id());
+            if($warehouse_id)
+                $q = $q->where('warehouse_id', $warehouse_id);
+            // if($purchase_status)
+            //     $q = $q->where('status', $purchase_status);
+            // if($payment_status)
+            //     $q = $q->where('payment_status', $payment_status);
+            $purchases = $q->get();
+        }
+        else
+        {
+            $search = $request->supplier;
+            $q = Purchase::leftJoin('suppliers', 'purchases.supplier_id', '=', 'suppliers.id')
+                ->whereDate('purchases.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))))
+                ->orderBy('created_at', 'desc');
+            if(auth()->user()->role_id > 2 && config('staff_access') == 'own') {
+                $purchases =  $q->with('supplier', 'warehouse')
+                                ->where('purchases.user_id', auth()->id())
+                                ->orwhere([
+                                    ['purchases.reference_no', 'LIKE', "%{$search}%"],
+                                    ['purchases.user_id', auth()->id()]
+                                ])
+                                ->orwhere([
+                                    ['suppliers.name', 'LIKE', "%{$search}%"],
+                                    ['purchases.user_id', auth()->id()]
+                                ])
+                                ->select('purchases.*')
+                                ->get();
+                $totalFiltered =  $q->where('purchases.user_id', auth()->id())
+                                    ->orwhere([
+                                        ['purchases.reference_no', 'LIKE', "%{$search}%"],
+                                        ['purchases.user_id', auth()->id()]
+                                    ])
+                                    ->orwhere([
+                                        ['suppliers.name', 'LIKE', "%{$search}%"],
+                                        ['purchases.user_id', auth()->id()]
+                                    ])
+                                    ->count();
+            }
+            else {
+                $purchases =  $q->with('supplier', 'warehouse')
+                                ->orwhere('purchases.reference_no', 'LIKE', "%{$search}%")
+                                ->orwhere('suppliers.name', 'LIKE', "%{$search}%")
+                                ->select('purchases.*')
+                                ->get();
+                $totalFiltered = $q->orwhere('purchases.reference_no', 'LIKE', "%{$search}%")
+                                    ->orwhere('suppliers.name', 'LIKE', "%{$search}%")
+                                    ->count();
+            }
+        }
+        $data = array();
+        if(!empty($purchases))
+        {
+            foreach ($purchases as $key=>$purchase)
+            {
+                $nestedData['id'] = $purchase->id;
+                $nestedData['key'] = $key;
+                $nestedData['date'] = date(config('date_format'), strtotime($purchase->created_at->toDateString()));
+                $nestedData['reference_no'] = $purchase->reference_no;
+
+                if($purchase->supplier_id) {
+                    $supplier = $purchase->supplier;
+                }
+                else {
+                    $supplier = new Supplier();
+                }
+                $nestedData['supplier'] = $supplier->name;
+                // if($purchase->status == 1){
+                //     $nestedData['purchase_status'] = '<div class="badge badge-success">'.trans('file.Recieved').'</div>';
+                //     $purchase_status = trans('file.Recieved');
+                // }
+                // elseif($purchase->status == 2){
+                //     $nestedData['purchase_status'] = '<div class="badge badge-success">'.trans('file.Partial').'</div>';
+                //     $purchase_status = trans('file.Partial');
+                // }
+                // elseif($purchase->status == 3){
+                //     $nestedData['purchase_status'] = '<div class="badge badge-danger">'.trans('file.Pending').'</div>';
+                //     $purchase_status = trans('file.Pending');
+                // }
+                // else{
+                //     $nestedData['purchase_status'] = '<div class="badge badge-danger">'.trans('file.Ordered').'</div>';
+                //     $purchase_status = trans('file.Ordered');
+                // }
+
+                if($purchase->payment_status == 1)
+                    $nestedData['payment_status'] = 'Belum Lunas';
+                else
+                    $nestedData['payment_status'] = 'Lunas';
+                
+                $nestedData['grand_total'] = number_format($purchase->grand_total, 2);
+                $returned_amount = DB::table('return_purchases')->where('purchase_id', $purchase->id)->sum('grand_total');
+                $nestedData['returned_amount'] = number_format($returned_amount, 2);
+                $nestedData['paid_amount'] = number_format($purchase->paid_amount, 2);
+                $nestedData['due'] = number_format($purchase->grand_total- $returned_amount  - $purchase->paid_amount, 2);
+                
+
+                // data for purchase details by one click
+                $user = User::find($purchase->user_id);
+                $warehouse = Warehouse::find($purchase->warehouse_id);
+                $nestedData['warehouse'] = $warehouse['name'] ?? 'Invalid toko';
+                $nestedData['date'] = $purchase->created_at;
+                // return $purchase;
+                // $nestedData['purchase'] = array( '[ "'.date(config('date_format'), strtotime($purchase->created_at->toDateString())).'"', ' "'.$purchase->reference_no.'"', ' "'.$purchase_status.'"',  ' "'.$purchase->id.'"', ' "'.$purchase->warehouse->name.'"', ' "'.$purchase->warehouse->phone.'"', ' "'.$purchase->warehouse->address.'"', ' "'.$supplier->name.'"', ' "'.$supplier->company_name.'"', ' "'.$supplier->email.'"', ' "'.$supplier->phone_number.'"', ' "'.$supplier->address.'"', ' "'.$supplier->city.'"', ' "'.$purchase->total_tax.'"', ' "'.$purchase->total_discount.'"', ' "'.$purchase->total_cost.'"', ' "'.$purchase->order_tax.'"', ' "'.$purchase->order_tax_rate.'"', ' "'.$purchase->order_discount.'"', ' "'.$purchase->shipping_cost.'"', ' "'.$purchase->grand_total.'"', ' "'.$purchase->paid_amount.'"', ' "'.preg_replace('/\s+/S', " ", $purchase->note).'"', ' "'.$user->name.'"', ' "'.$user->email.'"]'
+                // );
+
+                $product = Helpers::productPurchaseData($purchase->id);
+                // return $product;
+                $nestedData['product'] = $product;
+                $data[] = $nestedData;
+            }
+        }
+        $newData = [];
+
+        foreach($data as $d){
+            foreach($d['product'] as $p){
+                $item = [
+                    "purchased_date" => Carbon::parse($d['date'])->format('d-m-Y'),
+                    "product_name" => $p['product_name'],
+                    "user" => $user['name'],
+                    "purchased_qty" => $p['purchased_qty'],
+                    "purchased_amount" => $p['purchased_amount'],
+                    "supplier" => $d['supplier'],
+                    "warehouse" => $d['warehouse'],
+                    "payment_status" => $d['payment_status'],
+                ];
+            }
+            array_push($newData, $item);
+        }
+        // return $newData;
+        $json_data = array(
+            "start_date"    => $start_date,  
+            "end_date"    => $end_date,  
+            "supplier"    => $search,  
+            // "warehouse_id"    => $supplier,  
+            "recordsTotal"    => count($newData),  
+            "data_purchased"  => $newData
+        );
+        return response()->json($json_data);
     }
 
     public function stockReport(Request $request)

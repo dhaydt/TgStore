@@ -228,4 +228,43 @@ class Helpers
         }
         return $data;
     }
+
+    public static function productPurchaseData($id){
+        $lims_product_purchase_data = ProductPurchase::where('purchase_id', $id)->get();
+        $data = [];
+        foreach ($lims_product_purchase_data as $key => $product_purchase_data) {
+            $product = Product::find($product_purchase_data->product_id);
+            $unit = Unit::find($product_purchase_data->purchase_unit_id);
+            if($product_purchase_data->variant_id) {
+                $lims_product_variant_data = ProductVariant::FindExactProduct($product->id, $product_purchase_data->variant_id)->select('item_code')->first();
+                $product->code = $lims_product_variant_data->item_code;
+            }
+            if($product_purchase_data->product_batch_id) {
+                $product_batch_data = ProductBatch::select('batch_no')->find($product_purchase_data->product_batch_id);
+                $product_purchase[7][$key] = $product_batch_data->batch_no;
+            }
+            else
+                $product_purchase[7][$key] = 'N/A';
+            $product_purchase[0][$key] = $product->name . ' [' . $product->code.']';
+            if($product_purchase_data->imei_number) {
+                $product_purchase[0][$key] .= '<br>IMEI or Serial Number: '. $product_purchase_data->imei_number;
+            }
+            $product_purchase[1][$key] = $product_purchase_data->qty;
+            $product_purchase[2][$key] = $unit->unit_code;
+            $product_purchase[3][$key] = $product_purchase_data->tax;
+            $product_purchase[4][$key] = $product_purchase_data->tax_rate;
+            $product_purchase[5][$key] = $product_purchase_data->discount;
+            $product_purchase[6][$key] = $product_purchase_data->total;
+
+            $item = [
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'purchased_qty' => $product_purchase_data->qty,
+                'purchased_amount' => $product_purchase_data->total,
+            ];
+
+            array_push($data, $item);
+        }
+        return $data;
+    }
 }
