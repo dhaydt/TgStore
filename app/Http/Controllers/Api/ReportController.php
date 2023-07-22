@@ -363,6 +363,8 @@ class ReportController extends Controller
         $lims_sale_data = $q->get();
         $data = [
             "recordsTotal" => count($lims_sale_data),
+            "start_date" => $start_date,
+            "end_date" => $end_date,
             "data" => []
         ];
 
