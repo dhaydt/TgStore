@@ -53,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/stock_report', [ReportController::class, 'stockReport']);
     Route::post('/expense_report', [ReportController::class, 'expenseReport']);
     Route::post('/stock_alert', [ReportController::class, 'stockAlert']);
+    Route::post('/profit_loss_report', [ReportController::class, 'profitLossReport']);
     
     Route::get('/expense_category', [ReportController::class, 'expense_category']);
     
