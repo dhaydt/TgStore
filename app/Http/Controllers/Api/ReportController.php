@@ -13,9 +13,12 @@ use App\Product_Warehouse;
 use App\ProductPurchase;
 use App\ProductReturn;
 use App\ProductVariant;
+use App\Purchase;
 use App\PurchaseProductReturn;
+use App\ReturnPurchase;
 use App\Returns;
 use App\Sale;
+use App\Supplier;
 use App\Variant;
 use App\Warehouse;
 use Carbon\Carbon;
@@ -172,8 +175,8 @@ class ReportController extends Controller
             foreach($d['product'] as $p){
                 $item = [
                     'product_name' => $p['product_name'],
-                    'price' => $p['price'],
                     'qty' => $p['qty'],
+                    'total_price' => $p['price'],
                     'reference_no' => $d['reference_no'],
                     'warehouse' => $d['warehouse'],
                     'return_date' => $d['return_date'],
@@ -194,6 +197,158 @@ class ReportController extends Controller
             
         return response()->json($json_data);
     }
+
+    public function purchaseReturn(Request $request){
+        $warehouse_id = $request->warehouse_id;
+        $start_date = $request->start_date ?? now()->format('Y-m-d');
+        $end_date = $request->end_date ?? now()->format('Y-m-d');
+        $search = $request->supplier;
+        
+        $warehouse_id = $request->input('warehouse_id');
+
+        if(auth()->user()->role_id > 2 && config('staff_access') == 'own')
+            $totalData = ReturnPurchase::where('user_id', auth()->id())
+                        ->whereDate('created_at', '>=' ,$start_date)
+                        ->whereDate('created_at', '<=' ,$end_date)
+                        ->count();
+        elseif($warehouse_id != 0)
+            $totalData = ReturnPurchase::where('warehouse_id', $warehouse_id)
+                        ->whereDate('created_at', '>=' ,$start_date)
+                        ->whereDate('created_at', '<=' ,$end_date)
+                        ->count();
+        else
+            $totalData = ReturnPurchase::whereDate('created_at', '>=' ,$start_date)
+                        ->whereDate('created_at', '<=' ,$end_date)
+                        ->count();
+
+        $totalFiltered = $totalData;
+        if($request->input('length') != -1)
+            $limit = $request->input('length');
+        else
+            $limit = $totalData;
+        $dir = $request->input('order.0.dir');
+        if(empty($request->supplier)) {
+            $q = ReturnPurchase::with('supplier', 'warehouse', 'user')
+                ->whereDate('created_at', '>=' ,$start_date)
+                ->whereDate('created_at', '<=' ,$end_date)
+                ->orderBy('created_at', 'desc');
+            if(auth()->user()->role_id > 2 && config('staff_access') == 'own')
+                $q = $q->where('user_id', auth()->id());
+            elseif($warehouse_id != 0)
+                $q = $q->where('warehouse_id', $warehouse_id);
+            $returnss = $q->get();
+        }
+        else
+        {
+            $search = $request->supplier;
+            $q = ReturnPurchase::leftJoin('suppliers', 'return_purchases.supplier_id', '=', 'suppliers.id')
+                ->whereDate('return_purchases.created_at', '=' , date('Y-m-d', strtotime(str_replace('/', '-', $search))))
+                ->orderBy('created_at', 'desc');
+            if(auth()->user()->role_id > 2 && config('staff_access') == 'own') {
+                $returnss =  $q->select('return_purchases.*')
+                            ->with('supplier', 'warehouse', 'user')
+                            ->where('return_purchases.user_id', auth()->id())
+                            ->orwhere([
+                                ['return_purchases.reference_no', 'LIKE', "%{$search}%"],
+                                ['return_purchases.user_id', auth()->id()]
+                            ])
+                            ->orwhere([
+                                ['suppliers.name', 'LIKE', "%{$search}%"],
+                                ['return_purchases.user_id', auth()->id()]
+                            ])
+                            ->get();
+
+                $totalFiltered = $q->where('return_purchases.user_id', auth()->id())
+                                ->orwhere([
+                                    ['return_purchases.reference_no', 'LIKE', "%{$search}%"],
+                                    ['return_purchases.user_id', auth()->id()]
+                                ])
+                                ->orwhere([
+                                    ['suppliers.name', 'LIKE', "%{$search}%"],
+                                    ['return_purchases.user_id', auth()->id()]
+                                ])
+                                ->count();
+            }
+            else {
+                $returnss =  $q->select('return_purchases.*')
+                            ->with('supplier', 'warehouse', 'user')
+                            ->orwhere('return_purchases.reference_no', 'LIKE', "%{$search}%")
+                            ->orwhere('suppliers.name', 'LIKE', "%{$search}%")
+                            ->get();
+
+                $totalFiltered = $q->orwhere('return_purchases.reference_no', 'LIKE', "%{$search}%")
+                                ->orwhere('suppliers.name', 'LIKE', "%{$search}%")
+                                ->count();
+            }
+        }
+        $data = array();
+        if(!empty($returnss))
+        {
+            foreach ($returnss as $key=>$returns)
+            {
+                $nestedData['id'] = $returns->id;
+                $nestedData['key'] = $key;
+                $nestedData['date'] = date(config('date_format'), strtotime($returns->created_at->toDateString()));
+                $nestedData['reference_no'] = $returns->reference_no;
+                $nestedData['warehouse'] = $returns->warehouse->name;
+                if($returns->purchase_id) {
+                    $purchase_data = Purchase::select('reference_no')->find($returns->purchase_id);
+                    $nestedData['purchase_reference'] = $purchase_data->reference_no;
+                }
+                else
+                    $nestedData['purchase_reference'] = 'N/A';
+                if($returns->supplier){
+                    $supplier = $returns->supplier;
+                    $nestedData['supplier'] = $returns->supplier->name;
+                }
+                else {
+                    $supplier = new Supplier();
+                    $nestedData['supplier'] = 'N/A';
+                }
+                $nestedData['grand_total'] = number_format($returns->grand_total, 2);
+                $nestedData['return_date'] = Carbon::parse($returns->created_at)->format('d-m-Y H:i');
+                // data for purchase details by one click
+                $product = PurchaseProductReturn::where('return_id', $returns->id)->get();
+                $nestedData['return'] = array( '[ "'.date(config('date_format'), strtotime($returns->created_at->toDateString())).'"', ' "'.$returns->reference_no.'"', ' "'.$returns->warehouse->name.'"', ' "'.$returns->warehouse->phone.'"', ' "'.$returns->warehouse->address.'"', ' "'.$supplier->name.'"', ' "'.$supplier->company_name.'"', ' "'.$supplier->email.'"', ' "'.$supplier->phone_number.'"', ' "'.$supplier->address.'"', ' "'.$supplier->city.'"', ' "'.$returns->id.'"', ' "'.$returns->total_tax.'"', ' "'.$returns->total_discount.'"', ' "'.$returns->total_cost.'"', ' "'.$returns->order_tax.'"', ' "'.$returns->order_tax_rate.'"', ' "'.$returns->grand_total.'"', ' "'.preg_replace('/[\n\r]/', "<br>", $returns->return_note).'"', ' "'.preg_replace('/[\n\r]/', "<br>", $returns->staff_note).'"', ' "'.$returns->user->name.'"', ' "'.$returns->user->email.'"', ' "'.$nestedData['purchase_reference'].'"]'
+                );
+
+                $nestedData['product'] = [];
+                if($product){
+                    $nestedData['product'] = Helpers::purchaseProductReturnData($returns->id);
+                }
+                $data[] = $nestedData;
+            }
+        }
+        $newData = [];
+
+        foreach($data as $d){
+            // return $d;
+            foreach($d['product'] as $p){
+                $item = [
+                    'product_name' => $p['product_name'],
+                    'qty' => $p['qty'],
+                    'total_price' => $p['price'],
+                    'reference_no' => $d['reference_no'],
+                    'warehouse' => $d['warehouse'],
+                    'return_date' => $d['return_date'],
+                    'supplier' => $d['supplier'],
+                    // 'grand_total' => $d['grand_total'],
+                ];
+
+                array_push($newData, $item);
+            }
+        }
+
+        $json_data = array(
+            "draw"            => intval($request->input('draw')),  
+            "recordsTotal"    => intval($totalData),  
+            "recordsFiltered" => intval($totalFiltered), 
+            "data"            => $newData
+        );
+            
+        return response()->json($json_data);
+    }
+
     public function saleReport(Request $request)
     {
         $user = auth()->user();

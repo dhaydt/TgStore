@@ -371,6 +371,9 @@ class ReturnPurchaseController extends Controller
     {
         $data = $request->except('document');
         //return dd($data);
+        if($request->total_qty == null){
+            return redirect()->back()->with('message', 'Pilih produk yang akan di return!');
+        }
         $data['reference_no'] = 'prr-' . date("Ymd") . '-'. date("his");
         $data['user_id'] = Auth::id();
         $lims_purchase_data = Purchase::select('warehouse_id', 'supplier_id')->find($data['purchase_id']);
