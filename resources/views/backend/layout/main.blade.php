@@ -355,7 +355,7 @@
                     ])->first();
             ?>
             @if($index_permission_active)
-            <li><a href="#transfer" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-export"></i><span>{{trans('file.Transfer')}}</span></a>
+            <li><a href="#transfer" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-export"></i><span>Transfer Stock</span></a>
             <ul id="transfer" class="collapse list-unstyled ">
                 <li id="transfer-list-menu"><a href="{{route('transfers.index')}}">{{trans('file.Transfer List')}}</a></li>
                 <?php
@@ -390,13 +390,13 @@
                     ])->first();
             ?>
             @if($sale_return_index_permission_active || $purchase_return_index_permission_active)
-            <li><a href="#return" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-return"></i><span>{{trans('file.return')}}</span></a>
+            <li><a href="#return" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-return"></i><span>Retur</span></a>
             <ul id="return" class="collapse list-unstyled ">
                 @if($sale_return_index_permission_active)
-                <li id="sale-return-menu"><a href="{{route('return-sale.index')}}">{{trans('file.Sale')}}</a></li>
+                <li id="sale-return-menu"><a href="{{route('return-sale.index')}}">Retur Penjualan</a></li>
                 @endif
                 @if($purchase_return_index_permission_active)
-                <li id="purchase-return-menu"><a href="{{route('return-purchase.index')}}">{{trans('file.Purchase')}}</a></li>
+                <li id="purchase-return-menu"><a href="{{route('return-purchase.index')}}">Retur Pembelian</a></li>
                 @endif
             </ul>
             </li>
@@ -432,7 +432,7 @@
 
             ?>
             @if($index_permission_active || $balance_sheet_permission_active || $account_statement_permission_active || $money_transfer_permission_active)
-            <li class=""><a href="#account" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-briefcase"></i><span>{{trans('file.Accounting')}}</span></a>
+            <li class=""><a href="#account" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-briefcase"></i><span>Akuntansi</span></a>
             <ul id="account" class="collapse list-unstyled ">
                 @if($index_permission_active)
                 <li id="account-list-menu"><a href="{{route('accounts.index')}}">{{trans('file.Account List')}}</a></li>
@@ -442,10 +442,10 @@
                 <li id="money-transfer-menu"><a href="{{route('money-transfers.index')}}">{{trans('file.Money Transfer')}}</a></li>
                 @endif
                 @if($balance_sheet_permission_active)
-                <li id="balance-sheet-menu"><a href="{{route('accounts.balancesheet')}}">{{trans('file.Balance Sheet')}}</a></li>
+                <li id="balance-sheet-menu"><a href="{{route('accounts.balancesheet')}}">Neraca Keuangan</a></li>
                 @endif
                 @if($account_statement_permission_active)
-                <li id="account-statement-menu"><a id="account-statement" href="">{{trans('file.Account Statement')}}</a></li>
+                <li id="account-statement-menu"><a id="account-statement" href="">Rekening</a></li>
                 @endif
             </ul>
             </li>

@@ -96,7 +96,7 @@
             <div class="col-md-7 mt-4">
               <div class="card line-chart-example">
                 <div class="card-header d-flex align-items-center">
-                  <h4>{{trans('file.Cash Flow')}}</h4>
+                  <h4>Cash Flow</h4>
                 </div>
                 <div class="card-body">
                   <canvas id="cashFlow" data-color = "{{$color}}" data-color_rgba = "{{$color_rgba}}" data-recieved = "{{json_encode($payment_recieved)}}" data-sent = "{{json_encode($payment_sent)}}" data-month = "{{json_encode($month)}}" data-label1="{{trans('file.Payment Recieved')}}" data-label2="{{trans('file.Payment Sent')}}"></canvas>
