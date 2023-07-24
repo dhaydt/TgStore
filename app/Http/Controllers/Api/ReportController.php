@@ -204,7 +204,7 @@ class ReportController extends Controller
             'warehouse_id' => $warehouse_id,
             'start_date' => $start_date,
             'end_date' => $end_date,
-            'pembelian' => $purchase,
+            'pembelian' => ["grand_total" => round($product_cost, 2), "tax" => $product_tax],
             'penjualan' => $sale,
             'return_pembelian' => $purchase_return,
             'return_penjualan' => $return,
