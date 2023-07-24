@@ -557,6 +557,7 @@ class ReportController extends Controller
         ];
 
         foreach($lims_sale_data as $d){
+            // return $d;
             $item = [
                 'due_date' => Carbon::parse($d['created_at'])->format('d-m-Y'),
                 'reference_no' => $d['reference_no'],
@@ -564,6 +565,7 @@ class ReportController extends Controller
                 'customer_group' => CustomerGroup::find($d['customer']['customer_group_id'])['name'] ?? 'Invalid Group Customer',
                 'total' => $d['total_price'],
                 'paid' => $d['paid_amount'],
+                'warehouse_id' => $d['warehouse_id'],
                 'due' => $d['total_price'] - $d['paid_amount'],
                 'payment_status' => $d['payment_status'] == 4 ? 'Lunas' : 'Hutang'
             ];
