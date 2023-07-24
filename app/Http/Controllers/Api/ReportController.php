@@ -1211,11 +1211,11 @@ class ReportController extends Controller
             }
         }
         $newData = [];
-
         foreach($data as $d){
             foreach($d['product'] as $p){
                 $item = [
                     "purchased_date" => Carbon::parse($d['date'])->format('d-m-Y'),
+                    "reference_no" => $d['reference_no'],
                     "product_name" => $p['product_name'],
                     "user" => $user['name'],
                     "purchased_qty" => $p['purchased_qty'],
