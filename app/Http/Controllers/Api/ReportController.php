@@ -1224,8 +1224,8 @@ class ReportController extends Controller
                     "warehouse" => $d['warehouse'],
                     "payment_status" => $d['payment_status'],
                 ];
+                array_push($newData, $item);
             }
-            array_push($newData, $item);
         }
         // return $newData;
         $json_data = array(
