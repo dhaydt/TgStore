@@ -26,6 +26,19 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    public function updateFcm(Request $request){
+        $request->validate([
+            'fcm' => 'required'
+        ]);
+
+        $id = auth()->id();
+        $user = User::find($id);
+        $user->cm_firebase_token = $request->fcm;
+        $user->save();
+        
+        return response()->json(['status' => 'success', 'message' => 'Firebase token updated successfully!']);
+    }
+
     public function profile(Request $request)
     {
         $user = User::find(auth()->id());

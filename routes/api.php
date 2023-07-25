@@ -28,6 +28,7 @@ Route::post('login', [LoginController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [UserController::class, 'profile']);
+    Route::post('/update_fcm', [UserController::class, 'updateFcm']);
     Route::get('/home', [UserController::class, 'home']);
     Route::post('/change_password', [UserController::class, 'change_password']);
     
