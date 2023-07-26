@@ -1143,6 +1143,14 @@ class TransactionController extends Controller
                 $lims_customer_data->save();
             }
         }
+        $id_warehouse = auth()->user()->warehouse_id;
+
+        $alerts = Product::select('name','code', 'image', 'qty', 'alert_quantity')->where('is_active', true)->whereColumn('alert_quantity', '>', 'qty')->get();
+
+        if(count($alerts) > 0){
+            Helpers::aletStock($id_warehouse);
+        }
+
         if ($lims_sale_data->sale_status == '1')
             return response()->json(['message' => $message]);
         // return redirect('sales/gen_invoice/' . $lims_sale_data->id)->with('message', $message);

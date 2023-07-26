@@ -30,6 +30,7 @@ use App\User;
 use App\Variant;
 use App\ProductVariant;
 use App\CashRegister;
+use App\CPU\Helpers;
 use App\Returns;
 use App\Expense;
 use App\ProductPurchase;
@@ -754,6 +755,15 @@ class SaleController extends Controller
                 $lims_customer_data->save();
             }
         }
+
+        $id_warehouse = Auth::user()->warehouse_id;
+
+        $alerts = Product::select('name','code', 'image', 'qty', 'alert_quantity')->where('is_active', true)->whereColumn('alert_quantity', '>', 'qty')->get();
+
+        if(count($alerts) > 0){
+            Helpers::aletStock($id_warehouse);
+        }
+
         if($lims_sale_data->sale_status == '1')
             return redirect('sales/gen_invoice/' . $lims_sale_data->id)->with('message', $message);
         elseif($data['pos'])

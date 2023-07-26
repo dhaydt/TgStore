@@ -9,9 +9,111 @@ use App\ProductReturn;
 use App\ProductVariant;
 use App\PurchaseProductReturn;
 use App\Unit;
+use App\User;
 
 class Helpers
 {
+    public static function aletStock($id_warehouse){
+        $data = [
+            'title' => "Peringatan stock",
+            'description' => 'Stock Produk mencapai batas minimal',
+            'order_id' => 000,
+            'image' => 'zzz',
+        ];
+
+        $fcm = User::where(['warehouse_id' => $id_warehouse, 'role_id' => 1])->get();
+        
+        foreach($fcm as $f){
+            $fcm_token = $f['cm_firebase_token'];
+
+            Helpers::push_notif($fcm_token, $data);
+        }
+    }
+    
+    public function fcm_config_web(){
+        // <script type="module">
+        // // Import the functions you need from the SDKs you need
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+        // import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-analytics.js";
+        // // TODO: Add SDKs for Firebase products that you want to use
+        // // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // // Your web app's Firebase configuration
+        // // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        // const firebaseConfig = {
+        //     apiKey: "AIzaSyDJh1NtS-WlEdrbcfYnh_aIU4eyNypdL1Q",
+        //     authDomain: "tg-group-43e83.firebaseapp.com",
+        //     projectId: "tg-group-43e83",
+        //     storageBucket: "tg-group-43e83.appspot.com",
+        //     messagingSenderId: "194366684505",
+        //     appId: "1:194366684505:web:fca29ab792528091e2e048",
+        //     measurementId: "G-B7LBHPN8J6"
+        // };
+
+        // // Initialize Firebase
+        // const app = initializeApp(firebaseConfig);
+        // const analytics = getAnalytics(app);
+        // </script>
+    }
+    public static function push_notif($fcm_token, $data)
+    {
+        $key = config('app.fcm_key');
+        $url = 'https://fcm.googleapis.com/fcm/send';
+
+        $header = [
+            'authorization: key=' . $key . '',
+            'content-type: application/json',
+        ];
+
+        if (isset($data['order_id']) == false) {
+            $data['order_id'] = null;
+        }
+
+        // $img = asset('assets/front-end/img/notif.png');
+        $img = 'https://ezren.id/assets/front-end/img/e.ico';
+        $img = 'https://ezren.id/assets/front-end/img/ejren.jpg';
+
+        $notif = [
+            'title' => $data['title'],
+            'body' => $data['description'],
+            'image' => null,
+            'order_id' => $data['order_id'],
+            'title_loc_key' => $data['order_id'],
+            'is_read' => 0,
+            'icon' => $img,
+            'sound' => 'default',
+        ];
+
+        $postdata = '{
+            "to" : "' . $fcm_token . '",
+            "data" : {
+                "title" :"' . $data['title'] . '",
+                "body" : "' . $data['description'] . '",
+                "image" : "' . null . '",
+                "icon" : "' . $img . '",
+                "order_id":"' . $data['order_id'] . '",
+                "is_read": 0
+                },
+            "notification" : ' . json_encode($notif) . '
+        }';
+
+        $ch = curl_init();
+        $timeout = 120;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+        // Get URL content
+        $result = curl_exec($ch);
+        // close handle to release resources
+        curl_close($ch);
+
+        return $result;
+    }
+
     public static function imgUrl($type)
     {
         if ($type == 'product') {

@@ -56,6 +56,8 @@ return [
 
     'asset_url' => env('ASSET_URL', null),
 
+    'fcm_key' => env('fcm_key', 'AAAALUEoPVk:APA91bE7HYdgw0ujoIaDsgKwSPiptFumYOahQ9h3pvL6DfEoHbDahpe97ISWBEfzEE6sIr-8N4ZtSvZtULXz5xq2gsLZnQCYIPjAFge99e8YXBsxXT05I2NPI2MFshteAh8VZmuWmI4y'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
