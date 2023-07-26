@@ -2132,6 +2132,24 @@ class SaleController extends Controller
             $lims_customer_data->save();
         }
         $message = 'Payment created successfully';
+
+        $id_warehouse = Auth::user()->warehouse_id;
+
+        $data = [
+            'title' => 'Pembayaran berhasil!',
+            'description' => 'Pembayaran dengan no reference: ' . $lims_sale_data->reference_no . ' berhasil',
+            'order_id' => 000,
+            'image' => 'zzz',
+        ];
+
+        $fcm = User::where(['warehouse_id' => $id_warehouse])->get();
+        
+        foreach($fcm as $f){
+            $fcm_token = $f['cm_firebase_token'];
+
+            Helpers::push_notif($fcm_token, $data);
+        }
+
         if($lims_customer_data->email){
             $mail_data['email'] = $lims_customer_data->email;
             $mail_data['sale_reference'] = $lims_sale_data->reference_no;
