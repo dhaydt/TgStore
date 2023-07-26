@@ -761,7 +761,14 @@ class SaleController extends Controller
         $alerts = Product::select('name','code', 'image', 'qty', 'alert_quantity')->where('is_active', true)->whereColumn('alert_quantity', '>', 'qty')->get();
 
         if(count($alerts) > 0){
-            Helpers::aletStock($id_warehouse);
+            $msg = [
+                'title' => "Peringatan stock",
+                'description' => 'Stock Produk mencapai batas minimal',
+            ];
+            
+            if(count($alerts) > 0){
+                Helpers::notifToAdmin($id_warehouse, $msg);
+            }
         }
 
         if($lims_sale_data->sale_status == '1')

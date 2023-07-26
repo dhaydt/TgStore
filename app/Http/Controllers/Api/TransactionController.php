@@ -345,6 +345,15 @@ class TransactionController extends Controller
             ProductPurchase::create($product_purchase);
         }
 
+        $id_warehouse = auth()->user()->warehouse_id;
+
+        $msg = [
+            'title' => "Pembelian berhasil",
+            'description' => 'Transaksi pembelian barhasil!',
+        ];
+        
+        Helpers::notifToAdmin($id_warehouse, $msg);
+
         return response()->json(['status' => 'success', 'message' => 'Pembelian berhasil ditambahkan!']);
     }
 
@@ -1147,8 +1156,12 @@ class TransactionController extends Controller
 
         $alerts = Product::select('name','code', 'image', 'qty', 'alert_quantity')->where('is_active', true)->whereColumn('alert_quantity', '>', 'qty')->get();
 
+        $msg = [
+            'title' => "Peringatan stock",
+            'description' => 'Stock Produk mencapai batas minimal',
+        ];
         if(count($alerts) > 0){
-            Helpers::aletStock($id_warehouse);
+            Helpers::notifToAdmin($id_warehouse, $msg);
         }
 
         if ($lims_sale_data->sale_status == '1')

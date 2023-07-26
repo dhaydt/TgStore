@@ -13,10 +13,10 @@ use App\User;
 
 class Helpers
 {
-    public static function aletStock($id_warehouse){
+    public static function notifToAdmin($id_warehouse, $msg){
         $data = [
-            'title' => "Peringatan stock",
-            'description' => 'Stock Produk mencapai batas minimal',
+            'title' => $msg['title'],
+            'description' => $msg['description'],
             'order_id' => 000,
             'image' => 'zzz',
         ];

@@ -9,6 +9,7 @@ use App\Product;
 use App\Unit;
 use App\Tax;
 use App\Account;
+use App\CPU\Helpers;
 use App\Purchase;
 use App\ProductPurchase;
 use App\Product_Warehouse;
@@ -513,6 +514,15 @@ class PurchaseController extends Controller
             $product_purchase['total'] = $total[$i];
             ProductPurchase::create($product_purchase);
         }
+
+        $id_warehouse = Auth::user()->warehouse_id;
+
+        $msg = [
+            'title' => "Pembelian berhasil",
+            'description' => 'Transaksi pembelian barhasil!',
+        ];
+        
+        Helpers::notifToAdmin($id_warehouse, $msg);
 
         return redirect('purchases')->with('message', 'Purchase created successfully');
     }
