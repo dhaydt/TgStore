@@ -350,9 +350,7 @@ class TransactionController extends Controller
 
         $msg = [
             'title' => "Pembelian berhasil",
-            'description' => 'no reference : '.$data['reference_no'].'
-supplier : '. Supplier::find($request->supplier_id)['name'] ?? 'Invalid Supplier Id'. '
-            ',
+            'description' => 'Pembelian produk ke supplier ' . $lims_purchase_data['supplier']['name'] . ', nomor ref : ' . $data['reference_no'] . ' telah dilakukan.'
         ];
         
         Helpers::notifToAdmin($id_warehouse, $msg);
@@ -1166,7 +1164,8 @@ supplier : '. Supplier::find($request->supplier_id)['name'] ?? 'Invalid Supplier
 
         $msg = [
             'title' => "Peringatan stock",
-            'description' => 'Stock Produk '. implode(', ', $alerts->toArray()) .' mencapai batas minimal',
+            'description' => 'Stock Produk '. implode(', ', $alerts->toArray()) .' telah mencapai batas maksimal
+            ',
         ];
         if(count($alerts) > 0){
             Helpers::notifToAdmin($id_warehouse, $msg);

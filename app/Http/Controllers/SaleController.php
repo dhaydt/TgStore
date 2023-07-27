@@ -758,12 +758,12 @@ class SaleController extends Controller
 
         $id_warehouse = Auth::user()->warehouse_id;
 
-        $alerts = Product::select('name','code', 'image', 'qty', 'alert_quantity')->where('is_active', true)->whereColumn('alert_quantity', '>', 'qty')->get();
+        $alerts = Product::select('name','code', 'image', 'qty', 'alert_quantity')->where('is_active', true)->whereColumn('alert_quantity', '>', 'qty')->pluck('name');
 
         if(count($alerts) > 0){
             $msg = [
                 'title' => "Peringatan stock",
-                'description' => 'Stock Produk mencapai batas minimal',
+                'description' => 'Stock Produk '. implode(', ', $alerts->toArray()) .' telah mencapai batas maksimal'
             ];
             
             if(count($alerts) > 0){
@@ -2144,7 +2144,8 @@ class SaleController extends Controller
 
         $data = [
             'title' => 'Pembayaran berhasil!',
-            'description' => 'Pembayaran dengan no reference: ' . $lims_sale_data->reference_no . ' berhasil',
+            'description' => 'Pembayaran Hutang dari '. $lims_customer_data['name'] .' no ref : '. $lims_sale_data->reference_no . ' telah diterima.
+            ',
             'order_id' => 000,
             'image' => 'zzz',
         ];
