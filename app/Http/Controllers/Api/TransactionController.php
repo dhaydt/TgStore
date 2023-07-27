@@ -498,7 +498,7 @@ class TransactionController extends Controller
     }
 
 
-    public function product_list()
+    public function product_list(Request $request)
     {
 
         $columns = array(
@@ -696,6 +696,7 @@ class TransactionController extends Controller
             // "draw"            => intval($request->input('draw')),  
             "recordsTotal"    => intval($totalData),
             "recordsFiltered" => intval($totalFiltered),
+            "warehouse_id"      => auth()->user()->warehouse_id ?? 1,
             "data"            => $data
         );
 
