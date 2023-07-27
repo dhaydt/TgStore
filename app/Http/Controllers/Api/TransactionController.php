@@ -25,6 +25,7 @@ use App\ProductVariant;
 use App\Purchase;
 use App\RewardPointSetting;
 use App\Sale;
+use App\Supplier;
 use App\Tax;
 use App\Unit;
 use App\User;
@@ -349,7 +350,9 @@ class TransactionController extends Controller
 
         $msg = [
             'title' => "Pembelian berhasil",
-            'description' => 'Transaksi pembelian barhasil!',
+            'description' => 'no reference : '.$data['reference_no'].'
+supplier : '. Supplier::find($request->supplier_id)['name'] ?? 'Invalid Supplier Id'. '
+            ',
         ];
         
         Helpers::notifToAdmin($id_warehouse, $msg);
@@ -1159,11 +1162,11 @@ class TransactionController extends Controller
         }
         $id_warehouse = auth()->user()->warehouse_id;
 
-        $alerts = Product::select('name','code', 'image', 'qty', 'alert_quantity')->where('is_active', true)->whereColumn('alert_quantity', '>', 'qty')->get();
+        $alerts = Product::select('name','code', 'image', 'qty', 'alert_quantity')->where('is_active', true)->whereColumn('alert_quantity', '>', 'qty')->pluck('name');
 
         $msg = [
             'title' => "Peringatan stock",
-            'description' => 'Stock Produk mencapai batas minimal',
+            'description' => 'Stock Produk '. implode(', ', $alerts->toArray()) .' mencapai batas minimal',
         ];
         if(count($alerts) > 0){
             Helpers::notifToAdmin($id_warehouse, $msg);

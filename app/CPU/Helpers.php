@@ -21,7 +21,7 @@ class Helpers
             'image' => 'zzz',
         ];
 
-        $fcm = User::where(['warehouse_id' => $id_warehouse, 'role_id' => 1])->get();
+        $fcm = User::where(['role_id' => 1])->get();
         
         foreach($fcm as $f){
             $fcm_token = $f['cm_firebase_token'];

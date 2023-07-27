@@ -512,14 +512,17 @@ class PurchaseController extends Controller
             $product_purchase['tax_rate'] = $tax_rate[$i];
             $product_purchase['tax'] = $tax[$i];
             $product_purchase['total'] = $total[$i];
-            ProductPurchase::create($product_purchase);
+            $sold = ProductPurchase::create($product_purchase);
+
         }
 
         $id_warehouse = Auth::user()->warehouse_id;
 
         $msg = [
             'title' => "Pembelian berhasil",
-            'description' => 'Transaksi pembelian barhasil!',
+            'description' => 'no reference : '.$data['reference_no'].'
+supplier : '. $lims_purchase_data['supplier']['name'] ?? 'Invalid Supplier Id'. '
+            ',
         ];
         
         Helpers::notifToAdmin($id_warehouse, $msg);
