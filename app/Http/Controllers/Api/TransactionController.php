@@ -602,7 +602,11 @@ class TransactionController extends Controller
                         ['warehouse_id', auth()->user()->warehouse_id]
                     ])->sum('qty');
                 } else
-                    $nestedData['qty'] = $product->qty;
+                    $nestedData['qty'] = Product_Warehouse::where([
+                        ['product_id', $product->id],
+                        ['warehouse_id', 1]
+                    ])->sum('qty');
+                    // $nestedData['qty'] = $product->qty;
 
                 if ($product->unit_id)
                     $nestedData['unit'] = $product->unit->unit_name;
@@ -611,7 +615,7 @@ class TransactionController extends Controller
 
                 $nestedData['price'] = $product->price;
 
-                $warehouse_id = auth()->user()->warehouse_id;
+                $warehouse_id = auth()->user()->warehouse_id ?? 1;
                 if($warehouse_id){
                     if($product->is_diffPrice == 1){
                         $newProduct = Product_Warehouse::where(['product_id' => $product['id'], 'warehouse_id' => $warehouse_id])->first();
