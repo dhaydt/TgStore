@@ -98,7 +98,6 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        dd($request);
         $this->validate($request, [
             'company_name' => [
                 'max:255',
