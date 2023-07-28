@@ -65,7 +65,7 @@
                     <div class="icon"><i class="dripicons-return" style="color: #ff8952"></i></div>
                     <div>
                         <div class="count-number return-data">{{number_format((float)$return, 2, '.', '')}}</div>
-                        <div class="name"><strong style="color: #ff8952">{{trans('file.Sale Return')}}</strong></div>
+                        <div class="name"><strong style="color: #ff8952">Retur Penjualan</strong></div>
                     </div>
                   </div>
                 </div>
@@ -75,7 +75,7 @@
                     <div class="icon"><i class="dripicons-media-loop" style="color: #00c689"></i></div>
                     <div>
                         <div class="count-number purchase_return-data">{{number_format((float)$purchase_return, 2, '.', '')}}</div>
-                        <div class="name"><strong style="color: #00c689">{{trans('file.Purchase Return')}}</strong></div>
+                        <div class="name"><strong style="color: #00c689">Retur Pembelian</strong></div>
                     </div>
                   </div>
                 </div>

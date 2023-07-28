@@ -269,7 +269,7 @@
                     ])->first();
             ?>
             @if($sale_index_permission_active || $gift_card_permission_active || $coupon_permission_active || $delivery_permission_active)
-            <li><a href="#sale" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-cart"></i><span>{{trans('file.Sale')}}</span></a>
+            <li><a href="#sale" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-cart"></i><span>Penjualan</span></a>
             <ul id="sale" class="collapse list-unstyled ">
                 @if($sale_index_permission_active)
                 <li id="sale-list-menu"><a href="{{route('sales.index')}}">{{trans('file.Sale List')}}</a></li>
@@ -329,9 +329,9 @@
                     ])->first();
             ?>
             @if($index_permission_active)
-            <li><a href="#quotation" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-document"></i><span>{{trans('file.Quotation')}}</span><span></a>
+            <li><a href="#quotation" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-document"></i><span>Penawaran</span><span></a>
             <ul id="quotation" class="collapse list-unstyled ">
-                <li id="quotation-list-menu"><a href="{{route('quotations.index')}}">{{trans('file.Quotation List')}}</a></li>
+                <li id="quotation-list-menu"><a href="{{route('quotations.index')}}">Daftar Penawaran</a></li>
                 <?php
                     $add_permission_active = DB::table('permissions')
                         ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
@@ -341,7 +341,7 @@
                         ])->first();
                 ?>
                 @if($add_permission_active)
-                <li id="quotation-create-menu"><a href="{{route('quotations.create')}}">{{trans('file.Add Quotation')}}</a></li>
+                <li id="quotation-create-menu"><a href="{{route('quotations.create')}}">Tambah Penawaran</a></li>
                 @endif
             </ul>
             </li>
@@ -432,7 +432,7 @@
 
             ?>
             @if($index_permission_active || $balance_sheet_permission_active || $account_statement_permission_active || $money_transfer_permission_active)
-            <li class=""><a href="#account" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-briefcase"></i><span>Akuntansi</span></a>
+            <li class=""><a href="#account" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-briefcase"></i><span>Keuangan</span></a>
             <ul id="account" class="collapse list-unstyled ">
                 @if($index_permission_active)
                 <li id="account-list-menu"><a href="{{route('accounts.index')}}">{{trans('file.Account List')}}</a></li>
@@ -481,7 +481,7 @@
             ?>
 
             @if(Auth::user()->role_id != 5)
-            <li class=""><a href="#hrm" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-user-group"></i><span>HRM</span></a>
+            <li class=""><a href="#hrm" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-user-group"></i><span>Kepegawaian</span></a>
             <ul id="hrm" class="collapse list-unstyled ">
                 @if($department_active)
                 <li id="dept-menu"><a href="{{route('departments.index')}}">{{trans('file.Department')}}</a></li>
@@ -529,7 +529,7 @@
                     ])->first();
             ?>
             @if($user_index_permission_active || $customer_index_permission_active || $biller_index_permission_active || $supplier_index_permission_active)
-            <li><a href="#people" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-user"></i><span>{{trans('file.People')}}</span></a>
+            <li><a href="#people" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-user"></i><span>SDM</span></a>
             <ul id="people" class="collapse list-unstyled ">
 
                 @if($user_index_permission_active)
