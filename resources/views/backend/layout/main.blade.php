@@ -200,7 +200,7 @@
                 <li id="adjustment-create-menu"><a href="{{route('qty_adjustment.create')}}">{{trans('file.Add Adjustment')}}</a></li>
                 @endif
                 @if($stock_count_active)
-                <li id="stock-count-menu"><a href="{{route('stock-count.index')}}">{{trans('file.Stock Count')}}</a></li>
+                <li id="stock-count-menu"><a href="{{route('stock-count.index')}}">Stock Opname</a></li>
                 @endif
             </ul>
             </li>
@@ -563,7 +563,7 @@
                 @endif
 
                 @if($biller_index_permission_active)
-                <li id="biller-list-menu"><a href="{{route('biller.index')}}">{{trans('file.Biller List')}}</a></li>
+                <li id="biller-list-menu"><a href="{{route('biller.index')}}">Daftar Kasir</a></li>
                 <?php
                     $biller_add_permission_active = DB::table('permissions')
                         ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
@@ -573,12 +573,12 @@
                         ])->first();
                 ?>
                 @if($biller_add_permission_active)
-                <li id="biller-create-menu"><a href="{{route('biller.create')}}">{{trans('file.Add Biller')}}</a></li>
+                <li id="biller-create-menu"><a href="{{route('biller.create')}}">Tambah Kasir</a></li>
                 @endif
                 @endif
 
                 @if($supplier_index_permission_active)
-                <li id="supplier-list-menu"><a href="{{route('supplier.index')}}">{{trans('file.Supplier List')}}</a></li>
+                <li id="supplier-list-menu"><a href="{{route('supplier.index')}}">Daftar Supplier</a></li>
                 <?php
                     $supplier_add_permission_active = DB::table('permissions')
                         ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
@@ -588,7 +588,7 @@
                         ])->first();
                 ?>
                 @if($supplier_add_permission_active)
-                <li id="supplier-create-menu"><a href="{{route('supplier.create')}}">{{trans('file.Add Supplier')}}</a></li>
+                <li id="supplier-create-menu"><a href="{{route('supplier.create')}}">Tambah Supplier</a></li>
                 @endif
                 @endif
             </ul>
@@ -752,12 +752,12 @@
                 @endif
                 @if($daily_sale_active)
                 <li id="daily-sale-report-menu">
-                <a href="{{url('report/daily_sale/'.date('Y').'/'.date('m'))}}">{{trans('file.Daily Sale')}}</a>
+                <a href="{{url('report/daily_sale/'.date('Y').'/'.date('m'))}}">Penjualan Harian</a>
                 </li>
                 @endif
                 @if($monthly_sale_active)
                 <li id="monthly-sale-report-menu">
-                <a href="{{url('report/monthly_sale/'.date('Y'))}}">{{trans('file.Monthly Sale')}}</a>
+                <a href="{{url('report/monthly_sale/'.date('Y'))}}">Penjualan Bulanan</a>
                 </li>
                 @endif
                 @if($daily_purchase_active)
@@ -787,7 +787,7 @@
                     <input type="hidden" name="end_date" value="{{date('Y-m-d')}}" />
                     <input type="hidden" name="warehouse_id" value="0" />
                     <input type="hidden" name="time_period" value="weekly" />
-                    <a id="sale-report-chart-link" href="">{{trans('file.Sale Report Chart')}}</a>
+                    <a id="sale-report-chart-link" href="">Laporan Grafik Penjualan</a>
                     {!! Form::close() !!}
                 </li>
                 @endif
@@ -820,13 +820,13 @@
                     {!! Form::open(['route' => 'report.customerDueByDate', 'method' => 'post', 'id' => 'customer-due-report-form']) !!}
                     <input type="hidden" name="start_date" value="{{date('Y-m-d', strtotime('-1 year'))}}" />
                     <input type="hidden" name="end_date" value="{{date('Y-m-d')}}" />
-                    <a id="due-report-link" href="">{{trans('file.Customer Due Report')}}</a>
+                    <a id="due-report-link" href="">Hutang Pelanggan</a>
                     {!! Form::close() !!}
                 </li>
                 @endif
                 @if($supplier_report_active)
                 <li id="supplier-report-menu">
-                    <a id="supplier-report-link" href="">{{trans('file.Supplier Report')}}</a>
+                    <a id="supplier-report-link" href="">Laporan Supplier</a>
                 </li>
                 @endif
                 @if($supplier_due_report_active)
@@ -850,7 +850,7 @@
                 @endif
                 @if($product_expiry_report_active)
                 <li id="productExpiry-report-menu">
-                <a href="{{route('report.productExpiry')}}">{{trans('file.Product Expiry Report')}}</a>
+                <a href="{{route('report.productExpiry')}}">Laporan Produk Kadaluarsa</a>
                 </li>
                 @endif
                 @if($product_qty_alert_active)
@@ -860,7 +860,7 @@
                 @endif
                 @if($dso_report_active)
                 <li id="daily-sale-objective-menu">
-                    <a href="{{route('report.dailySaleObjective')}}">{{trans('file.Daily Sale Objective Report')}}</a>
+                    <a href="{{route('report.dailySaleObjective')}}">Laporan Target Penjualan Harian</a>
                 </li>
                 @endif
                 @if($user_report_active)
@@ -1548,7 +1548,7 @@
         <div role="document" class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 id="exampleModalLabel" class="modal-title">{{trans('file.Supplier Report')}}</h5>
+                    <h5 id="exampleModalLabel" class="modal-title">Laporan Supplier</h5>
                     <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i class="dripicons-cross"></i></span></button>
                 </div>
                 <div class="modal-body">
