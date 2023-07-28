@@ -41,7 +41,7 @@
   <link rel="stylesheet" href="{{ asset('asset_login/css/style.css') }}">
 </head>
 
-<body>
+<body style="max-width: 100vw; overflow: hidden;">
   <section class="ftco-section">
     <div class="container">
       <div class="row justify-content-center">
@@ -113,10 +113,64 @@
           </div>
         </div>
       </div>
-      <div class="copyrights text-center">
+      <div class="copyrights text-center w-100 text-light" style="position: absolute;left: 0; bottom: 10px;">
         <p>{{trans('file.Developed By')}} <span class="external">{{$general_setting->developed_by}}</span></p>
       </div>
       </section>
+
+      <!-- Old Login
+        {{-- div class="page login-page">
+      <div class="container">
+        <div class="form-outer text-center d-flex align-items-center">
+          <div class="form-inner">
+            <div class="logo">
+                @if($general_setting->site_logo)
+                <img src="{{url('logo', $general_setting->site_logo)}}" width="110">
+                @else
+                <span>{{$general_setting->site_title}}</span>
+                @endif
+            </div>
+            @if(session()->has('delete_message'))
+            <div class="alert alert-danger alert-dismissible text-center"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>{{ session()->get('delete_message') }}</div>
+            @endif
+            <form method="POST" action="{{ route('login') }}" id="login-form">
+              @csrf
+              <div class="form-group-material">
+                <input id="login-username" type="text" name="name" required class="input-material" value="">
+                <label for="login-username" class="label-material">{{trans('file.UserName')}}</label>
+                @if(session()->has('error'))
+                    <p>
+                        <strong>{{ session()->get('error') }}</strong>
+                    </p>
+                @endif
+              </div>
+
+              <div class="form-group-material">
+                <input id="login-password" type="password" name="password" required class="input-material" value="">
+                <label for="login-password" class="label-material">{{trans('file.Password')}}</label>
+                @if(session()->has('error'))
+                    <p>
+                        <strong>{{ session()->get('error') }}</strong>
+                    </p>
+                @endif
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">{{trans('file.LogIn')}}</button>
+            </form>
+            <!-- This three button for demo only-->
+            <!-- <button type="submit" class="btn btn-success admin-btn">LogIn as Admin</button>
+            <button type="submit" class="btn btn-info staff-btn">LogIn as Staff</button>
+            <button type="submit" class="btn btn-dark customer-btn">LogIn as Customer</button>
+            <br><br> -->
+            <!-- <a href="{{ route('password.request') }}" class="forgot-pass">{{trans('file.Forgot Password?')}}</a>
+            <p>{{trans('file.Do not have an account?')}}</p><a href="{{url('register')}}" class="signup">{{trans('file.Register')}}</a> --> --}}
+          </div>
+          <div class="copyrights text-center">
+            <p>{{trans('file.Developed By')}} <span class="external">{{$general_setting->developed_by}}</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+      -->
       <script src="{{ asset('asset_login/js/jquery.min.js') }}"></script>
       <script src="{{ asset('asset_login/js/popper.js') }}"></script>
       <script src="{{ asset('asset_login/js/bootstrap.min.js') }}"></script>
