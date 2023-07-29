@@ -1033,7 +1033,7 @@
                     <li id="unit-menu"><a href="{{route('unit.index')}}">{{trans('file.Unit')}}</a></li>
                     @endif
                     @if($currency_permission_active)
-                    <li id="currency-menu"><a href="{{route('currency.index')}}">{{trans('file.Currency')}}</a></li>
+                    {{-- <li id="currency-menu"><a href="{{route('currency.index')}}">{{trans('file.Currency')}}</a></li> --}}
                     @endif
                     @if($tax_permission_active)
                     <li id="tax-menu"><a href="{{route('tax.index')}}">{{trans('file.Tax')}}</a></li>
@@ -1046,16 +1046,16 @@
                     <li><a href="{{route('setting.backup')}}">Backup Database</a></li>
                     @endif
                     @if($general_setting_permission_active)
-                    <li id="general-setting-menu"><a href="{{route('setting.general')}}">{{trans('file.General Setting')}}</a></li>
+                    {{-- <li id="general-setting-menu"><a href="{{route('setting.general')}}">{{trans('file.General Setting')}}</a></li> --}}
                     @endif
                     @if($mail_setting_permission_active)
-                    <li id="mail-setting-menu"><a href="{{route('setting.mail')}}">{{trans('file.Mail Setting')}}</a></li>
+                    {{-- <li id="mail-setting-menu"><a href="{{route('setting.mail')}}">{{trans('file.Mail Setting')}}</a></li> --}}
                     @endif
                     @if($reward_point_setting_permission_active)
                     <li id="reward-point-setting-menu"><a href="{{route('setting.rewardPoint')}}">Pengaturan Poin</a></li>
                     @endif
                     @if($sms_setting_permission_active)
-                    <li id="sms-setting-menu"><a href="{{route('setting.sms')}}">Pengaturan SMS</a></li>
+                    {{-- <li id="sms-setting-menu"><a href="{{route('setting.sms')}}">Pengaturan SMS</a></li> --}}
                     @endif
                     @if($pos_setting_permission_active)
                     <li id="pos-setting-menu"><a href="{{route('setting.pos')}}">POS {{trans('file.settings')}}</a></li>
@@ -1066,7 +1066,7 @@
                 </ul>
             </li>
             @if(Auth::user()->role_id != 5)
-            <li><a target="_blank" href="{{url('public/read_me')}}"> <i class="dripicons-information"></i><span>{{trans('file.Documentation')}}</span></a></li>
+            {{-- <li><a target="_blank" href="{{url('public/read_me')}}"> <i class="dripicons-information"></i><span>{{trans('file.Documentation')}}</span></a></li> --}}
             @endif
         </ul>
       </nav>
@@ -1214,9 +1214,9 @@
                     </li>
                     @endif
                     @if($empty_database_permission_active)
-                    <li>
+                    {{-- <li>
                     <a onclick="return confirm('Are you sure want to delete? If you do this all of your data will be lost.')" href="{{route('setting.emptyDatabase')}}"><i class="dripicons-stack"></i> {{trans('file.Empty Database')}}</a>
-                    </li>
+                    </li> --}}
                     @endif
                     <li>
                     <a href="{{ route('logout') }}"
