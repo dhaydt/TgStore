@@ -1005,14 +1005,14 @@
                     <li id="role-menu"><a href="{{route('role.index')}}">{{trans('file.Role Permission')}}</a></li>
                     @endif
                     @if($discount_plan_permission_active)
-                    <li id="discount-plan-list-menu"><a href="{{route('discount-plans.index')}}">{{trans('file.Discount Plan')}}</a></li>
+                    <li id="discount-plan-list-menu"><a href="{{route('discount-plans.index')}}">Perencanaan Discount</a></li>
                     @endif
                     @if($discount_permission_active)
                     <li id="discount-list-menu"><a href="{{route('discounts.index')}}">{{trans('file.Discount')}}</a></li>
                     @endif
                     @if($all_notification_permission_active)
                     <li id="notification-list-menu">
-                        <a href="{{route('notifications.index')}}">{{trans('file.All Notification')}}</a>
+                        <a href="{{route('notifications.index')}}">Semua Pemberitahuan</a>
                     </li>
                     @endif
                     @if($send_notification_permission_active)
@@ -1024,7 +1024,7 @@
                     <li id="warehouse-menu"><a href="{{route('warehouse.index')}}">{{trans('file.Warehouse')}}</a></li>
                     @endif
                     @if($customer_group_permission_active)
-                    <li id="customer-group-menu"><a href="{{route('customer_group.index')}}">{{trans('file.Customer Group')}}</a></li>
+                    <li id="customer-group-menu"><a href="{{route('customer_group.index')}}">Group Pelanggan</a></li>
                     @endif
                     @if($brand_permission_active)
                     <li id="brand-menu"><a href="{{route('brand.index')}}">{{trans('file.Brand')}}</a></li>
@@ -1043,7 +1043,7 @@
                     <li id="create-sms-menu"><a href="{{route('setting.createSms')}}">{{trans('file.Create SMS')}}</a></li>
                     @endif
                     @if($backup_database_permission_active)
-                    <li><a href="{{route('setting.backup')}}">{{trans('file.Backup Database')}}</a></li>
+                    <li><a href="{{route('setting.backup')}}">Backup Database</a></li>
                     @endif
                     @if($general_setting_permission_active)
                     <li id="general-setting-menu"><a href="{{route('setting.general')}}">{{trans('file.General Setting')}}</a></li>
@@ -1052,10 +1052,10 @@
                     <li id="mail-setting-menu"><a href="{{route('setting.mail')}}">{{trans('file.Mail Setting')}}</a></li>
                     @endif
                     @if($reward_point_setting_permission_active)
-                    <li id="reward-point-setting-menu"><a href="{{route('setting.rewardPoint')}}">{{trans('file.Reward Point Setting')}}</a></li>
+                    <li id="reward-point-setting-menu"><a href="{{route('setting.rewardPoint')}}">Pengaturan Poin</a></li>
                     @endif
                     @if($sms_setting_permission_active)
-                    <li id="sms-setting-menu"><a href="{{route('setting.sms')}}">{{trans('file.SMS Setting')}}</a></li>
+                    <li id="sms-setting-menu"><a href="{{route('setting.sms')}}">Pengaturan SMS</a></li>
                     @endif
                     @if($pos_setting_permission_active)
                     <li id="pos-setting-menu"><a href="{{route('setting.pos')}}">POS {{trans('file.settings')}}</a></li>
