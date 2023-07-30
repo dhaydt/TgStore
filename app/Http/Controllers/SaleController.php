@@ -258,11 +258,11 @@ class SaleController extends Controller
                 else
                     $nestedData['delivery_status'] = 'N/A';
 
-                $nestedData['grand_total'] = number_format($sale->grand_total, 2);
+                $nestedData['grand_total'] = number_format($sale->grand_total, 0);
                 $returned_amount = DB::table('returns')->where('sale_id', $sale->id)->sum('grand_total');
-                $nestedData['returned_amount'] = number_format($returned_amount, 2);
-                $nestedData['paid_amount'] = number_format($sale->paid_amount, 2);
-                $nestedData['due'] = number_format($sale->grand_total - $returned_amount - $sale->paid_amount, 2);
+                $nestedData['returned_amount'] = number_format($returned_amount, 0);
+                $nestedData['paid_amount'] = number_format($sale->paid_amount, 0);
+                $nestedData['due'] = number_format($sale->grand_total - $returned_amount - $sale->paid_amount, 0);
                 $nestedData['options'] = '<div class="btn-group">
                             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.trans("file.action").'
                               <span class="caret"></span>
@@ -1568,16 +1568,16 @@ class SaleController extends Controller
             $product_sale->product_id = $product['id'];
             $product_sale->qty = $mail_data['qty'][$key] = $qty[$key];
             $product_sale->sale_unit_id = $sale_unit_id;
-            $product_sale->net_unit_price = number_format((float)$net_unit_price, 2, '.', '');
+            $product_sale->net_unit_price = number_format((float)$net_unit_price, 0, '.', '');
             $product_sale->discount = $discount[$key] * $qty[$key];
             $product_sale->tax_rate = $tax[$key]['rate'];
             $product_sale->tax = number_format((float)$product_tax, 2, '.', '');
-            $product_sale->total = $mail_data['total'][$key] = number_format((float)$total, 2, '.', '');
+            $product_sale->total = $mail_data['total'][$key] = number_format((float)$total, 0, '.', '');
             $product_sale->save();
             $lims_sale_data->total_qty += $qty[$key];
             $lims_sale_data->total_discount += $discount[$key] * $qty[$key];
-            $lims_sale_data->total_tax += number_format((float)$product_tax, 2, '.', '');
-            $lims_sale_data->total_price += number_format((float)$total, 2, '.', '');
+            $lims_sale_data->total_tax += number_format((float)$product_tax, 0, '.', '');
+            $lims_sale_data->total_price += number_format((float)$total, 0, '.', '');
         }
         $lims_sale_data->item = $key + 1;
         $lims_sale_data->order_tax = ($lims_sale_data->total_price - $lims_sale_data->order_discount) * ($data['order_tax_rate'] / 100);
