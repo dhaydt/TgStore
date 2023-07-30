@@ -236,7 +236,7 @@ class QuotationController extends Controller
                     $status = trans('file.Sent');
                 }
 
-                $nestedData['grand_total'] = number_format($quotation->grand_total, 2);
+                $nestedData['grand_total'] = number_format($quotation->grand_total, 0);
                 $nestedData['options'] = '<div class="btn-group">
                             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.trans("file.action").'
                               <span class="caret"></span>

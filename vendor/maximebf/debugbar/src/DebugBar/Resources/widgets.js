@@ -434,8 +434,8 @@ if (typeof(PhpDebugBar) == 'undefined') {
                     if (seconds < 0.001)
                         return (seconds * 1000000).toFixed() + 'μs';
                     else if (seconds < 1)
-                        return (seconds * 1000).toFixed(2) + 'ms';
-                    return (seconds).toFixed(2) +  's';
+                        return (seconds * 1000).toFixed(0) + 'ms';
+                    return (seconds).toFixed(0) +  's';
                 };
 
                 this.$el.empty();
@@ -453,8 +453,8 @@ if (typeof(PhpDebugBar) == 'undefined') {
 
                         var m = $('<div />').addClass(csscls('measure')),
                             li = $('<li />'),
-                            left = (measure.relative_start * 100 / data.duration).toFixed(2),
-                            width = Math.min((measure.duration * 100 / data.duration).toFixed(2), 100 - left);
+                            left = (measure.relative_start * 100 / data.duration).toFixed(0),
+                            width = Math.min((measure.duration * 100 / data.duration).toFixed(0), 100 - left);
 
                         m.append($('<span />').addClass(csscls('value')).css({
                             left: left + "%",
@@ -501,7 +501,7 @@ if (typeof(PhpDebugBar) == 'undefined') {
                     // build table and add
                     var aggregateTable = $('<table style="display: table; border: 0; width: 99%"></table>').addClass(csscls('params'));
                     $.each(aggregate, function(i, aggregate) {
-                        width = Math.min((aggregate.data.duration * 100 / data.duration).toFixed(2), 100);
+                        width = Math.min((aggregate.data.duration * 100 / data.duration).toFixed(0), 100);
 
                         aggregateTable.append('<tr><td class="' + csscls('name') + '">' + aggregate.data.count + ' x ' + aggregate.label + ' (' + width + '%)</td><td class="' + csscls('value') + '">' +
                             '<div class="' + csscls('measure') +'">' +

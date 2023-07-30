@@ -209,7 +209,7 @@
         'columnDefs': [
             {
                 "orderable": false,
-                'targets': [0, 1, 2, 3]
+                'targets': [0, 1, 0, 3]
             },
             {
                 'checkboxes': {

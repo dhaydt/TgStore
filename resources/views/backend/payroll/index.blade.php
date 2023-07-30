@@ -35,7 +35,7 @@
                     <td>{{ $payroll->reference_no }}</td>
                     <td>{{ $employee->name}}</td>
                     <td>{{ $account->name}}</td>
-                    <td>{{ number_format((float)$payroll->amount, 2, '.', '') }}</td>
+                    <td>{{ number_format((float)$payroll->amount, 0, '.', '') }}</td>
                     @if($payroll->paying_method == 0)
                         <td>Cash</td>
                     @elseif($payroll->paying_method == 1)
@@ -370,10 +370,10 @@
         if (dt_selector.rows( '.selected' ).any() && is_calling_first) {
             var rows = dt_selector.rows( '.selected' ).indexes();
 
-            $( dt_selector.column( 5 ).footer() ).html(dt_selector.cells( rows, 5, { page: 'current' } ).data().sum().toFixed(2));
+            $( dt_selector.column( 5 ).footer() ).html(dt_selector.cells( rows, 5, { page: 'current' } ).data().sum().toFixed(0));
         }
         else {
-            $( dt_selector.column( 5 ).footer() ).html(dt_selector.cells( rows, 5, { page: 'current' } ).data().sum().toFixed(2));
+            $( dt_selector.column( 5 ).footer() ).html(dt_selector.cells( rows, 5, { page: 'current' } ).data().sum().toFixed(0));
         }
     }
 </script>

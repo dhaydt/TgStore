@@ -137,9 +137,9 @@ class TransferController extends Controller
                 $nestedData['reference_no'] = $transfer->reference_no;
                 $nestedData['from_warehouse'] = $transfer->fromWarehouse->name;
                 $nestedData['to_warehouse'] = $transfer->toWarehouse->name;
-                $nestedData['total_cost'] = number_format($transfer->total_cost, 2);
-                $nestedData['total_tax'] = number_format($transfer->total_tax, 2);
-                $nestedData['grand_total'] = number_format($transfer->grand_total, 2);
+                $nestedData['total_cost'] = number_format($transfer->total_cost, 0);
+                $nestedData['total_tax'] = number_format($transfer->total_tax, 0);
+                $nestedData['grand_total'] = number_format($transfer->grand_total, 0);
 
                 if($transfer->status == 1) {
                     $nestedData['status'] = '<div class="badge badge-danger">'.trans('file.Completed').'</div>';
@@ -634,14 +634,14 @@ class TransferController extends Controller
             $product_transfer->product_id = $product['id'];
             $product_transfer->qty = $qty[$key];
             $product_transfer->purchase_unit_id = $unit[$key]['id'];
-            $product_transfer->net_unit_cost = number_format((float)$net_unit_cost, 2, '.', '');
+            $product_transfer->net_unit_cost = number_format((float)$net_unit_cost, 0, '.', '');
             $product_transfer->tax_rate = $tax[$key]['rate'];
-            $product_transfer->tax = number_format((float)$product_tax, 2, '.', '');
-            $product_transfer->total = number_format((float)$total, 2, '.', '');
+            $product_transfer->tax = number_format((float)$product_tax, 0, '.', '');
+            $product_transfer->total = number_format((float)$total, 0, '.', '');
             $product_transfer->save();
             $lims_transfer_data->total_qty += $qty[$key];
-            $lims_transfer_data->total_tax += number_format((float)$product_tax, 2, '.', '');
-            $lims_transfer_data->total_cost += number_format((float)$total, 2, '.', '');
+            $lims_transfer_data->total_tax += number_format((float)$product_tax, 0, '.', '');
+            $lims_transfer_data->total_cost += number_format((float)$total, 0, '.', '');
         }
         $lims_transfer_data->item = $key + 1;
         $lims_transfer_data->grand_total = $lims_transfer_data->total_cost + $lims_transfer_data->shipping_cost;

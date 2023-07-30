@@ -22,11 +22,11 @@
 						<div class="row">
 							<div class="col-md-6">
 								<span>Total {{trans('file.Items')}}</span>
-								<h2><strong>{{number_format((float)$total_item, 2, '.', '') }}</strong></h2>
+								<h2><strong>{{number_format((float)$total_item, 0, '.', '') }}</strong></h2>
 							</div>
 							<div class="col-md-6">
 								<span>Total {{trans('file.Quantity')}}</span>
-								<h2><strong>{{number_format((float)$total_qty, 2, '.', '') }}</strong></h2>
+								<h2><strong>{{number_format((float)$total_qty, 0, '.', '') }}</strong></h2>
 							</div>
 						</div>
 					</div>

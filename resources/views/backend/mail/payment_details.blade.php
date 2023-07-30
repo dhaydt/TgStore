@@ -4,5 +4,5 @@
 <p><strong>Payment Method: </strong>{{$payment_method}}</p>
 <p><strong>Grand Total: </strong>{{$grand_total}} {{$general_setting->currency}}</p>
 <p><strong>Paid Amount: </strong>{{$paid_amount}} {{$general_setting->currency}}</p>
-<p><strong>Due: </strong>{{number_format((float)($grand_total - $paid_amount), 2, '.', '')}} {{$general_setting->currency}}</p>
+<p><strong>Due: </strong>{{number_format((float)($grand_total - $paid_amount), 0, '.', '')}} {{$general_setting->currency}}</p>
 <p>Thank You</p>

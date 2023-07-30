@@ -54,7 +54,7 @@
                   <div class="wrapper count-title">
                     <div class="icon"><i class="dripicons-graph-bar" style="color: #733686"></i></div>
                     <div>
-                        <div class="count-number revenue-data">{{number_format((float)$revenue, 2, '.', '')}}</div>
+                        <div class="count-number revenue-data">{{number_format((float)$revenue, 0, '.', '')}}</div>
                         <div class="name"><strong style="color: #733686">{{ trans('file.revenue') }}</strong></div>
                     </div>
                   </div>
@@ -64,7 +64,7 @@
                   <div class="wrapper count-title">
                     <div class="icon"><i class="dripicons-return" style="color: #ff8952"></i></div>
                     <div>
-                        <div class="count-number return-data">{{number_format((float)$return, 2, '.', '')}}</div>
+                        <div class="count-number return-data">{{number_format((float)$return, 0, '.', '')}}</div>
                         <div class="name"><strong style="color: #ff8952">Retur Penjualan</strong></div>
                     </div>
                   </div>
@@ -74,7 +74,7 @@
                   <div class="wrapper count-title">
                     <div class="icon"><i class="dripicons-media-loop" style="color: #00c689"></i></div>
                     <div>
-                        <div class="count-number purchase_return-data">{{number_format((float)$purchase_return, 2, '.', '')}}</div>
+                        <div class="count-number purchase_return-data">{{number_format((float)$purchase_return, 0, '.', '')}}</div>
                         <div class="name"><strong style="color: #00c689">Retur Pembelian</strong></div>
                     </div>
                   </div>
@@ -84,7 +84,7 @@
                   <div class="wrapper count-title">
                     <div class="icon"><i class="dripicons-trophy" style="color: #297ff9"></i></div>
                     <div>
-                        <div class="count-number profit-data">{{number_format((float)$profit, 2, '.', '')}}</div>
+                        <div class="count-number profit-data">{{number_format((float)$profit, 0, '.', '')}}</div>
                         <div class="name"><strong style="color: #297ff9">{{trans('file.profit')}}</strong></div>
                     </div>
                   </div>
@@ -363,7 +363,7 @@
                         <?php $images = explode(",", $sale->product_images)?>
                         <tr>
                           <td><img src="{{url('public/images/product', $images[0])}}" height="25" width="30"> {{$sale->product_name}} [{{$sale->product_code}}]</td>
-                          <td>{{number_format((float)$sale->total_price, 2, '.', '')}}</td>
+                          <td>{{number_format((float)$sale->total_price, 0, '.', '')}}</td>
                         </tr>
                         @endforeach
                       </tbody>
@@ -409,19 +409,19 @@
 
     function dashboardFilter(data){
         $('.revenue-data').hide();
-        $('.revenue-data').html(parseFloat(data[0]).toFixed(2));
+        $('.revenue-data').html(parseFloat(data[0]).toFixed(0));
         $('.revenue-data').show(500);
 
         $('.return-data').hide();
-        $('.return-data').html(parseFloat(data[1]).toFixed(2));
+        $('.return-data').html(parseFloat(data[1]).toFixed(0));
         $('.return-data').show(500);
 
         $('.profit-data').hide();
-        $('.profit-data').html(parseFloat(data[2]).toFixed(2));
+        $('.profit-data').html(parseFloat(data[2]).toFixed(0));
         $('.profit-data').show(500);
 
         $('.purchase_return-data').hide();
-        $('.purchase_return-data').html(parseFloat(data[3]).toFixed(2));
+        $('.purchase_return-data').html(parseFloat(data[3]).toFixed(0));
         $('.purchase_return-data').show(500);
     }
 </script>

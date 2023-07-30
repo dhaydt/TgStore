@@ -72,14 +72,14 @@ class AutoPurchase extends Command
                 if($product->tax_id) {
                     $tax_data = DB::table('taxes')->select('rate')->find($product->tax_id);
                     if($product->tax_method == 1) {
-                        $net_unit_cost = number_format($product->cost, 2, '.', '');
-                        $tax = number_format($product->cost * 10 * ($tax_data->rate / 100), 2, '.', '');
-                        $cost = number_format(($product->cost * 10) + $tax, 2, '.', '');
+                        $net_unit_cost = number_format($product->cost, 0, '.', '');
+                        $tax = number_format($product->cost * 10 * ($tax_data->rate / 100), 0, '.', '');
+                        $cost = number_format(($product->cost * 10) + $tax, 0, '.', '');
                     }
                     else {
-                        $net_unit_cost = number_format((100 / (100 + $tax_data->rate)) * $product->cost, 2, '.', '');
-                        $tax = number_format(($product->cost - $net_unit_cost) * 10, 2, '.', '');
-                        $cost = number_format($product->cost * 10, 2, '.', '');
+                        $net_unit_cost = number_format((100 / (100 + $tax_data->rate)) * $product->cost, 0, '.', '');
+                        $tax = number_format(($product->cost - $net_unit_cost) * 10, 0, '.', '');
+                        $cost = number_format($product->cost * 10, 0, '.', '');
                     }
                     $tax_rate = $tax_data->rate;
                     $data['total_tax'] += $tax;
@@ -87,11 +87,11 @@ class AutoPurchase extends Command
                 }
                 else {
                     $data['total_tax'] += 0.00;
-                    $data['total_cost'] += number_format($product->cost * 10, 2, '.', '');
-                    $net_unit_cost = number_format($product->cost, 2, '.', '');
+                    $data['total_cost'] += number_format($product->cost * 10, 0, '.', '');
+                    $net_unit_cost = number_format($product->cost, 0, '.', '');
                     $tax_rate = 0.00;
                     $tax = 0.00;
-                    $cost = number_format($product->cost * 10, 2, '.', '');
+                    $cost = number_format($product->cost * 10, 0, '.', '');
                 }
 
                 $data['product_id'][$key] = $product->id;

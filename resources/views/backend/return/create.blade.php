@@ -83,10 +83,10 @@
                                                             <input type="hidden" name="actual_qty[]" class="actual-qty" value="{{$product_sale->qty}}">
                                                             <input type="number" class="form-control qty" name="qty[]" value="{{$product_sale->qty}}" required step="any" max="{{$product_sale->qty}}" />
                                                         </td>
-                                                        <td class="net_unit_price">{{ number_format((float)$product_sale->net_unit_price, 2, '.', '') }} </td>
-                                                        <td class="discount">{{ number_format((float)$product_sale->discount, 2, '.', '') }}</td>
-                                                        <td class="tax">{{ number_format((float)$product_sale->tax, 2, '.', '') }}</td>
-                                                        <td class="sub-total">{{ number_format((float)$product_sale->total, 2, '.', '') }}</td>
+                                                        <td class="net_unit_price">{{ number_format((float)$product_sale->net_unit_price, 0, '.', '') }} </td>
+                                                        <td class="discount">{{ number_format((float)$product_sale->discount, 0, '.', '') }}</td>
+                                                        <td class="tax">{{ number_format((float)$product_sale->tax, 0, '.', '') }}</td>
+                                                        <td class="sub-total">{{ number_format((float)$product_sale->total, 0, '.', '') }}</td>
                                                         <td><input type="checkbox" class="is-return" name="is_return[]" value="{{$product_data->id}}"></td>
                                                         <input type="hidden" class="product-code" name="product_code[]" value="{{$product_data->code}}"/>
                                                         <input type="hidden" name="product_id[]" class="product-id" value="{{$product_data->id}}"/>
@@ -326,19 +326,19 @@ function calculateTotal() {
             total_tax += parseFloat(tax);
             total += parseFloat(unit_price * qty);
             $('table.order-list tbody tr:nth-child(' + (i + 1) + ') .subtotal-value').val(unit_price * qty);
-            $('table.order-list tbody tr:nth-child(' + (i + 1) + ') .sub-total').text(parseFloat(unit_price * qty).toFixed(2));
-            $('table.order-list tbody tr:nth-child(' + (i + 1) + ') .tax-value').val(parseFloat(tax).toFixed(2));
-            $('table.order-list tbody tr:nth-child(' + (i + 1) + ') .tax').text(parseFloat(tax).toFixed(2));
+            $('table.order-list tbody tr:nth-child(' + (i + 1) + ') .sub-total').text(parseFloat(unit_price * qty).toFixed(0));
+            $('table.order-list tbody tr:nth-child(' + (i + 1) + ') .tax-value').val(parseFloat(tax).toFixed(0));
+            $('table.order-list tbody tr:nth-child(' + (i + 1) + ') .tax').text(parseFloat(tax).toFixed(0));
             item++;
         }
     });
     $('input[name="total_qty"]').val(total_qty);
 
-    $('input[name="total_discount"]').val(total_discount.toFixed(2));
+    $('input[name="total_discount"]').val(total_discount.toFixed(0));
 
-    $('input[name="total_tax"]').val(total_tax.toFixed(2));
+    $('input[name="total_tax"]').val(total_tax.toFixed(0));
 
-    $('input[name="total_price"]').val(total.toFixed(2));
+    $('input[name="total_price"]').val(total.toFixed(0));
     $('input[name="item"]').val(item);
     item += '(' + total_qty + ')';
     $('#item').text(item);
@@ -354,11 +354,11 @@ function calculateGrandTotal() {
     var grand_total = subtotal + order_tax;
 
     
-    $('#subtotal').text(subtotal.toFixed(2));
-    $('#order_tax').text(order_tax.toFixed(2));
-    $('input[name="order_tax"]').val(order_tax.toFixed(2));
-    $('#grand_total').text(grand_total.toFixed(2));
-    $('input[name="grand_total"]').val(grand_total.toFixed(2));
+    $('#subtotal').text(subtotal.toFixed(0));
+    $('#order_tax').text(order_tax.toFixed(0));
+    $('input[name="order_tax"]').val(order_tax.toFixed(0));
+    $('#grand_total').text(grand_total.toFixed(0));
+    $('input[name="grand_total"]').val(grand_total.toFixed(0));
 }
 
 $(window).keydown(function(e){

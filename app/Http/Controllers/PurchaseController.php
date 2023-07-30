@@ -203,11 +203,11 @@ class PurchaseController extends Controller
                 else
                     $nestedData['payment_status'] = '<div class="badge badge-success">'.trans('file.Paid').'</div>';
 
-                $nestedData['grand_total'] = number_format($purchase->grand_total, 2);
+                $nestedData['grand_total'] = number_format($purchase->grand_total, 0);
                 $returned_amount = DB::table('return_purchases')->where('purchase_id', $purchase->id)->sum('grand_total');
-                $nestedData['returned_amount'] = number_format($returned_amount, 2);
-                $nestedData['paid_amount'] = number_format($purchase->paid_amount, 2);
-                $nestedData['due'] = number_format($purchase->grand_total- $returned_amount  - $purchase->paid_amount, 2);
+                $nestedData['returned_amount'] = number_format($returned_amount, 0);
+                $nestedData['paid_amount'] = number_format($purchase->paid_amount, 0);
+                $nestedData['due'] = number_format($purchase->grand_total- $returned_amount  - $purchase->paid_amount, 0);
                 $nestedData['options'] = '<div class="btn-group">
                             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.trans("file.action").'
                               <span class="caret"></span>
@@ -689,16 +689,16 @@ supplier : '. $lims_purchase_data['supplier']['name'] ?? 'Invalid Supplier Id'. 
             else
                 $product_purchase->recieved = 0;
             $product_purchase->purchase_unit_id = $unit[$key]['id'];
-            $product_purchase->net_unit_cost = number_format((float)$net_unit_cost, 2, '.', '');
+            $product_purchase->net_unit_cost = number_format((float)$net_unit_cost, 0, '.', '');
             $product_purchase->discount = $discount[$key] * $qty[$key];
             $product_purchase->tax_rate = $tax[$key]['rate'];
-            $product_purchase->tax = number_format((float)$product_tax, 2, '.', '');
-            $product_purchase->total = number_format((float)$total, 2, '.', '');
+            $product_purchase->tax = number_format((float)$product_tax, 0, '.', '');
+            $product_purchase->total = number_format((float)$total, 0, '.', '');
             $product_purchase->save();
             $lims_purchase_data->total_qty += $qty[$key];
             $lims_purchase_data->total_discount += $discount[$key] * $qty[$key];
-            $lims_purchase_data->total_tax += number_format((float)$product_tax, 2, '.', '');
-            $lims_purchase_data->total_cost += number_format((float)$total, 2, '.', '');
+            $lims_purchase_data->total_tax += number_format((float)$product_tax, 0, '.', '');
+            $lims_purchase_data->total_cost += number_format((float)$total, 0, '.', '');
         }
         $lims_purchase_data->item = $key + 1;
         $lims_purchase_data->order_tax = ($lims_purchase_data->total_cost - $lims_purchase_data->order_discount) * ($data['order_tax_rate'] / 100);

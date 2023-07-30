@@ -2032,7 +2032,7 @@ if(getSavedValue("localStorageQty")) {
 
     product_price.push(parseFloat($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('.product_price').val()));
     var quantity = parseFloat($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('.qty').val());
-    product_discount.push(parseFloat(localStorageProductDiscount[i] / localStorageQty[i]).toFixed(2));
+    product_discount.push(parseFloat(localStorageProductDiscount[i] / localStorageQty[i]).toFixed(0));
     tax_rate.push(parseFloat($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('.tax-rate').val()));
     tax_name.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('.tax-name').val());
     tax_method.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('.tax-method').val());
@@ -2889,11 +2889,11 @@ $('.coupon-btn-close').on("click", function() {
 $(document).on('click', '.qc-btn', function(e) {
     if($(this).data('amount')) {
         if($('.qc').data('initial')) {
-            $('input[name="paying_amount"]').val( $(this).data('amount').toFixed(2) );
+            $('input[name="paying_amount"]').val( $(this).data('amount').toFixed(0) );
             $('.qc').data('initial', 0);
         }
         else {
-            $('input[name="paying_amount"]').val( (parseFloat($('input[name="paying_amount"]').val()) + $(this).data('amount')).toFixed(2) );
+            $('input[name="paying_amount"]').val( (parseFloat($('input[name="paying_amount"]').val()) + $(this).data('amount')).toFixed(0) );
         }
     }
     else
@@ -2902,7 +2902,7 @@ $(document).on('click', '.qc-btn', function(e) {
 });
 
 function change(paying_amount, paid_amount) {
-    $("#change").text( parseFloat(paying_amount - paid_amount).toFixed(2) );
+    $("#change").text( parseFloat(paying_amount - paid_amount).toFixed(0) );
 }
 
 function confirmDelete() {
@@ -3021,7 +3021,7 @@ function addNewProduct(data){
     localStorageProductCode.splice(rowindex, 0, data[1]);
     localStorageSaleUnit.splice(rowindex, 0, temp_unit_name[0]);
     localStorageProductDiscount.splice(rowindex, 0, product_discount[rowindex]);
-    localStorageTaxRate.splice(rowindex, 0, tax_rate[rowindex].toFixed(2));
+    localStorageTaxRate.splice(rowindex, 0, tax_rate[rowindex].toFixed(0));
     localStorageTaxName.splice(rowindex, 0, data[4]);
     localStorageTaxMethod.splice(rowindex, 0, data[5]);
     localStorageTempUnitName.splice(rowindex, 0, data[6]);
@@ -3063,7 +3063,7 @@ function edit(){
     var qty = $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.qty').val();
     $('input[name="edit_qty"]').val(qty);
 
-    $('input[name="edit_discount"]').val(parseFloat(product_discount[rowindex]).toFixed(2));
+    $('input[name="edit_discount"]').val(parseFloat(product_discount[rowindex]).toFixed(0));
 
     var tax_name_all = <?php echo json_encode($tax_name_all) ?>;
     pos = tax_name_all.indexOf(tax_name[rowindex]);
@@ -3089,7 +3089,7 @@ function edit(){
         row_product_price = product_price[rowindex];
         $("#edit_unit").hide();
     }
-    $('input[name="edit_unit_price"]').val(row_product_price.toFixed(2));
+    $('input[name="edit_unit_price"]').val(row_product_price.toFixed(0));
     $('.selectpicker').selectpicker('refresh');
 }
 
@@ -3111,7 +3111,7 @@ function couponDiscount() {
                 else if(value['type'] == 'fixed'){
                     if(parseFloat($('input[name="grand_total"]').val()) >= value['minimum_amount']) {
                         $('input[name="grand_total"]').val($('input[name="grand_total"]').val() - value['amount']);
-                        $('#grand-total').text(parseFloat($('input[name="grand_total"]').val()).toFixed(2));
+                        $('#grand-total').text(parseFloat($('input[name="grand_total"]').val()).toFixed(0));
                         if(!$('input[name="coupon_active"]').val())
                             alert('Congratulation! You got '+value['amount']+' '+currency+' discount');
                         $(".coupon-check").prop("disabled",true);
@@ -3120,7 +3120,7 @@ function couponDiscount() {
                         $("#coupon-modal").modal('hide');
                         $('input[name="coupon_id"]').val(value['id']);
                         $('input[name="coupon_discount"]').val(value['amount']);
-                        $('#coupon-text').text(parseFloat(value['amount']).toFixed(2));
+                        $('#coupon-text').text(parseFloat(value['amount']).toFixed(0));
                     }
                     else
                         alert('Grand Total is not sufficient for discount! Required '+value['minimum_amount']+' '+currency);
@@ -3130,7 +3130,7 @@ function couponDiscount() {
                     var coupon_discount = grand_total * (value['amount'] / 100);
                     grand_total = grand_total - coupon_discount;
                     $('input[name="grand_total"]').val(grand_total);
-                    $('#grand-total').text(parseFloat(grand_total).toFixed(2));
+                    $('#grand-total').text(parseFloat(grand_total).toFixed(0));
                     if(!$('input[name="coupon_active"]').val())
                             alert('Congratulation! You got '+value['amount']+'% discount');
                     $(".coupon-check").prop("disabled",true);
@@ -3139,7 +3139,7 @@ function couponDiscount() {
                     $("#coupon-modal").modal('hide');
                     $('input[name="coupon_id"]').val(value['id']);
                     $('input[name="coupon_discount"]').val(coupon_discount);
-                    $('#coupon-text').text(parseFloat(coupon_discount).toFixed(2));
+                    $('#coupon-text').text(parseFloat(coupon_discount).toFixed(0));
                 }
             }
         });
@@ -3258,20 +3258,20 @@ function calculateRowProductData(quantity) {
         var sub_total = sub_total_unit * quantity;
     }
 
-    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.discount-value').val((product_discount[rowindex] * quantity).toFixed(2));
-    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-rate').val(tax_rate[rowindex].toFixed(2));
-    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').val(net_unit_price.toFixed(2));
-    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed(2));
-    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-price').text(sub_total_unit.toFixed(2));
-    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed(2));
-    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.subtotal-value').val(sub_total.toFixed(2));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.discount-value').val((product_discount[rowindex] * quantity).toFixed(0));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-rate').val(tax_rate[rowindex].toFixed(0));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_price').val(net_unit_price.toFixed(0));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed(0));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.product-price').text(sub_total_unit.toFixed(0));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed(0));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.subtotal-value').val(sub_total.toFixed(0));
 
-    localStorageProductDiscount.splice(rowindex, 1, (product_discount[rowindex] * quantity).toFixed(2));
-    localStorageTaxRate.splice(rowindex, 1, tax_rate[rowindex].toFixed(2));
-    localStorageNetUnitPrice.splice(rowindex, 1, net_unit_price.toFixed(2));
-    localStorageTaxValue.splice(rowindex, 1, tax.toFixed(2));
-    localStorageSubTotalUnit.splice(rowindex, 1, sub_total_unit.toFixed(2));
-    localStorageSubTotal.splice(rowindex, 1, sub_total.toFixed(2));
+    localStorageProductDiscount.splice(rowindex, 1, (product_discount[rowindex] * quantity).toFixed(0));
+    localStorageTaxRate.splice(rowindex, 1, tax_rate[rowindex].toFixed(0));
+    localStorageNetUnitPrice.splice(rowindex, 1, net_unit_price.toFixed(0));
+    localStorageTaxValue.splice(rowindex, 1, tax.toFixed(0));
+    localStorageSubTotalUnit.splice(rowindex, 1, sub_total_unit.toFixed(0));
+    localStorageSubTotal.splice(rowindex, 1, sub_total.toFixed(0));
     localStorage.setItem("localStorageProductDiscount", localStorageProductDiscount);
     localStorage.setItem("localStorageTaxRate", localStorageTaxRate);
     localStorage.setItem("localStorageNetUnitPrice", localStorageNetUnitPrice);
@@ -3300,7 +3300,7 @@ function calculateTotal() {
         total_discount += parseFloat($(this).val());
     });
 
-    $('input[name="total_discount"]').val(total_discount.toFixed(2));
+    $('input[name="total_discount"]').val(total_discount.toFixed(0));
 
     //Sum of tax
     var total_tax = 0;
@@ -3308,14 +3308,14 @@ function calculateTotal() {
         total_tax += parseFloat($(this).val());
     });
 
-    $('input[name="total_tax"]').val(total_tax.toFixed(2));
+    $('input[name="total_tax"]').val(total_tax.toFixed(0));
 
     //Sum of subtotal
     var total = 0;
     $(".sub-total").each(function() {
         total += parseFloat($(this).text());
     });
-    $('input[name="total_price"]').val(total.toFixed(2));
+    $('input[name="total_price"]').val(total.toFixed(0));
 
     calculateGrandTotal();
 }
@@ -3338,7 +3338,7 @@ function calculateGrandTotal() {
 
     localStorage.setItem("order-tax-rate-select", order_tax);
     localStorage.setItem("order-discount-type", order_discount_type);
-    $("#discount").text(order_discount.toFixed(2));
+    $("#discount").text(order_discount.toFixed(0));
     $('input[name="order_discount"]').val(order_discount);
     $('input[name="order_discount_type"]').val(order_discount_type);
 
@@ -3349,7 +3349,7 @@ function calculateGrandTotal() {
     item = ++item + '(' + total_qty + ')';
     order_tax = (subtotal - order_discount) * (order_tax / 100);
     var grand_total = (subtotal + order_tax + shipping_cost) - order_discount;
-    $('input[name="grand_total"]').val(grand_total.toFixed(2));
+    $('input[name="grand_total"]').val(grand_total.toFixed(0));
 
     couponDiscount();
     var coupon_discount = parseFloat($('input[name="coupon_discount"]').val());
@@ -3359,12 +3359,12 @@ function calculateGrandTotal() {
 
     $('#item').text(item);
     $('input[name="item"]').val($('table.order-list tbody tr:last').index() + 1);
-    $('#subtotal').text(subtotal.toFixed(2));
-    $('#tax').text(order_tax.toFixed(2));
-    $('input[name="order_tax"]').val(order_tax.toFixed(2));
-    $('#shipping-cost').text(shipping_cost.toFixed(2));
-    $('#grand-total').text(grand_total.toFixed(2));
-    $('input[name="grand_total"]').val(grand_total.toFixed(2));
+    $('#subtotal').text(subtotal.toFixed(0));
+    $('#tax').text(order_tax.toFixed(0));
+    $('input[name="order_tax"]').val(order_tax.toFixed(0));
+    $('#shipping-cost').text(shipping_cost.toFixed(0));
+    $('#grand-total').text(grand_total.toFixed(0));
+    $('input[name="grand_total"]').val(grand_total.toFixed(0));
 }
 
 function hide() {

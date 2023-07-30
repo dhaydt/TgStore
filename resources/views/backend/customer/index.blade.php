@@ -74,8 +74,8 @@
                         @endforeach
                     </td>
                     <td>{{$customer->points}}</td>
-                    <td>{{number_format($customer->deposit - $customer->expense, 2)}}</td>
-                    <td>{{number_format($saleData->grand_total - $returned_amount - $saleData->paid_amount, 2)}}</td>
+                    <td>{{number_format($customer->deposit - $customer->expense, 0)}}</td>
+                    <td>{{number_format($saleData->grand_total - $returned_amount - $saleData->paid_amount, 0)}}</td>
                     <td>
                         <div class="btn-group">
                             <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{trans('file.action')}}

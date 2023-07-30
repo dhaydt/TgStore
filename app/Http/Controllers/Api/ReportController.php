@@ -494,7 +494,7 @@ class ReportController extends Controller
                     $supplier = new Supplier();
                     $nestedData['supplier'] = 'N/A';
                 }
-                $nestedData['grand_total'] = number_format($returns->grand_total, 2);
+                $nestedData['grand_total'] = number_format($returns->grand_total, 0);
                 $nestedData['return_date'] = Carbon::parse($returns->created_at)->format('d-m-Y H:i');
                 // data for purchase details by one click
                 $product = PurchaseProductReturn::where('return_id', $returns->id)->get();
@@ -1188,11 +1188,11 @@ class ReportController extends Controller
                 else
                     $nestedData['payment_status'] = 'Lunas';
                 
-                $nestedData['grand_total'] = number_format($purchase->grand_total, 2);
+                $nestedData['grand_total'] = number_format($purchase->grand_total, 0);
                 $returned_amount = DB::table('return_purchases')->where('purchase_id', $purchase->id)->sum('grand_total');
-                $nestedData['returned_amount'] = number_format($returned_amount, 2);
-                $nestedData['paid_amount'] = number_format($purchase->paid_amount, 2);
-                $nestedData['due'] = number_format($purchase->grand_total- $returned_amount  - $purchase->paid_amount, 2);
+                $nestedData['returned_amount'] = number_format($returned_amount, 0);
+                $nestedData['paid_amount'] = number_format($purchase->paid_amount, 0);
+                $nestedData['due'] = number_format($purchase->grand_total- $returned_amount  - $purchase->paid_amount, 0);
                 
 
                 // data for purchase details by one click

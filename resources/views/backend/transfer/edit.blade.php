@@ -160,9 +160,9 @@
                                                         </td>
                                                         @endif
                                                         <td><input type="number" class="form-control qty" name="qty[]" value="{{$product_transfer->qty}}" required step="any" /></td>
-                                                        <td class="net_unit_cost">{{ number_format((float)$product_transfer->net_unit_cost, 2, '.', '') }} </td>
-                                                        <td class="tax">{{ number_format((float)$product_transfer->tax, 2, '.', '') }}</td>
-                                                        <td class="sub-total">{{ number_format((float)$product_transfer->total, 2, '.', '') }}</td>
+                                                        <td class="net_unit_cost">{{ number_format((float)$product_transfer->net_unit_cost, 0, '.', '') }} </td>
+                                                        <td class="tax">{{ number_format((float)$product_transfer->tax, 0, '.', '') }}</td>
+                                                        <td class="sub-total">{{ number_format((float)$product_transfer->total, 0, '.', '') }}</td>
                                                         <td><button type="button" class="ibtnDel btn btn-md btn-danger">{{trans("file.delete")}}</button></td>
                                                         <input type="hidden" class="product-id" name="product_id[]" value="{{$product_data->id}}"/>
                                                         <input type="hidden" name="product_variant_id[]" value="{{$product_variant_id}}"/>
@@ -189,8 +189,8 @@
                                                     <th colspan="3">{{trans('file.Total')}}</th>
                                                     <th id="total-qty">{{$lims_transfer_data->total_qty}}</th>
                                                     <th></th>
-                                                    <th id="total-tax">{{ number_format((float)$lims_transfer_data->total_tax, 2, '.', '')}}</th>
-                                                    <th id="total">{{ number_format((float)$lims_transfer_data->total_cost, 2, '.', '')}}</th>
+                                                    <th id="total-tax">{{ number_format((float)$lims_transfer_data->total_tax, 0, '.', '')}}</th>
+                                                    <th id="total">{{ number_format((float)$lims_transfer_data->total_cost, 0, '.', '')}}</th>
                                                     <th><i class="dripicons-trash"></i></th>
                                                 </tfoot>
                                             </table>
@@ -378,11 +378,11 @@ $('select[name="from_warehouse_id"]').val($('input[name="from_warehouse_id_hidde
 $('select[name="to_warehouse_id"]').val($('input[name="to_warehouse_id_hidden"]').val());
 $('.selectpicker').selectpicker('refresh');
 $('#item').text($('input[name="item"]').val() + '(' + $('input[name="total_qty"]').val() + ')');
-$('#subtotal').text(parseFloat($('input[name="total_cost"]').val()).toFixed(2));
+$('#subtotal').text(parseFloat($('input[name="total_cost"]').val()).toFixed(0));
 if(!$('input[name="shipping_cost"]').val())
     $('input[name="shipping_cost"]').val('0.00');
-$('#shipping_cost').text(parseFloat($('input[name="shipping_cost"]').val()).toFixed(2));
-$('#grand_total').text(parseFloat($('input[name="grand_total"]').val()).toFixed(2));
+$('#shipping_cost').text(parseFloat($('input[name="shipping_cost"]').val()).toFixed(0));
+$('#grand_total').text(parseFloat($('input[name="grand_total"]').val()).toFixed(0));
 $('select[name="from_warehouse_id"]').prop('disabled', true);
 
 var id = $('select[name="from_warehouse_id"]').val();
@@ -608,7 +608,7 @@ function edit() {
     $('input[name="edit_qty"]').val(qty);
 
     unitConversion();
-    $('input[name="edit_unit_cost"]').val(row_product_cost.toFixed(2));
+    $('input[name="edit_unit_cost"]').val(row_product_cost.toFixed(0));
 
     temp_unit_name = (unit_name[rowindex]).split(',');
     temp_unit_name.pop();
@@ -651,19 +651,19 @@ function checkQuantity(purchase_qty, flag) {
 
 function calculateRowProductData(quantity) {
     unitConversion();
-    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-rate').val(tax_rate[rowindex].toFixed(2));
+    $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-rate').val(tax_rate[rowindex].toFixed(0));
 
     if (tax_method[rowindex] == 1) {
         var net_unit_cost = row_product_cost;
         var tax = net_unit_cost * quantity * (tax_rate[rowindex] / 100);
         var sub_total = (net_unit_cost * quantity) + tax;
 
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').text(net_unit_cost.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').val(net_unit_cost.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax').text(tax.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.subtotal-value').val(sub_total.toFixed(2));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').text(net_unit_cost.toFixed(0));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').val(net_unit_cost.toFixed(0));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax').text(tax.toFixed(0));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed(0));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed(0));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.subtotal-value').val(sub_total.toFixed(0));
     } else {
 
         var sub_total_unit = row_product_cost;
@@ -671,12 +671,12 @@ function calculateRowProductData(quantity) {
         var tax = (sub_total_unit - net_unit_cost) * quantity;
         var sub_total = sub_total_unit * quantity;
 
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').text(net_unit_cost.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').val(net_unit_cost.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax').text(tax.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed(2));
-        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.subtotal-value').val(sub_total.toFixed(2));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').text(net_unit_cost.toFixed(0));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.net_unit_cost').val(net_unit_cost.toFixed(0));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax').text(tax.toFixed(0));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.tax-value').val(tax.toFixed(0));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.sub-total').text(sub_total.toFixed(0));
+        $('table.order-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.subtotal-value').val(sub_total.toFixed(0));
     }
 
     calculateTotal();
@@ -712,16 +712,16 @@ function calculateTotal() {
     $(".tax").each(function() {
         total_tax += parseFloat($(this).text());
     });
-    $("#total-tax").text(total_tax.toFixed(2));
-    $('input[name="total_tax"]').val(total_tax.toFixed(2));
+    $("#total-tax").text(total_tax.toFixed(0));
+    $('input[name="total_tax"]').val(total_tax.toFixed(0));
 
     //Sum of subtotal
     var total = 0;
     $(".sub-total").each(function() {
         total += parseFloat($(this).text());
     });
-    $("#total").text(total.toFixed(2));
-    $('input[name="total_cost"]').val(total.toFixed(2));
+    $("#total").text(total.toFixed(0));
+    $('input[name="total_cost"]').val(total.toFixed(0));
 
     calculateGrandTotal();
 }
@@ -743,10 +743,10 @@ function calculateGrandTotal() {
 
     $('#item').text(item);
     $('input[name="item"]').val($('table.order-list tbody tr:last').index() + 1);
-    $('#subtotal').text(subtotal.toFixed(2));
-    $('#shipping_cost').text(shipping_cost.toFixed(2));
-    $('#grand_total').text(grand_total.toFixed(2));
-    $('input[name="grand_total"]').val(grand_total.toFixed(2));
+    $('#subtotal').text(subtotal.toFixed(0));
+    $('#shipping_cost').text(shipping_cost.toFixed(0));
+    $('#grand_total').text(grand_total.toFixed(0));
+    $('input[name="grand_total"]').val(grand_total.toFixed(0));
 }
 
 $('input[name="shipping_cost"]').on("input", function() {

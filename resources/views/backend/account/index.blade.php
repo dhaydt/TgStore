@@ -34,7 +34,7 @@
                     <td>{{ $account->account_no }}</td>
                     <td>{{ $account->name }}</td>
                     @if($account->initial_balance)
-                        <td>{{ number_format((float)$account->initial_balance, 2, '.', '') }}</td>
+                        <td>{{ number_format((float)$account->initial_balance, 0, '.', '') }}</td>
                     @else
                         <td>0.00</td>
                     @endif
@@ -264,10 +264,10 @@ function confirmDelete() {
     function datatable_sum(dt_selector, is_calling_first) {
         if (dt_selector.rows( '.selected' ).any() && is_calling_first) {
             var rows = dt_selector.rows( '.selected' ).indexes();
-            $( dt_selector.column( 3 ).footer() ).html(dt_selector.cells( rows, 3, { page: 'current' } ).data().sum().toFixed(2));
+            $( dt_selector.column( 3 ).footer() ).html(dt_selector.cells( rows, 3, { page: 'current' } ).data().sum().toFixed(0));
         }
         else {
-            $( dt_selector.column( 3 ).footer() ).html(dt_selector.cells( rows, 3, { page: 'current' } ).data().sum().toFixed(2));
+            $( dt_selector.column( 3 ).footer() ).html(dt_selector.cells( rows, 3, { page: 'current' } ).data().sum().toFixed(0));
         }
     }
 

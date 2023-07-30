@@ -34,7 +34,7 @@
 				<td style="border: 1px solid #000; padding: 5px">N/A</td>
 			@endif
 			<td style="border: 1px solid #000; padding: 5px">{{$qty[$key].' '.$unit[$key]}}</td>
-			<td style="border: 1px solid #000; padding: 5px">{{number_format((float)($total[$key] / $qty[$key]), 2, '.', '')}}</td>
+			<td style="border: 1px solid #000; padding: 5px">{{number_format((float)($total[$key] / $qty[$key]), 0, '.', '')}}</td>
 			<td style="border: 1px solid #000; padding: 5px">{{$total[$key]}}</td>
 		</tr>
 		@endforeach
@@ -75,7 +75,7 @@
 		</tr>
 		<tr>
 			<td colspan="5" style="border: 1px solid #000; padding: 5px"><strong>Due</strong></td>
-			<td style="border: 1px solid #000; padding: 5px">{{number_format((float)($grand_total - $paid_amount), 2, '.', '')}}</td>
+			<td style="border: 1px solid #000; padding: 5px">{{number_format((float)($grand_total - $paid_amount), 0, '.', '')}}</td>
 		</tr>
 	</tbody>
 </table>

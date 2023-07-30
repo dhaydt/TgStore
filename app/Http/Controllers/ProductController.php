@@ -439,13 +439,13 @@ class ProductController extends Controller
                 $nestedData['reference_no'] = $sale->reference_no;
                 $nestedData['warehouse'] = $sale->warehouse_name;
                 $nestedData['customer'] = $sale->customer_name.' ['.($sale->customer_number).']';
-                $nestedData['qty'] = number_format($sale->qty, 2);
+                $nestedData['qty'] = number_format($sale->qty, 0);
                 if($sale->sale_unit_id) {
                     $unit_data = DB::table('units')->select('unit_code')->find($sale->sale_unit_id);
                     $nestedData['qty'] .= ' '.$unit_data->unit_code;
                 }
-                $nestedData['unit_price'] = number_format(($sale->total / $sale->qty), 2);
-                $nestedData['sub_total'] = number_format($sale->total, 2);
+                $nestedData['unit_price'] = number_format(($sale->total / $sale->qty), 0);
+                $nestedData['sub_total'] = number_format($sale->total, 0);
                 $data[] = $nestedData;
             }
         }
@@ -532,13 +532,13 @@ class ProductController extends Controller
                     $nestedData['supplier'] = $purchase->supplier_name.' ['.($purchase->supplier_number).']';
                 else
                     $nestedData['supplier'] = 'N/A';
-                $nestedData['qty'] = number_format($purchase->qty, 2);
+                $nestedData['qty'] = number_format($purchase->qty, 0);
                 if($purchase->purchase_unit_id) {
                     $unit_data = DB::table('units')->select('unit_code')->find($purchase->purchase_unit_id);
                     $nestedData['qty'] .= ' '.$unit_data->unit_code;
                 }
-                $nestedData['unit_cost'] = number_format(($purchase->total / $purchase->qty), 2);
-                $nestedData['sub_total'] = number_format($purchase->total, 2);
+                $nestedData['unit_cost'] = number_format(($purchase->total / $purchase->qty), 0);
+                $nestedData['sub_total'] = number_format($purchase->total, 0);
                 $data[] = $nestedData;
             }
         }
@@ -624,13 +624,13 @@ class ProductController extends Controller
                 $nestedData['reference_no'] = $returns->reference_no;
                 $nestedData['warehouse'] = $returns->warehouse_name;
                 $nestedData['customer'] = $returns->customer_name.' ['.($returns->customer_number).']';
-                $nestedData['qty'] = number_format($returns->qty, 2);
+                $nestedData['qty'] = number_format($returns->qty, 0);
                 if($returns->sale_unit_id) {
                     $unit_data = DB::table('units')->select('unit_code')->find($returns->sale_unit_id);
                     $nestedData['qty'] .= ' '.$unit_data->unit_code;
                 }
-                $nestedData['unit_price'] = number_format(($returns->total / $returns->qty), 2);
-                $nestedData['sub_total'] = number_format($returns->total, 2);
+                $nestedData['unit_price'] = number_format(($returns->total / $returns->qty), 0);
+                $nestedData['sub_total'] = number_format($returns->total, 0);
                 $data[] = $nestedData;
             }
         }
@@ -718,13 +718,13 @@ class ProductController extends Controller
                     $nestedData['supplier'] = $return_purchase->supplier_name.' ['.($return_purchase->supplier_number).']';
                 else
                     $nestedData['supplier'] = 'N/A';
-                $nestedData['qty'] = number_format($return_purchase->qty, 2);
+                $nestedData['qty'] = number_format($return_purchase->qty, 0);
                 if($return_purchase->purchase_unit_id) {
                     $unit_data = DB::table('units')->select('unit_code')->find($return_purchase->purchase_unit_id);
                     $nestedData['qty'] .= ' '.$unit_data->unit_code;
                 }
-                $nestedData['unit_cost'] = number_format(($return_purchase->total / $return_purchase->qty), 2);
-                $nestedData['sub_total'] = number_format($return_purchase->total, 2);
+                $nestedData['unit_cost'] = number_format(($return_purchase->total / $return_purchase->qty), 0);
+                $nestedData['sub_total'] = number_format($return_purchase->total, 0);
                 $data[] = $nestedData;
             }
         }
