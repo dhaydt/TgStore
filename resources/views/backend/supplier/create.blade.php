@@ -8,7 +8,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
-                        <h4>{{trans('file.Add Supplier')}}</h4>
+                        <h4>Tambah Kasir</h4>
                     </div>
                     <div class="card-body">
                         <p class="italic"><small>{{trans('file.The field labels marked with * are required input fields')}}.</small></p>
@@ -93,7 +93,7 @@
                                     <input type="text" name="city" required class="form-control">
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            {{-- <div class="col-md-4">
                                 <div class="form-group">
                                     <label>{{trans('file.State')}}</label>
                                     <input type="text" name="state" class="form-control">
@@ -110,7 +110,7 @@
                                     <label>{{trans('file.Country')}}</label>
                                     <input type="text" name="country" class="form-control">
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-md-12">
                                 <div class="form-group mt-4">
                                     <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary">
