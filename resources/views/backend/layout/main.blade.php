@@ -1101,11 +1101,11 @@
                     </a>
                     <ul class="right-sidebar">
                         <li class="notifications">
-                            <a href="{{route('report.qtyAlert')}}" class="btn btn-link"> {{$alert_product}} product exceeds alert quantity</a>
+                            <a href="{{route('report.qtyAlert')}}" class="btn btn-link"> {{$alert_product}} produk peringatan stok</a>
                         </li>
                         @if($dso_alert_product_no)
                         <li class="notifications">
-                            <a href="{{route('report.dailySaleObjective')}}" class="btn btn-link"> {{$dso_alert_product_no}} product could not fulfill daily sale objective</a>
+                            <a href="{{route('report.dailySaleObjective')}}" class="btn btn-link"> {{$dso_alert_product_no}} produk tidak dapat memenuhi target penjualan harian</a>
                         </li>
                         @endif
                         @foreach(\Auth::user()->unreadNotifications as $key => $notification)
