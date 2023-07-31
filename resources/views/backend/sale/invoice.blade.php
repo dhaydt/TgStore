@@ -193,9 +193,19 @@
                 </tr>
                 <tr>
                     @if($general_setting->currency_position == 'prefix')
-                    <th class="centered" colspan="3">{{trans('file.In Words')}}: <span>{{$currency->code}}</span> <span>{{str_replace("-"," ",$numberInWords)}} Rupiah</span></th>
+                    <th class="centered" colspan="3">
+                        {{-- {{trans('file.In Words')}}: 
+                        <span>{{$currency->code}}</span>  --}}
+                        <span>{{str_replace("-"," ",$numberInWords)}} Rupiah</span></th>
                     @else
-                    <th class="centered" colspan="3">{{trans('file.In Words')}}: <span>{{str_replace("-"," ",$numberInWords)}}</span> <span>{{$currency->code}} Rupiah</span></th>
+                    <th class="centered" colspan="3">
+                        {{trans('file.In Words')}}: 
+                        <span>{{str_replace("-"," ",$numberInWords)}}</span> 
+                        <span>
+                            {{-- {{$currency->code}}  --}}
+                            Rupiah
+                        </span>
+                    </th>
                     @endif
                 </tr>
             </tbody>
