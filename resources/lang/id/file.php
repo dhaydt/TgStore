@@ -497,7 +497,7 @@ return [
 	"Stock Count" => "Count Saham",
 	"Count Stock" => "Stock Opname",
 	"Full" => "Penuh",
-	"Finalize" => "Memuktamadkan",
+	"Finalize" => "Final",
 	"Initial File" => "File Awal",
 	"Final File" => "File Akhir",
 	"Final Report" => "Laporan akhir",
