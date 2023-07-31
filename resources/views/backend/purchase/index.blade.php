@@ -198,7 +198,7 @@
                             <select name="paid_by_id" class="form-control">
                                 <option value="1">Cash</option>
                                 <option value="3">Credit Card</option>
-                                <option value="4">Cheque</option>
+                                {{-- <option value="4">Cheque</option> --}}
                             </select>
                         </div>
                     </div>
@@ -264,9 +264,9 @@
                         <div class="col-md-6 mt-1">
                             <label>{{trans('file.Paid By')}}</label>
                             <select name="edit_paid_by_id" class="form-control selectpicker">
-                                <option value="1">Cash</option>
-                                <option value="3">Credit Card</option>
-                                <option value="4">Cheque</option>
+                                <option value="1">Tunai</option>
+                                <option value="3">Transfer</option>
+                                {{-- <option value="4">Cheque</option> --}}
                             </select>
                         </div>
                     </div>

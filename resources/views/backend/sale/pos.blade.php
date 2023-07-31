@@ -1028,9 +1028,9 @@
                     </div>
                     <div class="payment-options">
                         <div class="column-5">
-                            <button style="background: #00cec9" type="button" class="btn btn-custom payment-btn" data-toggle="modal" data-target="#add-payment" id="cash-btn"><i class="fa fa-money"></i> {{trans('file.Cash')}}</button>
+                            <button style="background: #00cec9" type="button" class="btn btn-custom payment-btn" data-toggle="modal" data-target="#add-payment" id="cash-btn"><i class="fa fa-money"></i> Tunai</button>
                         </div>
-                        <div class="column-5">
+                        {{-- <div class="column-5">
                              <!--<button style="background: #0984e3" type="button" class="btn btn-custom payment-btn" data-toggle="modal" data-target="#add-payment" id="credit-card-btn"><i class="fa fa-credit-card"></i> {{trans('file.Card')}}</button> -->
                         </div>
                         <div class="column-5">
@@ -1044,17 +1044,17 @@
                         </div>
                         <div class="column-5">
                             <!-- <button style="background-color: #5f27cd" type="button" class="btn btn-custom payment-btn" data-toggle="modal" data-target="#add-payment" id="gift-card-btn"><i class="fa fa-credit-card-alt"></i> {{trans('file.Gift Card')}}</button> -->
-                        </div>
+                        </div> --}}
                         <div class="column-5">
-                            <!-- <button style="background-color: #b33771" type="button" class="btn btn-custom payment-btn" data-toggle="modal" data-target="#add-payment" id="deposit-btn"><i class="fa fa-university"></i> {{trans('file.Deposit')}}</button> -->
+                            <button style="background-color: #b33771" type="button" class="btn btn-custom payment-btn" data-toggle="modal" data-target="#add-payment" id="deposit-btn"><i class="fa fa-university"></i> {{trans('file.Deposit')}}</button>
                         </div>
-                        @if($lims_reward_point_setting_data->is_active)
+                        {{-- @if($lims_reward_point_setting_data->is_active)
                         <div class="column-5">
                             <!-- <button style="background-color: #319398" type="button" class="btn btn-custom payment-btn" data-toggle="modal" data-target="#add-payment" id="point-btn"><i class="dripicons-rocket"></i> {{trans('file.Points')}}</button> -->
                         </div>
-                        @endif
+                        @endif --}}
                         <div class="column-5">
-                            <button style="background-color: #d63031;" type="button" class="btn btn-custom" id="cancel-btn" onclick="return confirmCancel()"><i class="fa fa-close"></i> {{trans('file.Cancel')}}</button>
+                            <button style="background-color: #d63031;" type="button" class="btn btn-custom" id="cancel-btn" onclick="return confirmCancel()"><i class="fa fa-close"></i> Batal</button>
                         </div>
                         <div class="column-5">
                             <button style="background-color: #ffc107;" type="button" class="btn btn-custom" data-toggle="modal" data-target="#recentTransaction"><i class="dripicons-clock"></i> {{trans('file.Recent Transaction')}}</button>
@@ -1090,11 +1090,11 @@
                                             <input type="hidden" name="paid_by_id">
                                             <label>{{trans('file.Paid By')}}</label>
                                             <select name="paid_by_id_select" class="form-control selectpicker">
-                                                <option value="1">Cash</option>
-                                                <option value="2">Gift Card</option>
+                                                <option value="1">Tunai</option>
+                                                {{-- <option value="2">Gift Card</option>
                                                 <option value="3">Credit Card</option>
                                                 <option value="4">Cheque</option>
-                                                <option value="5">Paypal</option>
+                                                <option value="5">Paypal</option> --}}
                                                 <option value="6">Deposit</option>
                                                 @if($lims_reward_point_setting_data->is_active)
                                                 <option value="7">Points</option>

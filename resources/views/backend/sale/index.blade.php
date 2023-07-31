@@ -207,11 +207,11 @@
                         <div class="col-md-6 mt-1">
                             <label>{{trans('file.Paid By')}}</label>
                             <select name="paid_by_id" class="form-control">
-                                <option value="1">Cash</option>
-                                <option value="2">Gift Card</option>
-                                <option value="3">Credit Card</option>
-                                <option value="4">Cheque</option>
-                                <option value="5">Paypal</option>
+                                <option value="1">Tunai</option>
+                                {{-- <option value="2">Gift Card</option> --}}
+                                <option value="3">Transfer</option>
+                                {{-- <option value="4">Cheque</option> --}}
+                                {{-- <option value="5">Paypal</option> --}}
                                 <option value="6">Deposit</option>
                                 @if($lims_reward_point_setting_data->is_active)
                                 <option value="7">Points</option>
