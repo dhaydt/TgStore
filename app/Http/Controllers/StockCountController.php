@@ -63,7 +63,7 @@ class StockCountController extends Controller
             }
             //return $csvData;
             $filename= date('Ymd').'-'.date('his'). ".csv";
-            $file_path= public_path().'/stock_count/'.$filename;
+            $file_path= public_path().'/public/stock_count/'.$filename;
             $file = fopen($file_path, "w+");
             foreach ($csvData as $cellData){
               fputcsv($file, explode(',', $cellData));
@@ -108,11 +108,14 @@ class StockCountController extends Controller
         $product = [];
         while( !feof($file_handle) ) {
             $current_line = fgetcsv($file_handle);
+            // dd($current_line);
             if( $current_line && $i > 0 && ($current_line[3] != $current_line[4]) ){
                 $product[] = $current_line[0].' ['.$current_line[1].']';
                 $expected[] = $current_line[3];
                 $product_data = Product::where('code', $current_line[1])->first();
-                
+                if(!$product_data){
+                    return ['status' => 'error'];
+                }
                 if($current_line[4]){
                     $difference[] = $temp_dif = $current_line[4] - $current_line[3];
                     $counted[] = $current_line[4];
@@ -129,6 +132,7 @@ class StockCountController extends Controller
             $lims_stock_count_data->is_adjusted = true;
             $lims_stock_count_data->save();
         }
+        // dd($product);
         if( count($product) ) {
             $data[] = $product;
             $data[] = $expected;
@@ -137,6 +141,8 @@ class StockCountController extends Controller
             $data[] = $cost;
             $data[] = $lims_stock_count_data->is_adjusted;
         }
+
+        // dd($data);
         return $data;
     }
 
