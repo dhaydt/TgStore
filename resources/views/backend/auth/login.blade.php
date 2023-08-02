@@ -40,12 +40,16 @@
 
   <link rel="stylesheet" href="{{ asset('asset_login/css/style.css') }}">
   <style>
+    .ftco-section{
+      margin-top: 15vh;
+    }
     @media(max-width: 500px){
       .row-card{
         padding-top: 13px;
       }
       .ftco-section{
         padding-top: 5px !important;
+        margin-top: unset !important;
       }
       h2.heading-section{
         font-size: 18px;
