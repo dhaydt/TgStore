@@ -143,7 +143,7 @@ class StockController extends Controller
                         'product_id' => $p['product_id'],
                         'name' => $p['product']['name'],
                         'qty' => $p['qty'],
-                        'cost' => $p['product']['cost'],
+                        'cost' => number_format($p['product']['cost']),
                     ];
                     array_push($item, $i);
                 }
