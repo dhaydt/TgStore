@@ -93,9 +93,9 @@ class StockController extends Controller
                 $nestedData['reference_no'] = $transfer->reference_no;
                 $nestedData['from_warehouse'] = $transfer->fromWarehouse->id;
                 $nestedData['to_warehouse'] = $transfer->toWarehouse->id;
-                $nestedData['total_cost'] = number_format($transfer->total_cost);
-                $nestedData['total_tax'] = number_format($transfer->total_tax);
-                $nestedData['grand_total'] = number_format($transfer->grand_total);
+                $nestedData['total_cost'] = number_format($transfer->total_cost, 0);
+                $nestedData['total_tax'] = number_format($transfer->total_tax, 0);
+                $nestedData['grand_total'] = number_format($transfer->grand_total, 0);
 
                 if ($transfer->status == 1) {
                     $nestedData['status'] = 'completed';
@@ -143,7 +143,7 @@ class StockController extends Controller
                         'product_id' => $p['product_id'],
                         'name' => $p['product']['name'],
                         'qty' => $p['qty'],
-                        'cost' => number_format($p['product']['cost']),
+                        'cost' => $p['product']['cost'],
                     ];
                     array_push($item, $i);
                 }
