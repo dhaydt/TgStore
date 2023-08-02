@@ -45,7 +45,7 @@
     }
     @media(max-width: 500px){
       .row-card{
-        padding-top: 13px;
+        padding-top: 0px;
       }
       .ftco-section{
         padding-top: 5px !important;
@@ -64,7 +64,7 @@
         font-size: 10px;
       }
       .login-wrap.p-4.p-md-5{
-        padding:15px 20px !important;
+        padding:0px 20px !important;
       }
     }
   </style>
@@ -73,11 +73,11 @@
 <body style="max-width: 100vw; overflow: hidden;">
   <section class="ftco-section">
     <div class="container">
-      {{-- <div class="row justify-content-center d-none d-md-block">
+      <div class="row justify-content-center">
         <div class="col-md-6 text-center mb-5 pb-minus">
           <h2 class="heading-section">{{$general_setting->site_title ?? 'Invalid Web Name'}}</h2>
         </div>
-      </div> --}}
+      </div>
       <div class="row justify-content-center row-card">
         <div class="col-md-12 col-lg-10">
           <div class="wrap d-md-flex">
