@@ -93,9 +93,9 @@ class StockController extends Controller
                 $nestedData['reference_no'] = $transfer->reference_no;
                 $nestedData['from_warehouse'] = $transfer->fromWarehouse->id;
                 $nestedData['to_warehouse'] = $transfer->toWarehouse->id;
-                $nestedData['total_cost'] = $transfer->total_cost;
-                $nestedData['total_tax'] = $transfer->total_tax;
-                $nestedData['grand_total'] = $transfer->grand_total;
+                $nestedData['total_cost'] = number_format($transfer->total_cost);
+                $nestedData['total_tax'] = number_format($transfer->total_tax);
+                $nestedData['grand_total'] = number_format($transfer->grand_total);
 
                 if ($transfer->status == 1) {
                     $nestedData['status'] = 'completed';
