@@ -274,7 +274,7 @@
 
         ?>
         @if($index_permission_active || $balance_sheet_permission_active || $account_statement_permission_active)
-        <li class=""><a href="#account" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-briefcase"></i><span>{{trans('file.Accounting')}}</span></a>
+        <li class=""><a href="#account" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-briefcase"></i><span>Keuangan</span></a>
         <ul id="account" class="collapse list-unstyled ">
             @if($index_permission_active)
             <li id="account-list-menu"><a href="{{route('accounts.index')}}">{{trans('file.Account List')}}</a></li>
@@ -315,7 +315,7 @@
             ])->first();
         ?>
 
-        <li class=""><a href="#hrm" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-user-group"></i><span>HRM</span></a>
+        <li class=""><a href="#hrm" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-user-group"></i><span>Kepegawaian</span></a>
         <ul id="hrm" class="collapse list-unstyled ">
             @if($department_active)
             <li id="dept-menu"><a href="{{route('departments.index')}}">{{trans('file.Department')}}</a></li>
@@ -333,7 +333,7 @@
         </ul>
         </li>
 
-        <li><a href="#people" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-user"></i><span>{{trans('file.People')}}</span></a>
+        <li><a href="#people" aria-expanded="false" data-toggle="collapse"> <i class="dripicons-user"></i><span>SDM</span></a>
         <ul id="people" class="collapse list-unstyled ">
             <?php $index_permission_active = DB::table('permissions')
                 ->join('role_has_permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
@@ -585,7 +585,7 @@
                 <input type="hidden" name="end_date" value="{{date('Y-m-d')}}" />
                 <input type="hidden" name="warehouse_id" value="0" />
                 <input type="hidden" name="time_period" value="weekly" />
-                <a id="sale-report-chart-link" href="">{{trans('file.Sale Report Chart')}}</a>
+                <a id="sale-report-chart-link" href="">Laporan Grafik Penjualan</a>
                 {!! Form::close() !!}
             </li>
             @endif
@@ -653,7 +653,7 @@
             @endif
             @if($dso_report_active)
             <li id="daily-sale-objective-menu">
-                <a href="{{route('report.dailySaleObjective')}}">{{trans('file.Daily Sale Objective Report')}}</a>
+                <a href="{{route('report.dailySaleObjective')}}">Laporan Target Penjualan Harian</a>
             </li>
             @endif
             @if($user_report_active)
