@@ -684,7 +684,7 @@
   'session' => 
   array (
     'driver' => 'file',
-    'lifetime' => '1',
+    'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
     'files' => 'D:\\CODE\\tgstore\\storage\\framework/sessions',

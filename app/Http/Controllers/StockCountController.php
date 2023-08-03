@@ -158,7 +158,7 @@ class StockCountController extends Controller
         while( !feof($file_handle) ) {
             $current_line = fgetcsv($file_handle);
             if( $current_line && $i > 0 && ($current_line[3] != $current_line[4]) ){
-                $product_data = Product::where('code', $current_line[1])->first();
+                $product_data = Product::where('code', 'like', '%'.$current_line[1].'%')->first();
                 $product_id[] = $product_data->id;
                 $names[] = $current_line[0];
                 $code[] = $current_line[1];

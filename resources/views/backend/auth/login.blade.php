@@ -41,7 +41,7 @@
   <link rel="stylesheet" href="{{ asset('asset_login/css/style.css') }}">
   <style>
     .ftco-section{
-      margin-top: 15vh;
+      margin-top: 7vh;
     }
     @media(max-width: 500px){
       .row-card{
