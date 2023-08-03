@@ -495,6 +495,7 @@ return [
 	"User Report" => "Laporan Pengguna",
 	"Recieved Amount" => "Nilai yang Diterima",
 	"Theme" => "Tema",
+	"Switch Theme" => "Ganti Tema",
 	"Staff Access" => "Akses Staf",
 	"All Records" => "Semua data",
 	"Own Records" => "Data Sendiri",
