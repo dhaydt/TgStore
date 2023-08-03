@@ -53,15 +53,15 @@
                     <th>{{trans('file.Product')}}</th>
                     <th>{{trans('file.category')}}</th>
                     <th>{{trans('file.Purchased Amount')}}</th>
-                    <th>{{trans('file.Purchased')}} {{trans('file.qty')}}</th>
+                    <th>Pembelian Qty</th>
                     <!-- <th>Transfered Amount</th>
                     <th>Transfered Qty</th> -->
                     <th>{{trans('file.Sold Amount')}}</th>
-                    <th>{{trans('file.Sold')}} {{trans('file.qty')}}</th>
-                    <th>Returned Amount</th>
-                    <th>Returned Qty</th>
-                    <th>Purchase Returned Amount</th>
-                    <th>Purchase Returned Qty</th>
+                    <th>Penjualan Qty</th>
+                    <th>Total Retur</th>
+                    <th>Retur Qty</th>
+                    <th>Total Retur Pembelian</th>
+                    <th>Total Retur Qty</th>
                     <th>{{trans('file.profit')}}</th>
                     <th>{{trans('file.In Stock')}}</th>
                     <th>{{trans('file.Stock Worth (Price/Cost)')}}</th>

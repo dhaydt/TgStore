@@ -72,7 +72,7 @@
                                     <input type="text" name="city" required value="{{$lims_customer_data->city}}" class="form-control">
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{trans('file.State')}}</label>
                                     <input type="text" name="state" value="{{$lims_customer_data->state}}" class="form-control">
@@ -83,7 +83,7 @@
                                     <label>{{trans('file.Postal Code')}}</label>
                                     <input type="text" name="postal_code" value="{{$lims_customer_data->postal_code}}" class="form-control">
                                 </div>
-                            </div>
+                            </div> --}}
                             @if(!$lims_customer_data->user_id)
                             <div class="col-md-6 mt-3">
                                 <div class="form-group">
@@ -92,12 +92,12 @@
                                 </div>
                             </div>
                             @endif
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{trans('file.Country')}}</label>
                                     <input type="text" name="country" value="{{$lims_customer_data->country}}" class="form-control">
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-md-6 user-input">
                                 <div class="form-group">
                                     <label>{{trans('file.UserName')}} *</label>
