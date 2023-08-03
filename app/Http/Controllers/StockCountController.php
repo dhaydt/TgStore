@@ -63,7 +63,7 @@ class StockCountController extends Controller
             }
             //return $csvData;
             $filename= date('Ymd').'-'.date('his'). ".csv";
-            $file_path= public_path().'public/stock_count/'.$filename;
+            $file_path= public_path().'/stock_count/'.$filename;
             $file = fopen($file_path, "w+");
             foreach ($csvData as $cellData){
               fputcsv($file, explode(',', $cellData));
