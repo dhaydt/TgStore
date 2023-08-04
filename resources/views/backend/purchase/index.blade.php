@@ -820,7 +820,7 @@
              }
         });
 
-        var htmlfooter = '<p><strong>{{trans("file.Note")}}:</strong> '+purchase[22]+'</p><strong>{{trans("file.Created By")}}:</strong><br>'+purchase[23]+'<br>'+purchase[24];
+        var htmlfooter = '<p><strong>Tanggal Jatuh Tempo / Catatan:</strong> '+purchase[22]+'</p><strong>{{trans("file.Created By")}}:</strong><br>'+purchase[23]+'<br>'+purchase[24];
 
         $('#purchase-content').html(htmltext);
         $('#purchase-footer').html(htmlfooter);
