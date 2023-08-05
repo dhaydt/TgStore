@@ -282,7 +282,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label>{{trans('file.Note')}}</label>
+                                            <label>Tanggal Jatuh Tempo / Catatan</label>
                                             <textarea rows="5" class="form-control" name="note" >{{ $lims_purchase_data->note }}</textarea>
                                         </div>
                                     </div>
