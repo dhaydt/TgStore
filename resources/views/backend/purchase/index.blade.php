@@ -82,6 +82,7 @@
                     <th>{{trans('file.Paid')}}</th>
                     <th>{{trans('file.Due')}}</th>
                     <th>{{trans('file.Payment Status')}}</th>
+                    <th>Tanggal Jatuh Tempo/Catatan</th>
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
             </thead>
@@ -89,6 +90,7 @@
             <tfoot class="tfoot active">
                 <th></th>
                 <th>{{trans('file.Total')}}</th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -555,9 +557,9 @@
             },
             dataType: "json",
             type:"post",
-            /*success:function(data){
-                console.log(data);
-            }*/
+            // success:function(data){
+            //     console.log(data);
+            // }
         },
         "createdRow": function( row, data, dataIndex ) {
             $(row).addClass('purchase-link');
@@ -574,6 +576,7 @@
             {"data": "paid_amount"},
             {"data": "due"},
             {"data": "payment_status"},
+            {"data": "note"},
             {"data": "options"},
         ],
         'language': {
