@@ -74,6 +74,7 @@
                 <tr>
                     <th class="not-exported"></th>
                     <th>{{trans('file.Date')}}</th>
+                    <th>Toko</th>
                     <th>{{trans('file.reference')}}</th>
                     <th>{{trans('file.Biller')}}</th>
                     <th>{{trans('file.customer')}}</th>
@@ -91,6 +92,7 @@
             <tfoot class="tfoot active">
                 <th></th>
                 <th>{{trans('file.Total')}}</th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -789,19 +791,23 @@
                 payment_status: payment_status
             },
             dataType: "json",
-            type:"post"
+            type:"post",
+            // success:function(data){
+            //         console.log('data',data);
+            //     },
         },
         /*rowId: function(data) {
               return 'row_'+data['id'];
         },*/
         "createdRow": function( row, data, dataIndex ) {
-            //alert(data);
+            // alert(data);
             $(row).addClass('sale-link');
             $(row).attr('data-sale', data['sale']);
         },
         "columns": [
             {"data": "key"},
             {"data": "date"},
+            {"data": "warehouse"},
             {"data": "reference_no"},
             {"data": "biller"},
             {"data": "customer"},
