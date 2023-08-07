@@ -1193,6 +1193,7 @@ class ReportController extends Controller
                 $nestedData['returned_amount'] = number_format($returned_amount, 0);
                 $nestedData['paid_amount'] = number_format($purchase->paid_amount, 0);
                 $nestedData['due'] = number_format($purchase->grand_total- $returned_amount  - $purchase->paid_amount, 0);
+                $nestedData['note'] = $purchase->note;
                 
 
                 // data for purchase details by one click
@@ -1212,6 +1213,7 @@ class ReportController extends Controller
         }
         $newData = [];
         foreach($data as $d){
+            // return $data;
             foreach($d['product'] as $p){
                 $item = [
                     "purchased_date" => Carbon::parse($d['date'])->format('d-m-Y'),
@@ -1223,6 +1225,7 @@ class ReportController extends Controller
                     "supplier" => $d['supplier'],
                     "warehouse" => $d['warehouse'],
                     "payment_status" => $d['payment_status'],
+                    "note" => $d['note'],
                 ];
                 array_push($newData, $item);
             }
