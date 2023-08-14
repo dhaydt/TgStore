@@ -77,7 +77,7 @@
                                     <input type="text" name="city"  value="{{$lims_supplier_data->city}}" required class="form-control">
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label>{{trans('file.State')}}</label>
                                     <input type="text" name="state" value="{{$lims_supplier_data->state}}" class="form-control">
@@ -94,7 +94,7 @@
                                     <label>{{trans('file.Country')}}</label>
                                     <input type="text" name="country" value="{{$lims_supplier_data->country}}" class="form-control">
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-md-12">
                                 <div class="form-group mt-3">
                                     <input type="submit" value="{{trans('file.submit')}}" class="btn btn-primary">
