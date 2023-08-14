@@ -472,6 +472,7 @@ return [
 	"Update Department" => "Jabatan Update",
 	"Employee" => "Pekerja",
 	"Add Employee" => "Tambah Pekerja",
+	"Clear Due" => "Hapus Hutang",
 	"Update Employee" => "Update Pekerja",
 	"Payroll" => "Gaji",
 	"Add Payroll" => "Tambah Gaji",

@@ -545,6 +545,7 @@ return [
 	"Warehouse Report" => "Laporan toko",
 	"Quick Cash" => "Tunai Cepat",
 	"Clear" => "Jelas",
+	"Clear Due" => "Hapus Hutang",
 	"You can upload multiple image. Only .jpeg, .jpg, .png, .gif file can be uploaded. First image will be base image." => "Anda boleh memuat naik berbilang Gambar. Hanya fail .jpeg, .jpg, .png, .gif boleh dimuat naik. Gambar pertama akan menjadi Gambar asas.",
 	"This product has variant" => "Produk ini mempunyai variasi",
 	"Enter variant seperated by comma" => "Masukkan variasi yang dipisahkan oleh koma",
