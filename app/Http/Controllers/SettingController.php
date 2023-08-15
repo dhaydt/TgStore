@@ -359,8 +359,8 @@ class SettingController extends Controller
     	$pos_setting->warehouse_id = $data['warehouse_id'];
     	$pos_setting->biller_id = $data['biller_id'];
     	$pos_setting->product_number = $data['product_number'];
-    	$pos_setting->stripe_public_key = $data['stripe_public_key'];
-    	$pos_setting->stripe_secret_key = $data['stripe_secret_key'];
+    	$pos_setting->stripe_public_key = '-';
+    	$pos_setting->stripe_secret_key = '-';
         if(!isset($data['keybord_active']))
             $pos_setting->keybord_active = false;
         else
