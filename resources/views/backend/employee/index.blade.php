@@ -127,14 +127,14 @@
                         <label>{{trans('file.Address')}}</label>
                         <input type="text" name="address" class="form-control">
                     </div>
-                    <div class="col-md-6 form-group">
+                    {{-- <div class="col-md-6 form-group">
                         <label>{{trans('file.City')}}</label>
                         <input type="text" name="city" class="form-control">
                     </div>
                     <div class="col-md-6 form-group">
                         <label>{{trans('file.Country')}}</label>
                         <input type="text" name="country" class="form-control">
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">{{trans('file.submit')}}</button>
