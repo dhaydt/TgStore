@@ -200,7 +200,7 @@
                             <select name="paid_by_id" class="form-control">
                                 <option value="1">Tunai</option>
                                 <option value="8">Transfer</option>
-                                <option value="3">Credit Card</option>
+                                {{-- <option value="3">Credit Card</option> --}}
                                 {{-- <option value="4">Cheque</option> --}}
                             </select>
                         </div>
