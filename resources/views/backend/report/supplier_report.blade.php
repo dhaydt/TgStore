@@ -68,7 +68,7 @@
                             <th>{{trans('file.product')}} ({{trans('file.qty')}})</th>
                             <th>{{trans('file.grand total')}}</th>
                             <th>{{trans('file.Paid')}}</th>
-                            <th>{{trans('file.Balance')}}</th>
+                            <th>Hutang</th>
                             <th>{{trans('file.Status')}}</th>
                         </tr>
                     </thead>

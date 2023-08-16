@@ -210,7 +210,7 @@
                             <label>{{trans('file.Paid By')}}</label>
                             <select name="paid_by_id" class="form-control">
                                 <option value="1">Tunai</option>
-                                <option value="1">Transfer</option>
+                                <option value="8">Transfer</option>
                                 {{-- <option value="2">Gift Card</option> --}}
                                 <option value="3">Credit Card</option>
                                 {{-- <option value="4">Cheque</option> --}}
@@ -300,11 +300,12 @@
                         <div class="col-md-6 mt-1">
                             <label>{{trans('file.Paid By')}}</label>
                             <select name="edit_paid_by_id" class="form-control selectpicker">
-                                <option value="1">Cash</option>
-                                <option value="2">Gift Card</option>
+                                <option value="1">Tunai</option>
+                                <option value="8">Transfer</option>
+                                {{-- <option value="2">Gift Card</option> --}}
                                 <option value="3">Credit Card</option>
-                                <option value="4">Cheque</option>
-                                <option value="5">Paypal</option>
+                                {{-- <option value="4">Cheque</option> --}}
+                                {{-- <option value="5">Paypal</option> --}}
                                 <option value="6">Deposit</option>
                                 @if($lims_reward_point_setting_data->is_active)
                                 <option value="7">Points</option>
@@ -503,7 +504,8 @@
         rowindex = $(this).closest('tr').index();
         deposit = $('table.sale-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('.deposit').val();
         var sale_id = $(this).data('id').toString();
-        var balance = $('table.sale-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(12)').text();
+        var balance = $('table.sale-list tbody tr:nth-child(' + (rowindex + 1) + ')').find('td:nth-child(13)').text();
+        console.log('balance', balance)
         balance = parseFloat(balance.replace(/,/g, ''));
         $('input[name="paying_amount"]').val(balance);
         $('#add-payment input[name="balance"]').val(balance);
@@ -567,6 +569,8 @@
                 $('#edit-payment select[name="account_id"]').val(account_id[index]);
                 if(paying_method[index] == 'Cash')
                     $('select[name="edit_paid_by_id"]').val(1);
+                else if(paying_method[index] == 'Transfer')
+                    $('select[name="edit_paid_by_id"]').val(8);
                 else if(paying_method[index] == 'Gift Card'){
                     $('select[name="edit_paid_by_id"]').val(2);
                     $('#edit-payment select[name="gift_card_id"]').val(gift_card_id[index]);
@@ -656,8 +660,9 @@
     });
 
     $('input[name="amount"]').on("input", function() {
-        if( $(this).val() > parseFloat($('input[name="paying_amount"]').val()) ) {
-            alert('Paying amount cannot be bigger than recieved amount');
+        console.log('c', $(this).val(), parseFloat($('input[name="paying_amount"]').val()))
+        if( $(this).val() > $('input[name="paying_amount"]').val()) {
+            alert(parseFloat($('input[name="paying_amount"]').val(), 'Paying amount cannot be bigger than recieved amount', $(this).val()));
             $(this).val('');
         }
         else if( $(this).val() > parseFloat($('input[name="balance"]').val()) ) {

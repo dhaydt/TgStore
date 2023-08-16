@@ -2019,6 +2019,8 @@ class SaleController extends Controller
         
         if($data['paid_by_id'] == 1)
             $paying_method = 'Cash';
+        elseif($data['paid_by_id'] == 8)
+            $paying_method = 'Transfer';
         elseif ($data['paid_by_id'] == 2)
             $paying_method = 'Gift Card';
         elseif ($data['paid_by_id'] == 3)
@@ -2031,6 +2033,8 @@ class SaleController extends Controller
             $paying_method = 'Deposit';
         elseif($data['paid_by_id'] == 7)
             $paying_method = 'Points';
+        elseif($data['paid_by_id'] == 8)
+            $paying_method = 'Transfer';
 
 
         $cash_register_data = CashRegister::where([
@@ -2264,6 +2268,8 @@ class SaleController extends Controller
         }
         if($data['edit_paid_by_id'] == 1)
             $lims_payment_data->paying_method = 'Cash';
+        elseif($data['edit_paid_by_id'] == 8)
+            $lims_payment_data->paying_method = 'Transfer';
         elseif ($data['edit_paid_by_id'] == 2){
             if($lims_payment_data->paying_method == 'Gift Card'){
                 $lims_payment_gift_card_data = PaymentWithGiftCard::where('payment_id', $data['payment_id'])->first();

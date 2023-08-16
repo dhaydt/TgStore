@@ -306,6 +306,7 @@ return [
 	"Tax Method" => "Metode Pajak",
 	"Embedded Barcode" => "Sematkan Barcode",
 	"Daily Sale Objective" => "Target Penjualan Harian",
+	"Daily Sale Objective Report" => "Laporan Target Penjualan Harian",
 	"Featured product will be displayed in POS" => "Produk unggulan akan ditampilkan dalam POS", 
 	"Product Invoice Details" => "Detail Invois Produk",
 	"Purchase Status" => "Status Pembelian",

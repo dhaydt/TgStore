@@ -952,6 +952,8 @@ supplier : '. $lims_purchase_data['supplier']['name'] ?? 'Invalid Supplier Id'. 
 
         if($data['paid_by_id'] == 1)
             $paying_method = 'Cash';
+        elseif ($data['paid_by_id'] == 8)
+            $paying_method = 'Transfer';
         elseif ($data['paid_by_id'] == 2)
             $paying_method = 'Gift Card';
         elseif ($data['paid_by_id'] == 3)
@@ -1066,6 +1068,8 @@ supplier : '. $lims_purchase_data['supplier']['name'] ?? 'Invalid Supplier Id'. 
         $lims_payment_data->payment_note = $data['edit_payment_note'];
         if($data['edit_paid_by_id'] == 1)
             $lims_payment_data->paying_method = 'Cash';
+        elseif ($data['edit_paid_by_id'] == 8)
+        $lims_payment_data->paying_method = 'Transfer';
         elseif ($data['edit_paid_by_id'] == 2)
             $lims_payment_data->paying_method = 'Gift Card';
         elseif ($data['edit_paid_by_id'] == 3){

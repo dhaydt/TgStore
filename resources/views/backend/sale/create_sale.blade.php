@@ -1224,11 +1224,12 @@
                                             <input type="hidden" name="paid_by_id">
                                             <select class="form-control payment-option">
                                                 <option value="1">Cash</option>
-                                                <option value="2">Gift Card</option>
+                                                <option value="8">Transfer</option>
+                                                {{-- <option value="2">Gift Card</option> --}}
                                                 <option value="3">Credit Card</option>
-                                                <option value="4">Cheque</option>
-                                                <option value="5">Paypal</option>
-                                                <option value="6">Deposit</option>
+                                                {{-- <option value="4">Cheque</option> --}}
+                                                {{-- <option value="5">Paypal</option> --}}
+                                                {{-- <option value="6">Deposit</option> --}}
                                             </select>
                                         </div>
                                         <div class="form-group col-md-12 mt-3">

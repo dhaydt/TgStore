@@ -199,7 +199,7 @@
                             <label>{{trans('file.Paid By')}}</label>
                             <select name="paid_by_id" class="form-control">
                                 <option value="1">Tunai</option>
-                                <option value="1">Transfer</option>
+                                <option value="8">Transfer</option>
                                 <option value="3">Credit Card</option>
                                 {{-- <option value="4">Cheque</option> --}}
                             </select>
@@ -268,7 +268,7 @@
                             <label>{{trans('file.Paid By')}}</label>
                             <select name="edit_paid_by_id" class="form-control selectpicker">
                                 <option value="1">Tunai</option>
-                                <option value="3">Transfer</option>
+                                <option value="8">Transfer</option>
                                 {{-- <option value="4">Cheque</option> --}}
                             </select>
                         </div>
@@ -451,6 +451,8 @@
                 $('#edit-payment select[name="account_id"]').val(account_id[index]);
                 if(paying_method[index] == 'Cash')
                     $('select[name="edit_paid_by_id"]').val(1);
+                else if(paying_method[index] == 'Transfer')
+                    $('select[name="edit_paid_by_id"]').val(8);
                 else if(paying_method[index] == 'Credit Card'){
                     $('select[name="edit_paid_by_id"]').val(3);
                     $.getScript( "public/vendor/stripe/checkout.js" );
