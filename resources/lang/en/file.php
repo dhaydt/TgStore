@@ -297,7 +297,7 @@ return [
 	"Product Type" => "jenis produk",
 	"Product Unit" => "Unit Produk",
 	"Sale Unit" => "Unit PnePenjualan",
-	"supplier due report" => "Laporan Piutang Supplier",
+	"Supplier Due Report" => "Laporan Piutang Supplier",
 	"Purchase Unit" => "Unit Pembelian",
 	"Product Cost" => "Harga Beli Produk",
 	"Product Price" => "Harga Jual Produk",
