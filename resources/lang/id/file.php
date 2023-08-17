@@ -596,6 +596,7 @@ return [
 	"Currency Name" => "Nama Mata Wang",
 	"Currency Code" => "Kode matawang",
 	"Exchange Rate" => "Kartuar pertukaran",
+	"supplier due report" => "Laporan Piutang Supplier",
 	"System Title" => "Tajuk Sistem",
 	"System Logo" => "Logo Sistem",
 	"Flat" => "Flat",
