@@ -688,7 +688,7 @@ class TransactionController extends Controller
                     'code' => $product->code,
                     'brand' => $product->brand,
                     'category' => $product->category->name,
-                    'unit' => $product->unit->unit_name,
+                    'unit' => $product->unit->unit_name ?? 'Invalid unit',
                     'cost' => $product->cost,
                     'price' => $nestedData['price'],
                     // 'is_variant' => $product->is_variant
