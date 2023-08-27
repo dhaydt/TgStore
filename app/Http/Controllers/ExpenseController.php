@@ -116,7 +116,16 @@ class ExpenseController extends Controller
         }
         $data = array();
         if (!empty($expenses)) {
+
             foreach ($expenses as $key => $expense) {
+                if($expense['status'] == 'pending'){
+                    $statusExp = 'menunggu';
+                }elseif($expense['status'] == 'accepted'){
+                    $statusExp = 'diterima';
+                }else{
+                    $statusExp = 'ditolak';
+                }
+
                 $nestedData['id'] = $expense->id;
                 $nestedData['key'] = $key;
                 $nestedData['date'] = date(config('date_format'), strtotime($expense->created_at->toDateString()));
@@ -126,7 +135,7 @@ class ExpenseController extends Controller
                 $nestedData['amount'] = number_format($expense->amount, 0);
                 $nestedData['note'] = $expense->note;
                 $nestedData['status'] = '<div class="btn-group">
-                                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.$expense->status.'
+                                            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.$statusExp.'
                                         <span class="caret"></span>
                                         <span class="sr-only">Toggle Dropdown</span>
                                         </button>
