@@ -786,9 +786,9 @@ class ReportController extends Controller
         }
 
         if($warehouse_id == 0 || $warehouse_id == null){
-            $expenses = Expense::with('expenseCategory')->where('status', 'accepted')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
+            $expenses = Expense::with('expenseCategory')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
         }else{
-            $expenses = Expense::with('expenseCategory')->where('warehouse_id', $warehouse_id)->where('status', 'accepted')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
+            $expenses = Expense::with('expenseCategory')->where('warehouse_id', $warehouse_id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
         }
 
         $resp = [
@@ -799,6 +799,13 @@ class ReportController extends Controller
         ];
 
         foreach ($expenses as $e) {
+            if($e['status'] == 'pending'){
+                $statusExp = 'menunggu';
+            }elseif($e['status'] == 'accepted'){
+                $statusExp = 'diterima';
+            }else{
+                $statusExp = 'ditolak';
+            }
             $item = [
                 'id' => $e['id'],
                 'category_name' => $e['expenseCategory']['name'] ?? 'Invalid Category name',
@@ -806,6 +813,7 @@ class ReportController extends Controller
                 'amount' => $e['amount'],
                 'warehouse_id' => $e['warehouse_id'],
                 'note' => $e['note'],
+                'status' => $statusExp,
             ];
 
             array_push($resp['data'], $item);
