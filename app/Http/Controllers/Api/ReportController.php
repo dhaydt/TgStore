@@ -581,7 +581,7 @@ class ReportController extends Controller
         $data = $request->all();
         $start_date = $data['start_date'];
         $end_date = $data['end_date'];
-        $warehouse_id = $data['warehouse_id'];
+        $warehouse_id = $data['warehouse_id'] ?? 0;
 
         if ($start_date == null) {
             $start_date = date('Y-m') . '-01';
@@ -786,9 +786,9 @@ class ReportController extends Controller
         }
 
         if($warehouse_id == 0 || $warehouse_id == null){
-            $expenses = Expense::with('expenseCategory')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
+            $expenses = Expense::with('expenseCategory')->where('status', 'accepted')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
         }else{
-            $expenses = Expense::with('expenseCategory')->where('warehouse_id', $warehouse_id)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
+            $expenses = Expense::with('expenseCategory')->where('warehouse_id', $warehouse_id)->where('status', 'accepted')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->orderBy('created_at', 'desc')->get();
         }
 
         $resp = [

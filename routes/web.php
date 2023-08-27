@@ -287,6 +287,7 @@ Route::group(['middleware' => ['common', 'auth', 'active']], function () {
 	Route::resource('expense_categories', 'ExpenseCategoryController');
 
 	Route::post('expenses/expense-data', 'ExpenseController@expenseData')->name('expenses.data');
+	Route::post('expenses/status', 'ExpenseController@updateStatus')->name('expenses.status');
 	Route::post('expenses/deletebyselection', 'ExpenseController@deleteBySelection');
 	Route::resource('expenses', 'ExpenseController');
 

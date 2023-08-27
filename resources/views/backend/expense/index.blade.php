@@ -66,6 +66,7 @@
                     <th>{{trans('file.category')}}</th>
                     <th>{{trans('file.Amount')}}</th>
                     <th>{{trans('file.Note')}}</th>
+                    <th>Status</th>
                     <th class="not-exported">{{trans('file.action')}}</th>
                 </tr>
             </thead>
@@ -159,6 +160,39 @@
     </div>
 </div>
 
+<div id="editModalStatus" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
+    <div role="document" class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="exampleModalLabel" class="modal-title">Ubah Status Pengeluaran</h5>
+                <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true"><i class="dripicons-cross"></i></span></button>
+            </div>
+            <div class="modal-body">
+                {!! Form::open(['route' => ['expenses.status'], 'method' => 'post']) !!}
+                    <div class="form-group">
+                        <input type="hidden" name="expense_id">
+                        <label>{{trans('file.reference')}}</label>
+                        <p id="references">{{'er-' . date("Ymd") . '-'. date("his")}}</p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <label> Status</label>
+                            <select class="form-control selectpicker" name="status" data-live-search="true" data-live-search-style="begins">
+                                <option value="pending">Menunggu</option>
+                                <option value="accepted">Diterima</option>
+                                <option value="denied">Ditolak</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">{{trans('file.submit')}}</button>
+                    </div>
+                {{ Form::close() }}
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @endsection
 
@@ -195,7 +229,9 @@
             var url = "expenses/";
             var id = $(this).data('id').toString();
             url = url.concat(id).concat("/edit");
+            
             $.get(url, function(data) {
+                console.log('called edit', data)
                 $('#editModal #reference').text(data['reference_no']);
                 $("#editModal input[name='created_at']").val(data['date']);
                 $("#editModal select[name='warehouse_id']").val(data['warehouse_id']);
@@ -204,6 +240,19 @@
                 $("#editModal input[name='amount']").val(data['amount']);
                 $("#editModal input[name='expense_id']").val(data['id']);
                 $("#editModal textarea[name='note']").val(data['note']);
+                $('.selectpicker').selectpicker('refresh');
+            });
+        });
+        
+        $(document).on('click', 'button.open-StatusEdit', function() {
+            var url = "expenses/";
+            var id = $(this).data('id').toString();
+            url = url.concat(id).concat("/edit");
+            $.get(url, function(data) {
+                console.log('called edit status', data)
+                $('#editModalStatus #references').text(data['reference_no']);
+                $("#editModalStatus select[name='status']").val(data['status']);
+                $("#editModalStatus input[name='expense_id']").val(data['id']);
                 $('.selectpicker').selectpicker('refresh');
             });
         });
@@ -243,6 +292,7 @@
             {"data": "expenseCategory"},
             {"data": "amount"},
             {"data": "note"},
+            {"data": "status"},
             {"data": "options"}
         ],
         'language': {

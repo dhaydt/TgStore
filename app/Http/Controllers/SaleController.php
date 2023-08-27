@@ -108,6 +108,7 @@ class SaleController extends Controller
             8 => 'paid_amount',
         );
         
+        
         $warehouse_id = $request->input('warehouse_id');
         $sale_status = $request->input('sale_status');
         $payment_status = $request->input('payment_status');
