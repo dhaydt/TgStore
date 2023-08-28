@@ -343,6 +343,15 @@ class RoleController extends Controller
         }
         else
             $role->revokePermissionTo('expenses-delete');
+        
+            if($request->has('expenses-status')){
+            $permission = Permission::firstOrCreate(['name' => 'expenses-status']);
+            if(!$role->hasPermissionTo('expenses-status')){
+                $role->givePermissionTo($permission);
+            }
+        }
+        else
+            $role->revokePermissionTo('expenses-status');
 
         if($request->has('quotes-index')){
             $permission = Permission::firstOrCreate(['name' => 'quotes-index']);

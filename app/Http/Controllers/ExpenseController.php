@@ -140,7 +140,7 @@ class ExpenseController extends Controller
                                         <span class="sr-only">Toggle Dropdown</span>
                                         </button>
                                         <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">';
-                                            if (in_array("expenses-edit", $request['all_permission'])) {
+                                            if (in_array("expenses-status", $request['all_permission'])) {
                                                 $nestedData['status'] .= '<li>
                                                     <button type="button" data-id="' . $expense->id . '" class="open-StatusEdit btn btn-link" data-toggle="modal" data-target="#editModalStatus"> Ubah Status </button>
                                                 </li>';

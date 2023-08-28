@@ -18,11 +18,11 @@
 						    <table class="table table-bordered permission-table">
 						        <thead>
 						        <tr>
-						            <th colspan="5" class="text-center">{{$lims_role_data->name}} {{trans('file.Group Permission')}}</th>
+						            <th colspan="6" class="text-center">{{$lims_role_data->name}} {{trans('file.Group Permission')}}</th>
 						        </tr>
 						        <tr>
 						            <th rowspan="2" class="text-center">Module Name</th>
-						            <th colspan="4" class="text-center">
+						            <th colspan="5" class="text-center">
 						            	<div class="checkbox">
 						            		<input type="checkbox" id="select_all">
 						            		<label for="select_all">{{trans('file.Permissions')}}</label>
@@ -34,6 +34,7 @@
 						            <th class="text-center">{{trans('file.add')}}</th>
 						            <th class="text-center">{{trans('file.edit')}}</th>
 						            <th class="text-center">{{trans('file.delete')}}</th>
+						            <th class="text-center">Status</th>
 						        </tr>
 						        </thead>
 						        <tbody>
@@ -344,6 +345,18 @@
 								                <input type="checkbox" value="1" id="expenses-delete" name="expenses-delete">
 								                @endif
 								                <label for="expenses-delete"></label>
+								            </div>
+						            	</div>
+						            </td>
+						            <td class="text-center">
+						                <div class="icheckbox_square-blue" aria-checked="false" aria-disabled="false">
+							                <div class="checkbox">
+								                @if(in_array("expenses-status", $all_permission))
+								                <input type="checkbox" value="1" id="expenses-status" name="expenses-status" checked>
+								                @else
+								                <input type="checkbox" value="1" id="expenses-status" name="expenses-status">
+								                @endif
+								                <label for="expenses-status"></label>
 								            </div>
 						            	</div>
 						            </td>
