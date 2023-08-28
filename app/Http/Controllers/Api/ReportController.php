@@ -812,6 +812,7 @@ class ReportController extends Controller
                 'reference_no' => $e['reference_no'],
                 'amount' => $e['amount'],
                 'warehouse_id' => $e['warehouse_id'],
+                'warehouse_name' => $e['warehouse']['name'],
                 'note' => $e['note'],
                 'status' => $statusExp,
             ];
