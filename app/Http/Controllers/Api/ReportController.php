@@ -815,6 +815,7 @@ class ReportController extends Controller
                 'warehouse_name' => $e['warehouse']['name'],
                 'note' => $e['note'],
                 'status' => $statusExp,
+                'created_at' => Carbon::parse($e['created_at'])->format('d-m-Y'),
             ];
 
             array_push($resp['data'], $item);

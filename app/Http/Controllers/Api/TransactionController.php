@@ -100,6 +100,28 @@ class TransactionController extends Controller
         }
     }
 
+    public function expenseStatus(Request $request, $id){
+        $this->validate($request, [
+            'status' => 'required',
+        ], [
+            'status.required' => 'Masukan status pengeluaran!'
+        ]);
+        
+        if($request->status == 'accepted' || $request->status == 'pending' || $request->status == 'denied'){
+            $expense = Expense::find($id);
+            if($expense){
+                $expense->status = $request->status;
+                $expense->save();
+
+                return response()->json(['status' => 'success', 'message' => 'Status pengeluaran berhasil diubah!']);
+            }else{
+                return response()->json(['status' => 'fail', 'message' => 'Data pengeluaran tidak ditemukan']);
+            }
+        }else{
+            return response()->json(['status' => 'fail', 'message' => 'status hanya boleh berisi accepted, denied atau pending!']);
+        }
+    }
+
     public function addExpense(Request $request)
     {
         $this->validate($request, [
